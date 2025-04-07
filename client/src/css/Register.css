@@ -1,0 +1,132 @@
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .register-container {
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  .register-left {
+    width: 45%;
+    overflow: hidden;
+  }
+  
+  .register-image {
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+    border-bottom-right-radius: 50%;
+    border-top-right-radius: 50%;
+  }
+  
+  .register-right {
+    width: 55%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+  }
+  
+  .register-form-container {
+    width: 80%;
+    max-width: 400px;
+  }
+  
+  .register-logo img {
+    width: 40px;
+    margin: 0 auto;
+    display: block;
+  }
+  
+  .register-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .register-form label {
+    display: block;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #333;
+    position: relative;
+  }
+  
+  .register-form input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+    background-color: #f5f5f5;
+  }
+  
+  .password-field {
+    position: relative;
+  }
+  
+  .eye-icon {
+    position: absolute;
+    right: 15px;
+    top: 42px;
+    color: #888;
+    cursor: pointer;
+  }
+  
+  .continue-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background-color: #ff5b6a;
+    color: white;
+    border-radius: 25px;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .continue-btn:hover {
+    background-color: #e04a5b;
+  }
+  
+  .divider {
+    margin: 30px 0 20px;
+    border: none;
+    border-top: 1px solid #eee;
+  }
+  
+  .google-btn {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ff5b6a;
+    background: white;
+    color: #333;
+    border-radius: 25px;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  
+  .login-link {
+    margin-top: 20px;
+    font-size: 14px;
+    text-align: center;
+    color: #555;
+  }
+  
+  .login-link a {
+    color: #ff5b6a;
+    text-decoration: none;
+  }
+  

@@ -2,7 +2,7 @@
 import  "../css/Login.css"
 import SunsetImage from "../images/sunset.jpg";
 
-function Register() {
+function Login() {
     return(
 <div className="container">
       <div className="image-side">
@@ -43,7 +43,7 @@ function Register() {
             Continue with Google
           </button>
           <p className="signup-text">
-            Don’t have an account? <a href="#top">Sign Up</a>
+            Don’t have an account? <a href="/register">Sign Up</a>
           </p>
         </div>
       </div>
@@ -51,4 +51,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default Login;
