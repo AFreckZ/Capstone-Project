@@ -1,0 +1,103 @@
+.profile-container {
+    display: flex;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f4f4f9;
+    height: 100vh;
+  }
+  
+  .sidebar {
+    width: 250px;
+    background: #f0f0f5;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+  }
+  
+  .profile-pic {
+    width: 100%;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  
+  .edit-link {
+    display: block;
+    color: #ff5b7f;
+    margin: 5px 0;
+    font-size: 0.9em;
+    text-decoration: none;
+  }
+  
+  .preferences span {
+    display: inline-block;
+    background: #ff5b7f;
+    color: white;
+    padding: 4px 8px;
+    margin: 5px 5px 5px 0;
+    border-radius: 10px;
+    font-size: 0.8em;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+  }
+  
+  .my-trip {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .trip-image {
+    width: 300px;
+    border-radius: 10px;
+    margin-right: 20px;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    background: #ff5b7f;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .favorites {
+    margin-top: 20px;
+  }
+  
+  .favorite-items {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .favorite-card {
+    background: white;
+    border-radius: 15px;
+    padding: 10px;
+    text-align: center;
+    width: 120px;
+  }
+  
+  .favorite-card img {
+    border-radius: 10px;
+    width: 100%;
+    height: auto;
+  }
+  
+  .footer {
+    background: #0c0222;
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+  }
+  

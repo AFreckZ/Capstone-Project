@@ -1,26 +1,16 @@
+//require("dotenv").config()
 const express = require("express");
-const cors = require("cors");
-
 const app = express();
+const cors = require("cors");
+const pool = require("./db")
+//middleware
+app.use(express.json());//Access Body of client
 app.use(cors());
-app.use(express.json());
 
-const PORT = process.env.PORT || 5000;
+//Routes
+//register
+app.use("/auth",require("./routes/jwtAuth"))
 
-// Dummy register endpoint
-app.post("/api/register", (req, res) => {
-  const { name, email, password } = req.body;
-  console.log("Registered:", { name, email, password });
-  res.status(201).json({ message: "User registered successfully!" });
-});
-
-// Dummy login endpoint
-app.post("/api/login", (req, res) => {
-  const { email, password } = req.body;
-  console.log("Login attempt:", { email, password });
-  res.status(200).json({ message: "Login successful!" });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+app.listen(5000, () => {
+    console.log("server is running on port 5000")
+})
