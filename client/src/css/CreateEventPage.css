@@ -1,0 +1,11 @@
+@import './TripInformation.css';
+
+/* You can override or extend styles here */
+.event-form {
+  background: white;
+  margin: 30px auto;
+  padding: 30px;
+  max-width: 800px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
