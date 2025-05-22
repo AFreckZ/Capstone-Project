@@ -3,7 +3,8 @@ import React from 'react';
 //import Login from './Templates/Login';
 //import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 //import ProfilePage from './Templates/ProfilePage';
-import InterestPage from './Templates/Preferences';
+//import InterestPage from './Templates/Preferences';
+import TripInformationPage from './Templates/TripInformation';
 //import logo from './logo.svg';
 //import './css/App.css';
 
@@ -11,7 +12,7 @@ function App() {
 
   return (
     <div>
-      <InterestPage />
+      <TripInformationPage />
     </div>
     /*
     <Router>
