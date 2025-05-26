@@ -3,6 +3,12 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const pool = require("./db")
+
+//initailising the routes
+const venueRoutes = require('./routes/venueRoutes');
+const eventRoutes = require('./routes/eventRoutes');
+
+
 //middleware
 app.use(express.json());//Access Body of client
 app.use(cors());
@@ -10,8 +16,11 @@ app.use(cors());
 //Routes
 //register
 app.use("/auth",require("./routes/jwtAuth"))
-
-
+//venue routes
+app.use('/api/venues', venueRoutes);
+//event routes
+app.use('/api/events', eventRoutes);
+//testing the server
 app.get('/api/test', (req, res) => {
   res.json({ status: 'Server is working!' });
 });
