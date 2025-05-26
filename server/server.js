@@ -7,7 +7,7 @@ const pool = require("./db")
 //initailising the routes
 const venueRoutes = require('./routes/venueRoutes');
 const eventRoutes = require('./routes/eventRoutes');
-
+const touristRoutes = require('./routes/touristRoutes');
 
 //middleware
 app.use(express.json());//Access Body of client
@@ -20,6 +20,9 @@ app.use("/auth",require("./routes/jwtAuth"))
 app.use('/api/venues', venueRoutes);
 //event routes
 app.use('/api/events', eventRoutes);
+//tourists routes
+app.use('/api/tourists', touristRoutes );
+
 //testing the server
 app.get('/api/test', (req, res) => {
   res.json({ status: 'Server is working!' });

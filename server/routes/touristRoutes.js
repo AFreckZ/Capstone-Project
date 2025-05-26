@@ -2,25 +2,25 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-// GET all events
+// GET all tourists
 router.get('/', async (req, res) => {
   try {
-    const [events] = await pool.query('SELECT * FROM Event');
-    res.json(events);
+    const [tourists] = await pool.query('SELECT * FROM Tourist');
+    res.json(tourists);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to fetch events' });
+    res.status(500).json({ error: 'Failed to fetch tourists' });
   }
 });
 
 // GET single event
 router.get('/:id', async (req, res) => {
   try {
-    const [event] = await pool.query('SELECT * FROM Event WHERE event_id = ?', [req.params.id]);
-    if (event.length === 0) {
+    const [tourist] = await pool.query('SELECT * FROM Tourist WHERE tid = ?', [req.params.id]);
+    if (tourist.length === 0) {
       return res.status(404).json({ error: 'Event not found' });
     }
-    res.json(event[0]);
+    res.json(tourist[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch event' });
