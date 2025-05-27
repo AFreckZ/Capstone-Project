@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 // GET single event
 router.get('/:id', async (req, res) => {
   try {
-    const [tourist] = await pool.query('SELECT * FROM Tourist WHERE tid = ?', [req.params.id]);
+    const [tourist] = await pool.query('SELECT * FROM Tourist WHERE tourist_id = ?', [req.params.id]);
     if (tourist.length === 0) {
       return res.status(404).json({ error: 'Event not found' });
     }
