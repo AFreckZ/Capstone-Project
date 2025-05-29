@@ -2,13 +2,6 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-//register event
-// router.post('/regevent', async (req, res) =>{
-//     try{
-//         const {}= req.body;
-//         const [result] = await pool.query('INSERT INTO Event ()')
-//     }
-// } );
 
 
 // GET all events

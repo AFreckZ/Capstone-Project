@@ -9,6 +9,7 @@ const venueRoutes = require('./routes/venueRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const touristRoutes = require('./routes/touristRoutes');
 const itineraryRoutes= require('./routes/itineraryRoutes');
+const transportRoutes = require('./routes/transportRoutes');
 
 //middleware
 app.use(express.json());//Access Body of client
@@ -25,6 +26,9 @@ app.use('/api/events', eventRoutes);
 app.use('/api/tourists', touristRoutes );
 //itinerary routes
 app.use('/api/itinerary',itineraryRoutes );
+//transport agency routes, 
+app.use ('/api/transports', transportRoutes);
+
 
 //testing the server
 app.get('/api/test', (req, res) => {
