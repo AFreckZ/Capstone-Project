@@ -10,7 +10,7 @@ const eventRoutes = require('./routes/eventRoutes');
 const touristRoutes = require('./routes/touristRoutes');
 const itineraryRoutes= require('./routes/itineraryRoutes');
 const transportRoutes = require('./routes/transportRoutes');
-
+const userRoutes = require('./routes/userRoutes');
 //middleware
 app.use(express.json());//Access Body of client
 app.use(cors());
@@ -19,7 +19,7 @@ app.use(cors());
 //register
 app.use("/auth",require("./routes/jwtAuth"))
 //venue routes
-app.use('/api/venues', venueRoutes);
+app.use('api/venues', venueRoutes);
 //event routes
 app.use('/api/events', eventRoutes);
 //tourists routes
@@ -28,6 +28,8 @@ app.use('/api/tourists', touristRoutes );
 app.use('/api/itinerary',itineraryRoutes );
 //transport agency routes, 
 app.use ('/api/transports', transportRoutes);
+//user routes 
+app.use ('/api/user', userRoutes);
 
 
 //testing the server

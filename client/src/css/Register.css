@@ -107,7 +107,7 @@
     border-radius: 10px;
     padding: 7px;
   }
-  .user-type button:hover{
+  .user-type button:active{
     background-color: rgb(127, 118, 118);
   }
 
