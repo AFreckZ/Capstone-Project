@@ -60,6 +60,11 @@ function Register() {
             
               </span>
             </label>
+            <label className="user-type"> I am a:*
+              <button className="user-type" value="tourist">Tourist</button>
+              <button className="user-type" value="business-owner">Business Owner</button>
+              <button className="user-type" value="tourist-agency">Transport Agency </button>
+            </label>
 
             <button type="submit" className="continue-btn">Continue</button>
           </form>

@@ -1,5 +1,5 @@
 import React from 'react';
-//import Register from './Templates/Register';
+import Register from './Templates/Register';
 //import Login from './Templates/Login';
 //import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 //import ProfilePage from './Templates/ProfilePage';
@@ -8,12 +8,12 @@ import React from 'react';
 //import logo from './logo.svg';
 //import './css/App.css';
 //import CreateEventPage from './Templates/CreateEventPage';
-import Welcome from './Templates/WelcomePage';
+//import Welcome from './Templates/WelcomePage';
 function App() {
 
   return (
     <div>
-      <Welcome/>
+      <Register/>
     </div>
     /*
     <Router>
