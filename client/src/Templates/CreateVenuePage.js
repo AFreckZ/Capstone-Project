@@ -1,6 +1,5 @@
-// CreateEventPage.js
+// CreateVenuePage.js
 import React, { useState } from "react";
-import axios from 'axios';
 import "../css/CreateEventPage.css";
 import JamaicanAddressForm from "./JamaicanAddressForm";
 
@@ -87,22 +86,17 @@ function WeeklySchedule({ schedule, setSchedule }) {
   );
 }
 
-export default function CreateEventPage() {
+export default function CreateVenuePage() {
   const [name, setName] = useState("");
-  const [eventType, setEventType] = useState("");
-  const [address, setAddress] = useState("");
   const [description, setDescription] = useState("");
-  const [duration, setDuration] = useState("");
+  const [address, setAddress] = useState("");
+  const [venueType, setVenueType] = useState("");
   const [cost, setCost] = useState("");
   const [schedule, setSchedule] = useState(initialSchedule);
-  const [menuImage, setMenuImage] = useState(null);
-  const [flyerImage, setFlyerImage] = useState(null);
-  const [itineraryFile, setItineraryFile] = useState(null);
-
-  const [selectedDate, setSelectedDate] = useState("");
+  const [dateSchedule, setDateSchedule] = useState([]);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [dateSchedule, setDateSchedule] = useState([]);
+  const [selectedDate, setSelectedDate] = useState("");
 
   const handleAddDateSchedule = () => {
     if (selectedDate && startTime && endTime) {
@@ -113,25 +107,24 @@ export default function CreateEventPage() {
     }
   };
 
-  const handleCreateEvent = () => {
-    const eventData = {
+  const handleCreateVenue = () => {
+    const venueData = {
       name,
-      eventType,
-      address,
       description,
-      duration,
+      address,
+      venueType,
       cost,
       schedule,
       dateSchedule,
     };
 
-    console.log("Event Created:", eventData);
-    alert(`Event Created:\n${JSON.stringify(eventData, null, 2)}`);
+    console.log("Venue Created:", venueData);
+    alert(`Venue Created:\n${JSON.stringify(venueData, null, 2)}`);
   };
 
   return (
     <div className="event-container">
-      <header className="trip-header">
+     <header className="trip-header">
         <div className="header-content">
           <div className="logo">Yaad Quest</div>
           <nav className="nav-links">
@@ -148,71 +141,29 @@ export default function CreateEventPage() {
       <div className="trip-banner">
         <button className="back-button">⟵ Back</button>
         <div className="banner-content">
-          <h1>Create Event</h1>
-          <p>Enter the details for your events</p>
+          <h1>Create Venue</h1>
+          <p>Enter the details for your venue</p>
         </div>
       </div>
-      
+
+
       <div className="event-form">
         <div className="form-group">
-          <label>Event Name:</label>
+          <label>Venue Name:</label>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
         <div className="form-group">
-          <label>Event Type:</label>
-          <select
-            value={eventType}
-            onChange={(e) => setEventType(e.target.value)}
-          >
-            <option value="">Select an event type</option>
-            <option value="Concert">Concert</option>
-            <option value="Festival">Festival</option>
-            <option value="Food Fair">Food Fair</option>
-            <option value="Cultural Show">Cultural Show</option>
-            <option value="Tour">Tour</option>
-            <option value="Beach Party">Beach Party</option>
-            <option value="Community Market">Community Market</option>
-            <option value="Wellness Retreat">Wellness Retreat</option>
-            <option value="Nightlife">Nightlife</option>
-            <option value="Other">Other</option>
-          </select>
-
-          {["Food Fair", "Restaurant"].includes(eventType) && (
-            <div className="form-group">
-              <label>Upload Menu (Image):</label>
-              <input type="file" accept="image/*" onChange={(e) => setMenuImage(e.target.files[0])} />
-            </div>
-          )}
-
-          {["Concert", "Festival", "Nightlife"].includes(eventType) && (
-            <div className="form-group">
-              <label>Upload Flyer or Line-up (Image):</label>
-              <input type="file" accept="image/*" onChange={(e) => setFlyerImage(e.target.files[0])} />
-            </div>
-          )}
-
-          {["Tour", "Wellness Retreat"].includes(eventType) && (
-            <div className="form-group">
-              <label>Upload Itinerary (PDF or DOCX):</label>
-              <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setItineraryFile(e.target.files[0])} />
-            </div>
-          )}
-
-          {eventType === "Other" && (
-            <input
-              type="text"
-              placeholder="Enter custom event type"
-              onChange={(e) => setEventType(e.target.value)}
-            />
-          )}
+          <label>Description:</label>
+          <textarea rows="4" value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
 
+        <h3>Address:</h3>
         <JamaicanAddressForm onAddressChange={setAddress} />
 
         <div className="form-group">
-          <label>Description:</label>
-          <textarea rows="4" value={description} onChange={(e) => setDescription(e.target.value)} />
+          <label>Venue Type:</label>
+          <input type="text" value={venueType} onChange={(e) => setVenueType(e.target.value)} />
         </div>
 
         <div className="form-group">
@@ -222,40 +173,22 @@ export default function CreateEventPage() {
 
         <WeeklySchedule schedule={schedule} setSchedule={setSchedule} />
 
-        {/* Excursion Date Schedule */}
-        <div className="form-group excursion-section">
-  <label>Excursion Schedule by Date:</label>
-  <div className="excursion-inputs">
-    <input
-      type="date"
-      value={selectedDate}
-      onChange={(e) => setSelectedDate(e.target.value)}
-    />
-    <input
-      type="time"
-      value={startTime}
-      onChange={(e) => setStartTime(e.target.value)}
-    />
-    <input
-      type="time"
-      value={endTime}
-      onChange={(e) => setEndTime(e.target.value)}
-    />
-    <button onClick={handleAddDateSchedule}>Add</button>
-  </div>
+        <div className="form-group">
+          <label>Excursion Schedule by Date:</label>
+          <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
+          <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} placeholder="Start Time" />
+          <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} placeholder="End Time" />
+          <button onClick={handleAddDateSchedule}>Add Date Schedule</button>
 
-  <ul className="excursion-list">
-    {dateSchedule.map((item, index) => (
-      <li key={index}>
-        {item.date} – {item.startTime} to {item.endTime}
-      </li>
-    ))}
-  </ul>
-</div>
-
+          <ul>
+            {dateSchedule.map((item, index) => (
+              <li key={index}>{item.date} - {item.startTime} to {item.endTime}</li>
+            ))}
+          </ul>
+        </div>
 
         <div className="action-buttons">
-          <button className="finish-button" onClick={handleCreateEvent}>Create Event</button>
+          <button className="finish-button" onClick={handleCreateVenue}>Create Venue</button>
           <button className="cancel-button">Cancel</button>
         </div>
       </div>

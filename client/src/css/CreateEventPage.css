@@ -1,11 +1,441 @@
 @import './TripInformation.css';
+/* CreateEventPage.css */
 
-/* You can override or extend styles here */
+
+/*Header*/
+.trip-header {
+  background: linear-gradient(to right, #1a1a1a, #333);
+  color: white;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  animation: slideDown 0.6s ease-in-out;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #ffcc00;
+  letter-spacing: 1px;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #ffcc00;
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-links a:hover {
+  color: #ffcc00;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #555;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: box-shadow 0.3s;
+}
+
+.avatar:hover {
+  box-shadow: 0 0 10px #ffcc00;
+}
+
+/* Entrance animation */
+@keyframes slideDown {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* EVENT FORM CONTAINER */
 .event-form {
-  background: white;
-  margin: 30px auto;
-  padding: 30px;
+  background-color: #ffffff;
   max-width: 800px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* FORM GROUPS */
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="file"],
+.form-group select,
+.form-group textarea {
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #1e90ff;
+  outline: none;
+}
+
+/* WEEKLY SCHEDULE */
+.weekly-schedule {
+  margin-top: 30px;
+}
+
+.weekly-schedule label {
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.schedule-table th,
+.schedule-table td {
+  text-align: left;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+}
+
+.schedule-table select,
+.schedule-table input[type="checkbox"] {
+  padding: 6px;
+  font-size: 14px;
+}
+
+/* ACTION BUTTONS */
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.finish-button,
+.cancel-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.finish-button {
+  background-color: #1e90ff;
+  color: white;
+}
+
+.finish-button:hover {
+  background-color: #187bcd;
+}
+
+.cancel-button {
+  background-color: #ccc;
+  color: #333;
+}
+
+.cancel-button:hover {
+  background-color: #aaa;
+}
+
+.excursion-section {
+  margin-top: 2rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+}
+
+.excursion-section label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.excursion-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.excursion-inputs input[type="date"],
+.excursion-inputs input[type="time"] {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  flex: 1;
+  min-width: 120px;
+}
+
+.excursion-section button {
+  padding: 0.6rem 1.2rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.excursion-section button:hover {
+  background-color: #0056b3;
+}
+
+.excursion-list {
+  margin-top: 1rem;
+  list-style: none;
+  padding: 0;
+}
+
+.excursion-list li {
+  background-color: #fff;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+/*Footer*/
+
+.trip-footer {
+  background: linear-gradient(to right, #222, #111);
+  color: #f1f1f1;
+  padding: 3rem 2rem;
+  margin-top: 4rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeInUp 0.8s ease-in-out;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 2rem;
+}
+
+.footer-section {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-logo {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #ffcc00;
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.footer-logo:hover {
+  transform: scale(1.05);
+}
+
+.footer-section h3 {
+  color: #ffcc00;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-section p {
+  margin: 0.3rem 0;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.footer-section p:hover {
+  color: #ffcc00;
+}
+
+.footer-icons {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.icon.pink {
+  width: 35px;
+  height: 35px;
+  background: #ff66b2;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.icon.pink:hover {
+  transform: rotate(20deg) scale(1.1);
+}
+
+.store-badge {
+  background: #333;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+}
+
+.store-badge:hover {
+  background: #ffcc00;
+  color: #111;
+  transform: translateY(-3px);
+}
+
+/* Entrance animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .footer-section {
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+}
+
+
+/*Bannner*/
+.trip-banner {
+  background: linear-gradient(135deg, #2c3e50, #1abc9c);
+  padding: 4rem 2rem;
+  color: #fff;
+  text-align: center;
+  border-radius: 0 0 2rem 2rem;
+  position: relative;
+  overflow: hidden;
+  animation: fadeSlideIn 1s ease forwards;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.banner-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.trip-banner h1 {
+  font-size: 2.8rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.trip-banner p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* Stylish back button */
+.back-button {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  backdrop-filter: blur(6px);
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateX(-3px);
+}
+
+/* Animation for entrance */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
