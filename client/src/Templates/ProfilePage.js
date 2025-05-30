@@ -17,7 +17,24 @@ const ProfilePage = () => {
   ];
 
   return (
+
+
     <div className="profile-container">
+
+      <header className="trip-header">
+        <div className="header-content">
+          <div className="logo">Yaad Quest</div>
+          <nav className="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Explore</a>
+            <a href="#">Activities</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+          </nav>
+          <div className="avatar"></div>
+        </div>
+      </header>
+    <div className="content-body">
       <aside className="sidebar">
         <img src={profileImage} alt="User" className="profile-pic" />
         <h2>Mary Jane</h2>
@@ -31,9 +48,6 @@ const ProfilePage = () => {
         </div>
         <a href="#" className="edit-link">Edit Preferences</a>
 
-        <h3>Configuration</h3>
-        <p>🌐 Change Language</p>
-        <p>🌙 Dark Mode</p>
       </aside>
 
       <main className="main-content">
@@ -80,6 +94,7 @@ const ProfilePage = () => {
         </footer>
       </main>
     </div>
+  </div>
   );
 };
 
