@@ -1,5 +1,5 @@
 import React from 'react';
-import Register from './Templates/Register';
+//import Register from './Templates/Register';
 import Login from './Templates/Login';
 //import Login from './Templates/Login';
 //import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
@@ -14,7 +14,7 @@ function App() {
 
   return (
     <div>
-      <Register/>
+      <Login/>
     </div>
     /*
     <Router>

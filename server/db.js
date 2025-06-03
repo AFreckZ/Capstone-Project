@@ -12,6 +12,8 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+// JWT Secret 
+const JWT_SECRET = process.env.JWT_SECRET; 
 // Test connection
 (async () => {
   try {

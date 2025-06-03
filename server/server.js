@@ -1,4 +1,4 @@
-require("dotenv").config()
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -13,11 +13,10 @@ const transportRoutes = require('./routes/transportRoutes');
 const userRoutes = require('./routes/userRoutes');
 //middleware
 app.use(express.json());//Access Body of client
+app.use(express.urlencoded({extended: true}));
 app.use(cors());
 
 //Routes
-//register
-app.use("/auth",require("./routes/jwtAuth"))
 //venue routes
 app.use('/api/venues', venueRoutes);
 //event routes
