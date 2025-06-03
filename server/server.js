@@ -19,7 +19,7 @@ app.use(cors());
 //register
 app.use("/auth",require("./routes/jwtAuth"))
 //venue routes
-app.use('api/venues', venueRoutes);
+app.use('/api/venues', venueRoutes);
 //event routes
 app.use('/api/events', eventRoutes);
 //tourists routes

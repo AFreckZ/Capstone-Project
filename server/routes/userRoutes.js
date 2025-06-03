@@ -2,57 +2,44 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const pool = require('../db');
+const bcrypt = require('bcrypt');
 
 router.use(bodyParser.json());
 
 //register user
 router.post('/register', async (req, res) => {
-  let connection;
   try {
     const { name, email, password, userType } = req.body;
 
-    // Validate input
+    // Validation (same as before)
     if (!name || !email || !password || !userType) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    connection = await pool.getConnection();
-
     // Check if user exists
-    const [users] = await connection.query(
-      'SELECT id FROM users WHERE email = ?', 
-      [email]
-    );
-
+    const [users] = await pool.query('SELECT user_id FROM user WHERE email = ?', [email]);
     if (users.length > 0) {
-      return res.status(409).json({ message: 'Email already registered' });
+      return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Hash password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Insert user
-    const [result] = await connection.query(
-      `INSERT INTO users (name, email, password, user_type) 
-       VALUES (?, ?, ?, ?)`,
-      [name, email, hashedPassword, userType]
+    // Hash password and insert
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const [result] = await pool.query(
+      'INSERT INTO user (username, password, email, usertype) VALUES (?, ?, ?, ?)',
+      [name, hashedPassword, email, userType]
     );
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: 'User registered successfully',
-      userId: result.insertId
+      userId: result.insertId,
     });
-
   } catch (error) {
-    console.error('Database error:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  } finally {
-    if (connection) connection.release();
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
 
-// GET all Users
+// Getting all the users
 router.get('/', async (req, res) => {
   try {
     const [users] = await pool.query('SELECT * FROM User');

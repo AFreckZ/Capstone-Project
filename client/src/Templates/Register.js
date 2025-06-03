@@ -8,9 +8,7 @@ import Beach from "../images/Beach.jpg";
 //import { eyeOff } from "react-icons-kit/feather/eyeOff.js";
 
 function Register() {
-  //const [showPassword, setShowPassword] = useState(false);
-  //const [showConfirm, setShowConfirm] = useState(false);
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
@@ -18,16 +16,17 @@ function Register() {
     userType: null
   });
   
-  const [errors, setErrors] = React.useState({});
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+
   const validateForm = () => {
     const newErrors = {};
     
     if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
     if (!formData.password) newErrors.password = 'Password is required';
-    if (!formData.password.length<8) newErrors.password='passwords should be atleast 8 characters';
+    if (formData.password.length < 8) newErrors.password = 'Password should be at least 8 characters';
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
@@ -36,6 +35,7 @@ function Register() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleUserTypeSelect = (type) => {
     setFormData(prev => ({ ...prev, userType: type }));
     if (errors.userType) setErrors(prev => ({ ...prev, userType: '' }));
@@ -49,7 +49,6 @@ function Register() {
     setIsSubmitting(true);
     setErrors({});
     
-    
     try {
       const response = await axios.post('http://localhost:5001/api/user/register', {
         name: formData.name,
@@ -59,11 +58,9 @@ function Register() {
       });
 
       setSuccessMessage('Registration successful!');
-      console.log('Registration response:', response.data); 
+      console.log('Registration response:', response.data);
       
-      if (!response.ok) {
-        throw new Error('Registration failed');
-      }
+      // Reset form on success
       setFormData({
         name: '',
         email: '',
@@ -72,7 +69,6 @@ function Register() {
         userType: null
       });
 
-      // Redirect or show success message
     } catch (error) {
       console.error('Registration error:', error.response?.data);
       setErrors({
@@ -83,21 +79,24 @@ function Register() {
     }
   };
 
-
   const handleChange = (e) => {
-      const { name, value } = e.target;
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    };
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
 
-  
   return (
     <div className="register-container">
       <div className="register-left">
         <img
-          src={Beach} // Replace this
+          src={Beach}
           alt="Beach"
           className="register-image"
         />
@@ -109,79 +108,86 @@ function Register() {
             <img src="/path-to-logo.png" alt="Logo" />
           </div>
           <h2 className="register-title">Register</h2>
+          
+          {successMessage && (
+            <div className="success-message">{successMessage}</div>
+          )}
+          
           <form className="register-form" onSubmit={handleSubmit}>
             <label>
-              Name:*<input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Enter your name"/>
-            {errors.name && <span className="error">{errors.name}</span>}
-
+              Name:*
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Enter your name"
+              />
+              {errors.name && <span className="error">{errors.name}</span>}
             </label>
+
             <label>
-              Email:*<input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Enter your email" />
-            {errors.email && <span className="error">{errors.email}</span>}
-
+              Email:*
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+              />
+              {errors.email && <span className="error">{errors.email}</span>}
             </label>
 
-            <label required className="password-field">
+            <label className="password-field">
               Password:*
               <input
-                //type={showPassword ? "text" : "password"}
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
                 placeholder="Enter password"
               />
-              <span
-                className="icon-eye"
-                //onClick={() => setShowPassword(!showPassword)}
-              >
-              </span>
+              {errors.password && <span className="error">{errors.password}</span>}
             </label>
 
-            <label required  className="password-field">
+            <label className="password-field">
               Confirm Password:*
               <input
-               // type={showConfirm ? "text" : "password"}
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
                 placeholder="Confirm password"
               />
-              <span
-                className="icon-eye"
-                //onClick={() => setShowConfirm(!showConfirm)}
-              >
-            
-              </span>
+              {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
             </label>
-            <div className="user-type-group">
-          <span className="user-type-label">I am a:*</span> 
-          {['tourist', 'business-owner', 'transport-agency'].map((type) => (
-            <button
-              key={type}
-              type="button"
-              className={`user-type-btn ${formData.userType === type ? 'active' : ''}`}
-              onClick={() => handleUserTypeSelect(type)}
-            >
-              {type.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ')}
-            </button>
-          ))}
-          {errors.userType && <span className="error">{errors.userType}</span>}
-        </div>
 
-          <button 
-            type="submit" 
-            className="continue-btn"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Processing...' : 'Continue'}
-          </button>
+            <div className="user-type-group">
+              <span className="user-type-label">I am a:*</span> 
+              {['tourist', 'business-owner', 'transport-agency'].map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  className={`user-type-btn ${formData.userType === type ? 'active' : ''}`}
+                  onClick={() => handleUserTypeSelect(type)}
+                >
+                  {type.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ')}
+                </button>
+              ))}
+              {errors.userType && <span className="error">{errors.userType}</span>}
+            </div>
+
+            <button 
+              type="submit" 
+              className="continue-btn"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Processing...' : 'Continue'}
+            </button>
         
-        {errors.submit && <div className="error">{errors.submit}</div>}
-      </form>          
+            {errors.submit && <div className="error">{errors.submit}</div>}
+          </form>          
+          
           <hr className="divider" />
 
           <button className="google-btn">
@@ -196,6 +202,7 @@ function Register() {
       </div>
     </div>
   );
-};
+}
 
+// export default Register;
 export default Register;
