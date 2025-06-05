@@ -3,7 +3,7 @@ import React from 'react';
 import Login from './Templates/Login';
 //import Login from './Templates/Login';
 //import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
-import ProfilePage from './Templates/ProfilePage';
+//import ProfilePage from './Templates/ProfilePage';
 //import InterestPage from './Templates/Preferences';
 //import TripInformationPage from './Templates/TripInformation';
 //import logo from './logo.svg';
@@ -17,7 +17,6 @@ function App() {
   return (
     <div>
       <Login/>
-      <ProfilePage />
     </div>
     /*
     <Router>

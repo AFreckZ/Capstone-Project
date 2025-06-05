@@ -1,8 +1,9 @@
 //Import CSS
 import React, { useState} from "react";
-//import {useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import  "../css/Login.css"
 import SunsetImage from "../images/sunset.jpg";
+// import ProfilePage from './Templates/ProfilePage';
 
 function Login() {
  const [email, setEmail] = useState("");
@@ -12,7 +13,7 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  // const navigate = useNavigate();
+   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,14 +56,15 @@ function Login() {
 
       
       setSuccessMessage("Login successful!");
-      setError(""); // Clear any errors      
+      setError(""); // Clear any errors  
+      navigate("/ProfilePage");    
       //alert("Login successful!"); 
       //resets the fields
       setEmail("");
       setPassword("");
       setRememberMe(false);
       setTimeout(() => {
-      // navigate("/dashboard");
+      
       console.log("Redirecting to dashboard...");
     }, 1500);
       

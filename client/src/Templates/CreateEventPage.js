@@ -4,88 +4,7 @@ import axios from 'axios';
 import "../css/CreateEventPage.css";
 import JamaicanAddressForm from "./JamaicanAddressForm";
 
-const daysOfWeek = [
-  "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
-];
 
-const hours = Array.from({ length: 24 }, (_, i) =>
-  `${i === 0 ? 12 : i > 12 ? i - 12 : i}:00 ${i < 12 ? "AM" : "PM"}`
-);
-
-const initialSchedule = daysOfWeek.reduce((acc, day) => {
-  acc[day] = { open: "", close: "", isClosed: false };
-  return acc;
-}, {});
-
-function WeeklySchedule({ schedule, setSchedule }) {
-  const handleChange = (day, field, value) => {
-    setSchedule(prev => ({
-      ...prev,
-      [day]: { ...prev[day], [field]: value }
-    }));
-  };
-
-  const toggleClosed = (day) => {
-    setSchedule(prev => ({
-      ...prev,
-      [day]: { ...prev[day], isClosed: !prev[day].isClosed, open: "", close: "" }
-    }));
-  };
-
-  return (
-    <div className="weekly-schedule">
-      <label>Weekly Operating Hours:</label>
-      <table className="schedule-table">
-        <thead>
-          <tr>
-            <th>Day</th>
-            <th>Open</th>
-            <th>Close</th>
-            <th>Closed</th>
-          </tr>
-        </thead>
-        <tbody>
-          {daysOfWeek.map(day => (
-            <tr key={day}>
-              <td>{day}</td>
-              <td>
-                <select
-                  value={schedule[day].open}
-                  onChange={(e) => handleChange(day, "open", e.target.value)}
-                  disabled={schedule[day].isClosed}
-                >
-                  <option value="">--</option>
-                  {hours.map(hour => (
-                    <option key={hour} value={hour}>{hour}</option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                <select
-                  value={schedule[day].close}
-                  onChange={(e) => handleChange(day, "close", e.target.value)}
-                  disabled={schedule[day].isClosed}
-                >
-                  <option value="">--</option>
-                  {hours.map(hour => (
-                    <option key={hour} value={hour}>{hour}</option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={schedule[day].isClosed}
-                  onChange={() => toggleClosed(day)}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
 
 export default function CreateEventPage() {
   const [name, setName] = useState("");
@@ -94,7 +13,6 @@ export default function CreateEventPage() {
   const [description, setDescription] = useState("");
   const [duration, setDuration] = useState("");
   const [cost, setCost] = useState("");
-  const [schedule, setSchedule] = useState(initialSchedule);
   const [menuImage, setMenuImage] = useState(null);
   const [flyerImage, setFlyerImage] = useState(null);
   const [itineraryFile, setItineraryFile] = useState(null);
@@ -121,7 +39,6 @@ export default function CreateEventPage() {
       description,
       duration,
       cost,
-      schedule,
       dateSchedule,
     };
 
@@ -220,11 +137,10 @@ export default function CreateEventPage() {
           <input type="number" value={cost} onChange={(e) => setCost(e.target.value)} />
         </div>
 
-        <WeeklySchedule schedule={schedule} setSchedule={setSchedule} />
 
         {/* Excursion Date Schedule */}
         <div className="form-group excursion-section">
-  <label>Excursion Schedule by Date:</label>
+  <label>Event Date and Time:</label>
   <div className="excursion-inputs">
     <input
       type="date"
