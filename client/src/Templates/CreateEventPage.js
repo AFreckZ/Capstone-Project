@@ -5,7 +5,6 @@ import "../css/CreateEventPage.css";
 import JamaicanAddressForm from "./JamaicanAddressForm";
 
 
-
 export default function CreateEventPage() {
   const [name, setName] = useState("");
   const [eventType, setEventType] = useState("");
@@ -22,6 +21,10 @@ export default function CreateEventPage() {
   const [endTime, setEndTime] = useState("");
   const [dateSchedule, setDateSchedule] = useState([]);
 
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const handleAddDateSchedule = () => {
     if (selectedDate && startTime && endTime) {
       setDateSchedule([...dateSchedule, { date: selectedDate, startTime, endTime }]);
@@ -30,6 +33,11 @@ export default function CreateEventPage() {
       setEndTime("");
     }
   };
+
+  const removeScheduleItem = (index) => {
+    setDateSchedule(dateSchedule.filter((_, i) => i !== index));
+  };
+
 
   const handleCreateEvent = () => {
     const eventData = {
@@ -45,6 +53,28 @@ export default function CreateEventPage() {
     console.log("Event Created:", eventData);
     alert(`Event Created:\n${JSON.stringify(eventData, null, 2)}`);
   };
+
+  //uploading flyer, menu etc
+  const uploadFile = async (file, type) => {
+    if (!file) return null;
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
+    
+    try {
+      const response = await axios.post('/api/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data.filePath;
+    } catch (error) {
+      console.error(`Error uploading ${type}:`, error);
+      throw new Error(`Failed to upload ${type}`);
+    }
+  };
+
 
   return (
     <div className="event-container">

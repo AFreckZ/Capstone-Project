@@ -11,6 +11,7 @@ const touristRoutes = require('./routes/touristRoutes');
 const itineraryRoutes= require('./routes/itineraryRoutes');
 const transportRoutes = require('./routes/transportRoutes');
 const userRoutes = require('./routes/userRoutes');
+const preferenceRoutes = require('./routes/preferencesRoutes');
 //middleware
 app.use(express.json());//Access Body of client
 app.use(express.urlencoded({extended: true}));
@@ -29,6 +30,8 @@ app.use('/api/itinerary',itineraryRoutes );
 app.use ('/api/transports', transportRoutes);
 //user routes 
 app.use ('/api/user', userRoutes);
+// preference routes
+app.use ('/api/prefer', preferenceRoutes);
 
 
 //testing the server

@@ -118,7 +118,7 @@
     margin-top: 10px;
   }
   
-  .pref-icon {
+  .pref-icon button {
     padding: 10px;
     border: 2px solid #ccc;
     border-radius: 50px;
@@ -126,7 +126,7 @@
     text-align: center;
   }
   
-  .pref-icon.selected {
+  .pref-icon button.selected {
     background-color: #ff4d6d;
     color: white;
     border-color: #ff4d6d;

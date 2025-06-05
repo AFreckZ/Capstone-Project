@@ -41,8 +41,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-
-
 // login user
 router.post('/login', async (req, res) => {
   console.log('=== USER LOOKUP DEBUG ===');
@@ -143,7 +141,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET single event
+// GET single user
 router.get('/:id', async (req, res) => {
   try {
     const [user] = await pool.query('SELECT * FROM User WHERE user_id = ?', [req.params.id]);
