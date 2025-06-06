@@ -2,8 +2,6 @@
 import React, { useState } from "react";
 import "../css/Preferences.css";
 
-
-
 // list of preference types
 const categories = [
   "Concert",
@@ -22,8 +20,14 @@ const categories = [
 
 export default function InterestPage() {
   const [selected, setSelected] = useState([]);
+  const [message, setMessage] = useState({ text: '', type: '', visible: false });
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleSelection = (category) => {
+    if (message.visible) {
+      setMessage({ text: '', type: '', visible: false });
+    }
+    
     const index = selected.indexOf(category);
     if (index > -1) {
       const newSelected = [...selected];
@@ -38,11 +42,27 @@ export default function InterestPage() {
     const index = selected.indexOf(category);
     return index > -1 ? index + 1 : null;
   };
-
+  const showMessage = (text, type) => {
+    setMessage({ text, type, visible: true });
+    if (type === 'success') {
+      setTimeout(() => {
+        setMessage({ text: '', type: '', visible: false });
+      }, 5000);
+    }
+  };
 
 const handleSavePreferences = async () => {
   const selectedPrefs = selected;
   const total = selectedPrefs.length;
+
+    if (total === 0) {
+      showMessage("Please select at least one preference before saving.", "error");
+      return;
+    }
+
+    setIsLoading(true);
+    setMessage({ text: '', type: '', visible: false });
+
 
   // Create weighted preferences: first selected gets highest weight
   const weightedPrefs = selectedPrefs.map((tag, index) => ({
@@ -50,9 +70,8 @@ const handleSavePreferences = async () => {
     weight: total - index,
   }));
 
-  console.log(JSON.stringify(weightedPrefs, null, 2));
+    console.log("Sending preferences:", JSON.stringify(weightedPrefs, null, 2));
 
-  // Send weighted preferences JSON to backend
   try {
     const response = await fetch("http://localhost:5001/api/prefer/preferences", {
       method: "POST",
@@ -63,16 +82,31 @@ const handleSavePreferences = async () => {
       body: JSON.stringify({ preferences: weightedPrefs }),
     });
 
+    const result = await response.json();
 
      if (response.ok) {
-      const result = await response.json();
       console.log("Preferences saved:", result);
-      // You can show a success message or redirect here
+      showMessage(
+        `Your preferences has been saved`, 
+          "success"
+      );
+      // Optionally redirect after successful save
+      // setTimeout(() => window.location.href = '/dashboard', 2000);
     } else {
       console.error("Failed to save preferences:", response.status);
+      showMessage(
+        result.error || 'Failed to save preferences. Please try again.', 
+          "error"
+        );
     }
   } catch (error) {
     console.error("Error saving preferences:", error);
+          showMessage(
+        "Network error: Could not connect to server. Please check your connection and try again.", 
+        "error"
+      );
+    } finally {
+      setIsLoading(false);
   }
 };
   return (
@@ -96,8 +130,13 @@ const handleSavePreferences = async () => {
       </div>
       <div className="instructions">
         <p>Please select the types of events and venues that you would like to visit.</p>
-
+      
       </div>
+         {message.visible && (
+        <div className={`message ${message.type}`}>
+          {message.text}
+        </div>
+      )}
       <div className="category-grid">
        
         {categories.map((category) => (
