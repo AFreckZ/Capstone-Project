@@ -3,16 +3,21 @@ import React, { useState } from "react";
 import "../css/Preferences.css";
 
 
+
+// list of preference types
 const categories = [
-  "Restaurants",
-  "Festivals",
-  "Recreational",
-  "Beach",
-  "Historical",
-  "Tours",
-  "Sports",
-  "Nature",
-  "Technology"
+  "Concert",
+  "Party",
+  "Festival",
+  "Sport",
+  "Art/Talent",
+  "Outdoor Adventure",
+  "Indoor Adventure",
+  "Museum/Historical Site",
+  "Local Food/Dining",
+  "Unique Food/Dining",
+  "Club/Bar/Party",
+  "Live Music"
 ];
 
 export default function InterestPage() {
@@ -34,6 +39,42 @@ export default function InterestPage() {
     return index > -1 ? index + 1 : null;
   };
 
+
+const handleSavePreferences = async () => {
+  const selectedPrefs = selected;
+  const total = selectedPrefs.length;
+
+  // Create weighted preferences: first selected gets highest weight
+  const weightedPrefs = selectedPrefs.map((tag, index) => ({
+    tag,
+    weight: total - index,
+  }));
+
+  console.log(JSON.stringify(weightedPrefs, null, 2));
+
+  // Send weighted preferences JSON to backend
+  try {
+    const response = await fetch("http://localhost:5001/api/prefer/preferences", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // Add auth token or user ID if needed
+      },
+      body: JSON.stringify({ preferences: weightedPrefs }),
+    });
+
+
+     if (response.ok) {
+      const result = await response.json();
+      console.log("Preferences saved:", result);
+      // You can show a success message or redirect here
+    } else {
+      console.error("Failed to save preferences:", response.status);
+    }
+  } catch (error) {
+    console.error("Error saving preferences:", error);
+  }
+};
   return (
     <div className="interest-container">
       <header className="interest-header">
@@ -53,8 +94,12 @@ export default function InterestPage() {
       <div className="hero-image">
         <h1>Choose Your Preferences</h1>
       </div>
+      <div className="instructions">
+        <p>Please select the types of events and venues that you would like to visit.</p>
 
+      </div>
       <div className="category-grid">
+       
         {categories.map((category) => (
           <div
             key={category}
@@ -69,8 +114,8 @@ export default function InterestPage() {
         ))}
       </div>
 
-      <div className="save-button-wrapper">
-        <button className="save-button">Save Preferences →</button>
+      <div className="save-button-wrapper" onClick={handleSavePreferences}>
+        <button className="save-button" >Save Preferences →</button>
       </div>
 
       <footer className="interest-footer">
