@@ -264,3 +264,21 @@
     flex-direction: column;
   }
 }
+.password-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  flex: 1;
+}
+
+.toggle-visibility {
+  margin-left: 10px;
+  padding: 6px 10px;
+  font-size: 0.9em;
+  background-color: #ccc;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}

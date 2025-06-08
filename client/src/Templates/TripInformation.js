@@ -1,6 +1,9 @@
 // TripInformationPage.js
 import React, { useState } from "react";
 import "../css/TripInformation.css";
+import { useNavigate } from 'react-router-dom';
+
+
 
 export default function TripInformationPage() {
   const [needTransport, setNeedTransport] = useState(true);
@@ -71,8 +74,10 @@ export default function TripInformationPage() {
     "Festivals",
     "Technology"
   ];
-
+const navigate = useNavigate();
   return (
+ 
+
     <div className="trip-container">
       <header className="trip-header">
         <div className="header-content">
@@ -89,7 +94,7 @@ export default function TripInformationPage() {
       </header>
 
       <div className="trip-banner">
-        <div className="back-button">⟵ BACK</div>
+        <div className="back-button"onClick={() => navigate(-1)} style={{ cursor: 'pointer' }}>⟵ BACK</div>
         <h1>Trip Information</h1>
         <p>Edit information that will be needed for your trip</p>
       </div>
@@ -183,12 +188,12 @@ export default function TripInformationPage() {
               <div key={pref} className="pref-icon">{pref}</div>
             ))}
           </div>
-          <div className="edit-preferences">Edit Preferences</div>
+          <div className="edit-preferences"onClick={() => navigate("/preferences")}>Edit Preferences</div>
         </div>
 
         <div className="action-buttons">
-          <button className="finish-button">Finished</button>
-          <button className="cancel-button">Cancel</button>
+          <button className="finish-button" onClick={() => navigate("/profile")} >Finished</button>
+          <button className="cancel-button"  onClick={() => navigate("/")}>Cancel</button>
         </div>
       </div>
 

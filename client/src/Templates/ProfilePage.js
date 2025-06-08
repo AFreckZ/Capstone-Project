@@ -60,18 +60,7 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        <section className="favorites">
-          <h2>My Favorites</h2>
-          <div className="favorite-items">
-            {favorites.map((item, index) => (
-              <div className="favorite-card" key={index}>
-                <img src={item.image} alt={item.label} />
-                <p>{item.label}</p>
-                <small>{item.count} {item.label.toLowerCase()}</small>
-              </div>
-            ))}
-          </div>
-        </section>
+        
 
         <footer className="footer">
           <div>

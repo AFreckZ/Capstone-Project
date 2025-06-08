@@ -8,10 +8,15 @@ const BusinessProfileForm = () => {
     phone: "",
     description: "",
     image: null,
+    password: "",
+    confirmPassword: "",
   });
 
   const [errors, setErrors] = useState({});
   const [previewImage, setPreviewImage] = useState(null);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,6 +36,11 @@ const BusinessProfileForm = () => {
     if (!formData.businessName) newErrors.businessName = "Business name is required.";
     if (!formData.email) newErrors.email = "Email is required.";
     if (!formData.description) newErrors.description = "Please enter a description.";
+    if (!formData.password) newErrors.password = "Password is required.";
+    if (!formData.confirmPassword) newErrors.confirmPassword = "Please confirm your password.";
+    if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+    newErrors.confirmPassword = "Passwords do not match.";
+  }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -68,11 +78,56 @@ const BusinessProfileForm = () => {
           {errors.email && <span className="error">{errors.email}</span>}
         </div>
 
+
+        {/* Password */}
+<div className="form-group">
+  <label>Password *</label>
+  <div className="password-wrapper">
+    <input
+      type={showPassword ? "text" : "password"}
+      name="password"
+      value={formData.password}
+      onChange={handleChange}
+    />
+    <button
+      type="button"
+      className="toggle-visibility"
+      onClick={() => setShowPassword((prev) => !prev)}
+    >
+      {showPassword ? "Hide" : "Show"}
+    </button>
+  </div>
+  {errors.password && <span className="error">{errors.password}</span>}
+</div>
+
+{/* Confirm Password */}
+<div className="form-group">
+  <label>Confirm Password *</label>
+  <div className="password-wrapper">
+    <input
+      type={showConfirmPassword ? "text" : "password"}
+      name="confirmPassword"
+      value={formData.confirmPassword}
+      onChange={handleChange}
+    />
+    <button
+      type="button"
+      className="toggle-visibility"
+      onClick={() => setShowConfirmPassword((prev) => !prev)}
+    >
+      {showConfirmPassword ? "Hide" : "Show"}
+    </button>
+  </div>
+  {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
+</div>
+        
+
         {/* Phone */}
         <div className="form-group">
           <label>Phone Number</label>
           <input name="phone" value={formData.phone} onChange={handleChange} />
         </div>
+
 
         {/* Description */}
         <div className="form-group">

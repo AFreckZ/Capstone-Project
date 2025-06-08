@@ -1,4 +1,16 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Register from './Templates/Register';
+import Login from './Templates/Login';
+import ProfilePage from './Templates/ProfilePage';
+import SignUpPage from './Templates/SignUpPage';
+import TouristProfileForm from './Templates/TouristProfileForm';
+import InterestPage from './Templates/Preferences';
+import TripInformationPage from './Templates/TripInformation';
+import BusinessProfileForm from './Templates/BusinessProfileForm';
+import CreateEventPage from './Templates/CreateEventPage';
+import CreateVenuePage from './Templates/CreateVenuePage';
+
 //import Register from './Templates/Register';
 //import Login from './Templates/Login';
 //import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
@@ -7,7 +19,7 @@ import React from 'react';
 //import TouristProfileForm from './Templates/TouristProfileForm';
 //import InterestPage from './Templates/Preferences';
 //import TripInformationPage from './Templates/TripInformation';
-import BusinessProfileForm from './Templates/BusinessProfileForm';
+//import BusinessProfileForm from './Templates/BusinessProfileForm';
 //import logo from './logo.svg';
 //import './css/App.css';
 //import CreateEventPage from './Templates/CreateEventPage';
@@ -15,16 +27,24 @@ import BusinessProfileForm from './Templates/BusinessProfileForm';
 function App() {
 
   return (
-    <div>
+    /*<div>
       <BusinessProfileForm />
-    </div>
-    /*
+    </div>*/
+    
     <Router>
       <Routes>
+        <Route path="/" element={<SignUpPage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/tourist-profile" element={<TouristProfileForm />} />
+        <Route path="/preferences" element={<InterestPage />} />
+        <Route path="/trip-info" element={<TripInformationPage />} />
+        <Route path="/business-profile" element={<BusinessProfileForm />} />
+        <Route path="/create-event" element={<CreateEventPage />} />
+        <Route path="/create-venue" element={<CreateVenuePage />} />
       </Routes>
-    </Router>*/
+    </Router>
   );
 }
 

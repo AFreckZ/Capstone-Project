@@ -31,11 +31,14 @@ const TouristProfileForm = () => {
     interests: "",
     travelDates: "",
     image: null,
+    password: "",
+  confirmPassword: "",
   });
 
   const [errors, setErrors] = useState({});
   const [previewImage, setPreviewImage] = useState(null);
-
+  const [showPassword, setShowPassword] = useState(false);
+const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -55,6 +58,11 @@ const TouristProfileForm = () => {
     if (!formData.email) newErrors.email = "Email is required.";
     if (!formData.country) newErrors.country = "Please select a country.";
     if (!formData.interests) newErrors.interests = "Please share your interests.";
+    if (!formData.password) newErrors.password = "Password is required.";
+  if (!formData.confirmPassword) newErrors.confirmPassword = "Please confirm your password.";
+  if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+    newErrors.confirmPassword = "Passwords do not match.";
+  }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -91,6 +99,48 @@ const TouristProfileForm = () => {
           <input name="email" type="email" value={formData.email} onChange={handleChange} />
           {errors.email && <span className="error">{errors.email}</span>}
         </div>
+        {/* Password */}
+<div className="form-group">
+  <label>Password *</label>
+  <div className="password-wrapper">
+    <input
+      type={showPassword ? "text" : "password"}
+      name="password"
+      value={formData.password}
+      onChange={handleChange}
+    />
+    <button
+      type="button"
+      className="toggle-visibility"
+      onClick={() => setShowPassword((prev) => !prev)}
+    >
+      {showPassword ? "Hide" : "Show"}
+    </button>
+  </div>
+  {errors.password && <span className="error">{errors.password}</span>}
+</div>
+
+{/* Confirm Password */}
+<div className="form-group">
+  <label>Confirm Password *</label>
+  <div className="password-wrapper">
+    <input
+      type={showConfirmPassword ? "text" : "password"}
+      name="confirmPassword"
+      value={formData.confirmPassword}
+      onChange={handleChange}
+    />
+    <button
+      type="button"
+      className="toggle-visibility"
+      onClick={() => setShowConfirmPassword((prev) => !prev)}
+    >
+      {showConfirmPassword ? "Hide" : "Show"}
+    </button>
+  </div>
+  {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
+</div>
+
 
         {/* Phone */}
         <div className="form-group">

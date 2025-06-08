@@ -1,6 +1,7 @@
 // InterestPage.js
 import React, { useState } from "react";
 import "../css/Preferences.css";
+import { useNavigate } from 'react-router-dom';
 
 
 const categories = [
@@ -33,8 +34,9 @@ export default function InterestPage() {
     const index = selected.indexOf(category);
     return index > -1 ? index + 1 : null;
   };
-
+const navigate = useNavigate();
   return (
+    
     <div className="interest-container">
       <header className="interest-header">
         <div className="header-content">
@@ -70,7 +72,7 @@ export default function InterestPage() {
       </div>
 
       <div className="save-button-wrapper">
-        <button className="save-button">Save Preferences →</button>
+        <button className="save-button" onClick={() => navigate ("/Profile")}>Save Preferences →</button>
       </div>
 
       <footer className="interest-footer">
