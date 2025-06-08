@@ -1,7 +1,9 @@
 // CreateEventPage.js
 import React, { useState } from "react";
+import axios from 'axios';
 import "../css/CreateEventPage.css";
 import JamaicanAddressForm from "./JamaicanAddressForm";
+
 
 const daysOfWeek = [
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
@@ -150,7 +152,13 @@ export default function CreateEventPage() {
           <h1>Create Event</h1>
           <p>Enter the details for your events</p>
         </div>
+        <button className="back-button">⟵ Back</button>
+        <div className="banner-content">
+          <h1>Create Event</h1>
+          <p>Enter the details for your events</p>
+        </div>
       </div>
+      
       
       <div className="event-form">
         <div className="form-group">
@@ -160,6 +168,36 @@ export default function CreateEventPage() {
 
         <div className="form-group">
           <label>Event Type:</label>
+          <select
+            value={eventType}
+            onChange={(e) => setEventType(e.target.value)}
+          >
+            <option value="">Select an event type</option>
+            <option value="Concert">Concert</option>
+            <option value="Festival">Festival</option>
+            <option value="Food Fair">Food Fair</option>
+            <option value="Cultural Show">Cultural Show</option>
+            <option value="Tour">Tour</option>
+            <option value="Beach Party">Beach Party</option>
+            <option value="Community Market">Community Market</option>
+            <option value="Wellness Retreat">Wellness Retreat</option>
+            <option value="Nightlife">Nightlife</option>
+            <option value="Other">Other</option>
+          </select>
+
+          {["Food Fair", "Restaurant"].includes(eventType) && (
+            <div className="form-group">
+              <label>Upload Menu (Image):</label>
+              <input type="file" accept="image/*" onChange={(e) => setMenuImage(e.target.files[0])} />
+            </div>
+          )}
+
+          {["Concert", "Festival", "Nightlife"].includes(eventType) && (
+            <div className="form-group">
+              <label>Upload Flyer or Line-up (Image):</label>
+              <input type="file" accept="image/*" onChange={(e) => setFlyerImage(e.target.files[0])} />
+            </div>
+          )}
           <select
             value={eventType}
             onChange={(e) => setEventType(e.target.value)}
@@ -205,7 +243,23 @@ export default function CreateEventPage() {
               onChange={(e) => setEventType(e.target.value)}
             />
           )}
+          {["Tour", "Wellness Retreat"].includes(eventType) && (
+            <div className="form-group">
+              <label>Upload Itinerary (PDF or DOCX):</label>
+              <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setItineraryFile(e.target.files[0])} />
+            </div>
+          )}
+
+          {eventType === "Other" && (
+            <input
+              type="text"
+              placeholder="Enter custom event type"
+              onChange={(e) => setEventType(e.target.value)}
+            />
+          )}
         </div>
+
+        <JamaicanAddressForm onAddressChange={setAddress} />
 
         <JamaicanAddressForm onAddressChange={setAddress} />
 
@@ -254,6 +308,7 @@ export default function CreateEventPage() {
 
 
         <div className="action-buttons">
+          <button className="finish-button" onClick={handleCreateEvent}>Create Event</button>
           <button className="finish-button" onClick={handleCreateEvent}>Create Event</button>
           <button className="cancel-button">Cancel</button>
         </div>

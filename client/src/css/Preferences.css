@@ -62,7 +62,32 @@
   .hero-image::before {
     color: white;
   }
-  
+  .instructions{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
+  .message {
+  margin: 20px auto;
+  padding: 15px 20px;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bold;
+  max-width: 600px;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
   .category-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -79,7 +104,6 @@
     border: 2px solid #c4b5fd;
     border-radius: 9999px;
     display: flex;
-    align-items: center;
     justify-content: center;
     cursor: pointer;
     margin: 0 auto;

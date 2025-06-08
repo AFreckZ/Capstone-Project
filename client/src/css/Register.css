@@ -97,6 +97,39 @@
     background-color: #e04a5b;
   }
   
+.user-type-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.user-type-label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.user-type-btn {
+  padding: 8px 12px;
+  margin:7px;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.user-type-btn:hover {
+  background: #e0e0e0;
+}
+
+.user-type-btn.active {
+  background: #ff5b6a;
+  color: white;
+  border-color: #ff5b6a;
+}
+  
+
   .divider {
     margin: 30px 0 20px;
     border: none;
@@ -130,3 +163,28 @@
     text-decoration: none;
   }
   
+
+  .error-message {
+  color: #ff0000;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+input:invalid {
+  border-color: #ff0000;
+}
+
+.user-type-selection {
+  margin: 1rem 0;
+}
+
+.user-type-selection button {
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.user-type-selection button.active {
+  background-color: #4CAF50;
+  color: white;
+}

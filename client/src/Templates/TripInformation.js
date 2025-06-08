@@ -96,16 +96,11 @@ const navigate = useNavigate();
       <div className="trip-banner">
         <div className="back-button"onClick={() => navigate(-1)} style={{ cursor: 'pointer' }}>⟵ BACK</div>
         <h1>Trip Information</h1>
-        <p>Edit information that will be needed for your trip</p>
+        <p>Input your travel preferences below to start building your itinerary.</p>
       </div>
 
       <div className="trip-form">
-        <div className="form-group">
-          <label>Will You Need Transport:</label>
-          <button className="toggle-button" onClick={() => setNeedTransport(!needTransport)}>
-            {needTransport ? "✔️" : "❌"}
-          </button>
-        </div>
+      
 
         <div className="form-group">
           <label>Location:</label>
@@ -131,7 +126,7 @@ const navigate = useNavigate();
         </div>
         <div className="form-group date-inputs">
   <div>
-    <label htmlFor="itineraryStart">Itinerary Start Date:</label>
+    <label htmlFor="itineraryStart">Preferred Activity Start Date:</label>
     <input
       id="itineraryStart"
       type="date"
@@ -140,7 +135,7 @@ const navigate = useNavigate();
     />
   </div>
   <div>
-    <label htmlFor="itineraryEnd">Itinerary End Date:</label>
+    <label htmlFor="itineraryEnd">Preferred Activity End Date:</label>
     <input
       id="itineraryEnd"
       type="date"
@@ -177,20 +172,21 @@ const navigate = useNavigate();
       </div>
     </div>
 
-
-
-
-
         <div className="form-group">
           <label>Preferences</label>
           <div className="preference-icons">
             {preferences.map((pref) => (
-              <div key={pref} className="pref-icon">{pref}</div>
+              <div key={pref} className="pref-icon"><button> {pref}</button> </div>
             ))}
           </div>
           <div className="edit-preferences"onClick={() => navigate("/preferences")}>Edit Preferences</div>
         </div>
-
+        <div className="form-group">
+                <label>Will You Need Transport:</label>
+                <button className="toggle-button" onClick={() => setNeedTransport(!needTransport)}>
+                  {needTransport ? "✔️" : "❌"}
+                </button>
+              </div>
         <div className="action-buttons">
           <button className="finish-button" onClick={() => navigate("/profile")} >Finished</button>
           <button className="cancel-button"  onClick={() => navigate("/")}>Cancel</button>
