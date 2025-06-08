@@ -188,3 +188,52 @@ input:invalid {
   background-color: #4CAF50;
   color: white;
 }
+
+/* User Type Selection Styles */
+.user-type-group {
+  margin: 20px 0;
+  display: inline;
+  flex-direction: column;
+}
+
+.user-type-label {
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+.user-type-group button {
+  margin-right: 10px;
+}
+
+.user-type-btn {
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 15px;
+}
+
+.user-type-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.user-type-btn.active {
+  background-color: #1d3557;
+  color: #fff;
+  border-color: #1d3557;
+}
+
+/* Wrap buttons horizontally */
+.user-type-group {
+  flex-direction: column;
+}
+
+.user-type-group .user-type-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
