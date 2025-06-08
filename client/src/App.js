@@ -2,9 +2,12 @@ import React from 'react';
 //import Register from './Templates/Register';
 //import Login from './Templates/Login';
 //import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
-import ProfilePage from './Templates/ProfilePage';
+//import ProfilePage from './Templates/ProfilePage';
+//import SignUpPage from './Templates/SignUpPage';
+//import TouristProfileForm from './Templates/TouristProfileForm';
 //import InterestPage from './Templates/Preferences';
 //import TripInformationPage from './Templates/TripInformation';
+import BusinessProfileForm from './Templates/BusinessProfileForm';
 //import logo from './logo.svg';
 //import './css/App.css';
 //import CreateEventPage from './Templates/CreateEventPage';
@@ -13,7 +16,7 @@ function App() {
 
   return (
     <div>
-      <ProfilePage />
+      <BusinessProfileForm />
     </div>
     /*
     <Router>
