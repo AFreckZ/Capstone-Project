@@ -2,10 +2,9 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-//sending the tourist preference to the db
+//adding the  tourists preferences to the db
 router.post("/preferences", async (req, res) => {
   const { preferences } = req.body;
-  //const userId = req.user.id; 
   const tourist_id=10;
   try {
     if (!preferences || !Array.isArray(preferences) || preferences.length === 0) {
@@ -97,7 +96,7 @@ router.get('/tourists/:id', async (req,res) =>{
 // GET single preference
 router.get('/:id', async (req, res) => {
   try {
-    const [tourist] = await pool.query('SELECT * FROM Preferences WHERE preference_id = ?', [req.params.id]);
+    const [tourist] = await pool.query('SELECT preferences FROM Tourist_Preferences WHERE tourist_id = ?', [req.params.id]);
     if (tourist.length === 0) {
       return res.status(404).json({ error: 'Preference not found' });
     }

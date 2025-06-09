@@ -57,9 +57,7 @@ function Login() {
       
       setSuccessMessage("Login successful!");
       setError(""); // Clear any errors  
-      navigate("/ProfilePage");    
-      //alert("Login successful!"); 
-      //resets the fields
+      navigate("/user");    
       setEmail("");
       setPassword("");
       setRememberMe(false);

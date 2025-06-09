@@ -9,57 +9,6 @@
   overflow: hidden;
 }
 
-.trip-header {
-  background: linear-gradient(to right, #1d3557, #457b9d);
-  color: white;
-  padding: 20px 40px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  flex-shrink: 0;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.logo {
-  font-size: 1.8rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-.nav-links {
-  display: flex;
-  gap: 30px;
-}
-
-.nav-links a {
-  color: #ffffff;
-  text-decoration: none;
-  font-weight: 500;
-  position: relative;
-  transition: color 0.3s ease;
-}
-
-.nav-links a::after {
-  content: '';
-  display: block;
-  height: 2px;
-  width: 0%;
-  background-color: #ffca3a;
-  transition: width 0.3s ease;
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-}
-
-.nav-links a:hover::after {
-  width: 100%;
-}
 
 .avatar {
   width: 40px;

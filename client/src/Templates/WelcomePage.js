@@ -8,8 +8,8 @@ function Welcome(){
             <div className="welcome-banner">
             <h1>Welcome to Yaad Quest</h1>
             <h2> The Jamaican Trip Planner App</h2>
-            <button>Register</button>
-            <button>Log In</button>
+            <button ><Link to= "/register">Register</Link></button>
+            <button ><Link to= "/login">Login</Link></button>
 
             </div>
         </div>

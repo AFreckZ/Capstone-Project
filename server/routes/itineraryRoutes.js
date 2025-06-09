@@ -27,15 +27,15 @@ router.get('/:id', async (req, res) => {
   }
 });
 // GET all itineraries
-router.get('/generate', async (req, res) => {
-  try {
+// router.get('/generate', async (req, res) => {
+//   try {
 
-    //filter the events
-    const [itineraries] = await pool.query('SELECT * FROM Events Where start_date == 2024-12-15');
-    res.json(itineraries);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch itinerary' });
-  }
-});
+//     //filter the events
+//     const [itineraries] = await pool.query('SELECT * FROM Events Where start_date == 2024-12-15');
+//     res.json(itineraries);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: 'Failed to fetch itinerary' });
+//   }
+//});
 module.exports = router;

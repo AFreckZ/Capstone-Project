@@ -43,55 +43,54 @@ router.post('/register', async (req, res) => {
 
 // login user
 router.post('/login', async (req, res) => {
-  console.log('=== USER LOOKUP DEBUG ===');
   
   try {
     const { email, password } = req.body;
     console.log('Looking up user with email:', email);
     
     // Test the actual user query
-    console.log('Step 10: About to execute user lookup query');
+    console.log(' About to execute user lookup query');
     const [rows] = await pool.execute(
       'SELECT * FROM user WHERE email = ?',
       [email]
     );
     
-    console.log('Step 11: User query completed successfully');
+    console.log(' User query completed successfully');
     console.log('Found rows:', rows.length);
     console.log('Row data:', rows);
     
     if (rows.length === 0) {
-      console.log('Step 12: No user found');
+      console.log(' No user found');
       return res.status(401).json({ 
         message: 'Invalid email or password' 
       });
     }
     
     const user = rows[0];
-    console.log('Step 12: User found:', {
+    console.log(' User found:', {
       id: user.user_id,
       email: user.email,
       hasPassword: !!user.password,
       passwordLength: user.password ? user.password.length : 0
     });
     
-    console.log('Step 13: About to compare passwords');
+    console.log(' About to compare passwords');
     console.log('Input password:', password);
     console.log('Stored password hash (first 20 chars):', user.password.substring(0, 20) + '...');
     
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log('Step 14: Password comparison completed');
+    console.log('Password comparison completed');
     console.log('Password valid:', isPasswordValid);
     
     if (!isPasswordValid) {
-      console.log('Step 15: Password verification failed');
+      console.log('Password verification failed');
       return res.status(401).json({ 
         message: 'Invalid email or password' 
       });
     }
     
-    console.log('Step 15: Password verified successfully');
-    console.log('Step 16: Creating JWT token');
+    console.log(' Password verified successfully');
+    console.log(' Creating JWT token');
     console.log('JWT_SECRET loaded:', !!process.env.JWT_SECRET);
     
     const token = jwt.sign(
@@ -103,7 +102,7 @@ router.post('/login', async (req, res) => {
       { expiresIn: '24h' }
     );
     
-    console.log('Step 17: JWT token created successfully');
+    console.log(' JWT token created successfully');
     
     res.status(200).json({
       message: 'Login successful',
@@ -115,7 +114,7 @@ router.post('/login', async (req, res) => {
       }
     });
     
-    console.log('Step 18: Response sent successfully');
+    console.log('Response sent successfully');
     
   } catch (error) {
     console.log('=== ERROR IN USER LOOKUP ===');

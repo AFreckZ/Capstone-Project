@@ -1,10 +1,11 @@
 // TripInformationPage.js
 import React, { useState } from "react";
 import "../css/TripInformation.css";
+import JamaicanAddressForm from "./JamaicanAddressForm";
 
 export default function TripInformationPage() {
   const [needTransport, setNeedTransport] = useState(true);
-  const [location, setLocation] = useState("");
+  const [location, setAddress] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [budget, setBudget] = useState("");
@@ -12,34 +13,11 @@ export default function TripInformationPage() {
   const [currency, setCurrency] = useState('USD');
   const [itineraryStart, setItineraryStart] = useState("");
   const [itineraryEnd, setItineraryEnd] = useState("");
+  const [preferStarttime, setPreferStartTime]= useState("");
+  const [preferEndtime, setPreferEndTime]= useState("");
 
-/*
-  const NumberInput = () => {
-    const [amount,setAmount] = useState('')
 
-    const formatNumber = (num) => {
-        if (!num) return '';
-        const cleaned = num.replace(/,/g,'');
-        if (isNaN(cleaned)) return value;
-        return new Intl.NumberFormat().format(cleaned);
-    };
-    
-    const handleChange = (e) =>{
-        const raw = e.target.value.replace(/,/g,'');
-        if (/^\d*$/.test(raw)){
-            setValue(formatNumber(raw));
-        }
-    };
-    return (
-        <input
-        type="text"
-        value = {value}
-        onChange = {handleChange}
-        placeholder="Enter amount"
-        />
-    )
-  }
-    */
+
   const convertToJMD = () => {
     const rate = exchangeRates[currency] || 1;
     const result = amount * rate;
@@ -98,13 +76,8 @@ export default function TripInformationPage() {
       
 
         <div className="form-group">
-          <label>Location:</label>
-          <select value={location} onChange={(e) => setLocation(e.target.value)}>
-            <option value="">Select Parish</option>
-            {parishes.map((parish) => (
-              <option key={parish} value={parish}>{parish}</option>
-            ))}
-          </select>
+          <label>Location of Stay:</label>
+          <JamaicanAddressForm onAddressChange={setAddress} />
         </div>
 
         <div className="form-group date-inputs">
@@ -120,8 +93,9 @@ export default function TripInformationPage() {
           
         </div>
         <div className="form-group date-inputs">
+  
   <div>
-    <label htmlFor="itineraryStart">Preferred Activity Start Date:</label>
+    <label htmlFor="itineraryEnd">Preferred Activity Start Date:</label>
     <input
       id="itineraryStart"
       type="date"
@@ -130,12 +104,32 @@ export default function TripInformationPage() {
     />
   </div>
   <div>
-    <label htmlFor="itineraryEnd">Preferred Activity End Date:</label>
+    <label htmlFor="itineraryEnd">Preferred Activity End Dates:</label>
     <input
       id="itineraryEnd"
       type="date"
       value={itineraryEnd}
       onChange={(e) => setItineraryEnd(e.target.value)}
+    />
+  </div>
+  <br></br>
+  <div>
+    <label htmlFor="preferStarttime">Preferred Activity Start Time:</label>
+    <input
+      id="preferStarttime"
+      type="time"
+      value={preferStarttime}
+      onChange={(e) => setPreferStartTime(e.target.value)}
+    />
+  </div>
+  
+  <div>
+    <label htmlFor="preferEndtime">Preferred Activity End Time:</label>
+    <input
+      id="preferEndtime"
+      type="time"
+      value={preferEndtime}
+      onChange={(e) => setPreferEndTime(e.target.value)}
     />
   </div>
 </div>

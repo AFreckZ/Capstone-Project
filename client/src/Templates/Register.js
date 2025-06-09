@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import axios from 'axios';
+import {Navigate, useNavigate} from "react-router-dom";
 //import React from "react";
 import "../css/Register.css";
 import Beach from "../images/Beach.jpg";
-//import { Icon } from "react-icons-kit";
-//import { eye } from "react-icons-kit/feather/eye.js";
-//import { eyeOff } from "react-icons-kit/feather/eyeOff.js";
+
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -48,7 +47,7 @@ function Register() {
     
     setIsSubmitting(true);
     setErrors({});
-    
+    Navigate("/user")
     try {
       const response = await axios.post('http://localhost:5001/api/user/register', {
         name: formData.name,
@@ -86,7 +85,6 @@ function Register() {
       [name]: value
     }));
     
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }

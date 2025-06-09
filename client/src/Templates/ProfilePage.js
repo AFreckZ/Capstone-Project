@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../css/ProfilePage.css';
 import profileImage from '../images/sunset.jpg'; // Replace with real asset
-
+import { Link } from 'react-router-dom';
 const ProfilePage = () => {
   const [trip] = useState({
     name: "My Trip",
@@ -46,7 +46,7 @@ const ProfilePage = () => {
           <span>🎉 Festivals</span>
           <span>🍽️ Restaurants</span>
         </div>
-        <a href="#" className="edit-link">Edit Preferences</a>
+        <Link to="/info">Edit Preferences</Link>
 
       </aside>
 
