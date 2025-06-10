@@ -1,194 +1,6 @@
-// // React version of the Python itinerary generator
-
-// import React, { useEffect, useState } from 'react';
-
-// const activities = [
-//   {
-//     name: 'Fort Rocky Tours',
-//     cost: 90,
-//     duration: 120,
-//     date: '2025-04-03',
-//     start_time: '10:00',
-//     end_time: '16:00',
-//     tags: ['tour (historical)'],
-//     priority: 2,
-//     type: 'venue',
-//   },
-//   {
-//     name: 'UWI Carnival',
-//     cost: 50,
-//     duration: 120,
-//     date: '2025-04-03',
-//     start_time: '12:00',
-//     end_time: '17:00',
-//     tags: ['outdoor activity', 'party'],
-//     priority: 1,
-//     type: 'event',
-//   },
-//   {
-//     name: 'Jamaica Food and Beverage',
-//     cost: 70,
-//     duration: 270,
-//     date: '2025-04-06',
-//     start_time: '14:00',
-//     end_time: '19:00',
-//     tags: ['outdoor food and dining', 'outdoor festival'],
-//     priority: 1,
-//     type: 'event',
-//   },
-//   {
-//     name: 'Devon House',
-//     cost: 30,
-//     duration: 180,
-//     date: '2025-04-06',
-//     start_time: '10:00',
-//     end_time: '22:00',
-//     tags: ['tour (historical)', 'outdoor activity', 'outdoor food and dining'],
-//     priority: 2,
-//     type: 'venue',
-//   },
-// ];
-
-// const preferences = [
-//   { name: 'Outdoor festival', weight: 10 },
-//   { name: 'Tours (historical)', weight: 9 },
-//   { name: 'Outdoor Food and Dining', weight: 8 },
-//   { name: 'Outdoor Activity', weight: 7 },
-//   { name: 'Indoor Activity', weight: 6 },
-//   { name: 'Indoor Festival', weight: 5 },
-//   { name: 'Indoor Food and Dining', weight: 4 },
-//   { name: 'Beach', weight: 3 },
-//   { name: 'Tours (Nature)', weight: 2 },
-//   { name: 'Live Music/concert', weight: 1 },
-// ];
-
-// const preferredSlots = [
-//   { date: '2025-04-03', start: '10:00', end: '16:00' },
-//   { date: '2025-04-04', start: '14:00', end: '18:00' },
-//   { date: '2025-04-06', start: '10:00', end: '19:00' },
-// ];
-
-// const budget = 300;
-
-// function timeToMinutes(timeStr) {
-//   const [h, m] = timeStr.split(':').map(Number);
-//   return h * 60 + m;
-// }
-
-// function hasTimeConflict(act1, act2) {
-//   if (act1.date !== act2.date) return false;
-//   const s1 = timeToMinutes(act1.start_time);
-//   const e1 = s1 + act1.duration;
-//   const s2 = timeToMinutes(act2.start_time);
-//   const e2 = s2 + act2.duration;
-//   return !(e1 <= s2 || e2 <= s1);
-// }
-
-// function fitsPreferredSlot(activity) {
-//   return preferredSlots.some((slot) => {
-//     if (activity.date !== slot.date) return false;
-//     const actStart = timeToMinutes(activity.start_time);
-//     const actEnd = actStart + activity.duration;
-//     const slotStart = timeToMinutes(slot.start);
-//     const slotEnd = timeToMinutes(slot.end);
-//     return actStart >= slotStart && actEnd <= slotEnd;
-//   });
-// }
-
-// function normalizeTag(text) {
-//   return text.toLowerCase().replace(/[()\-]/g, '').replace(/s\b/, '').trim();
-// }
-
-// function calculatePreferenceScore(activity) {
-//   const normTags = activity.tags.map(normalizeTag);
-//   let score = 0;
-//   for (const pref of preferences) {
-//     const prefNorm = normalizeTag(pref.name);
-//     if (normTags.includes(prefNorm)) {
-//       score += pref.weight * 2;
-//     }
-//   }
-//   return score;
-// }
-
-// function generateOptimalItinerary() {
-//   const valid = activities.filter(fitsPreferredSlot);
-//   let best = [], bestScore = 0;
-//   for (let r = 1; r <= valid.length; r++) {
-//     const combos = combinations(valid, r);
-//     for (const combo of combos) {
-//       const cost = combo.reduce((sum, a) => sum + a.cost, 0);
-//       if (cost > budget) continue;
-//       const conflict = combo.some((a, i) =>
-//         combo.some((b, j) => j > i && hasTimeConflict(a, b))
-//       );
-//       if (conflict) continue;
-//       let score = combo.reduce((sum, a) => sum + calculatePreferenceScore(a), 0);
-//       score += cost * 0.3;
-//       if (score > bestScore || (score === bestScore && combo.length > best.length)) {
-//         best = combo;
-//         bestScore = score;
-//       }
-//     }
-//   }
-//   return best.sort((a, b) => a.date.localeCompare(b.date) || a.start_time.localeCompare(b.start_time));
-// }
-
-// function combinations(arr, k) {
-//   if (k === 0) return [[]];
-//   if (arr.length < k) return [];
-//   const [first, ...rest] = arr;
-//   const withFirst = combinations(rest, k - 1).map((combo) => [first, ...combo]);
-//   const withoutFirst = combinations(rest, k);
-//   return [...withFirst, ...withoutFirst];
-// }
-
-// export default function ItineraryPlanner() {
-//   const [itinerary, setItinerary] = useState([]);
-
-//   useEffect(() => {
-//     const result = generateOptimalItinerary();
-//     setItinerary(result);
-//   }, []);
-
-//   const totalCost = itinerary.reduce((sum, a) => sum + a.cost, 0);
-//   return (
-//     <div className="p-4">
-//       <h1 className="text-2xl font-bold mb-4">Weighted Preference Itinerary</h1>
-//       <p>Budget: ${budget}</p>
-//       {itinerary.length === 0 ? (
-//         <p>No valid itinerary found within constraints.</p>
-//       ) : (
-//         <div>
-//           {Array.from(new Set(itinerary.map((a) => a.date))).map((date) => (
-//             <div key={date} className="mt-4">
-//               <h2 className="text-xl font-semibold">
-//                 {new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-//               </h2>
-//               {itinerary
-//                 .filter((a) => a.date === date)
-//                 .map((a, i) => (
-//                   <div key={i} className="ml-4">
-//                     <p>{a.start_time}-{a.end_time}: {a.name}</p>
-//                     <ul className="ml-6 list-disc">
-//                       <li>Cost: ${a.cost}</li>
-//                       <li>Duration: {a.duration} mins</li>
-//                       <li>Type: {a.type}</li>
-//                       <li>Tags: {a.tags.join(', ')}</li>
-//                     </ul>
-//                   </div>
-//                 ))}
-//             </div>
-//           ))}
-//           <p className="mt-4 font-semibold">Total Cost: ${totalCost}/{budget}</p>
-//           <p>Budget Remaining: ${budget - totalCost}</p>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-// React version of the Python itinerary generator
-//import React, { useState, useEffect } from 'react';
+// //working but not spreading venues across days
+//  import React, { useState, useEffect } from 'react';
+// import axios from 'axios';
 
 // const ItineraryPlanner = () => {
 //   const [activities, setActivities] = useState([]);
@@ -196,207 +8,15 @@
 //   const [touristInfo, setTouristInfo] = useState(null);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
-//   //const [tourist_id, setTouristId] = useState(1);
-//   const [tourist_id,setTouristId]= useState(10);
-
+//   const [touristId, setTouristId] = useState(10);
 //   const [optimalActivities, setOptimalActivities] = useState([]);
-//   const [knapsackScore, setKnapsackScore] = useState(0);
 
-//   // Fetch tourist information from database 
-//   const fetchTouristInfo = async (tourist_id) => {
-//     try {
-//       const response = await fetch(`/api/tourists/${tourist_id}`);
-//       if (!response.ok) throw new Error('Failed to fetch tourist information');
-//       const data = await response.json();
-//       return data;
-//     } catch (err) {
-//       console.error('Error fetching tourist info:', err);
-//       // Fallback default tourist info
-//       return {
-//         tourist_id: null,
-//         user_id: tourist_id,
-//         trip_start: new Date().toISOString().split('T')[0],
-//         trip_end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-//         budget: 300.00,
-//         need_for_transport: 0,
-//         preferred_start: "09:00:00",
-//         preferred_end: "18:00:00",
-//         address: null,
-//         preferred_dates: [new Date().toISOString().split('T')[0]]
-//       };
-//     }
-//   };
-
-//   // Fetch user preferences 
-//   const fetchUserPreferences = async (tourist_id) => {
-//     try {
-//       const response = await fetch(`/api/prefer/${tourist_id}`);
-//       if (!response.ok) throw new Error('Failed to fetch user preferences');
-      
-//       const data = await response.json();
-//       return data.preferences || [];
-//     } catch (err) {
-//       console.error('Error fetching preferences:', err);
-//       // Fallback to default preferences
-//       return [
-//         { category: "Festival", weight: 10 },
-//         { category: "Museum/Historical Site", weight: 9 },
-//         { category: "Food & Dining (Local)", weight: 8 },
-//         { category: "Food & Dining (Unique)", weight: 8 },
-//         { category: "Outdoor Adventure", weight: 7 },
-//         { category: "Indoor Adventure", weight: 6 },
-//         { category: "Live Music", weight: 5 },
-//         { category: "Beach/River", weight: 4 },
-//         { category: "Club/Bar/Party", weight: 3 },
-//         { category: "Party", weight: 3 },
-//         { category: "Concert", weight: 2 },
-//         { category: "Sport", weight: 1 },
-//         { category: "Art/Talent Showcasing", weight: 1 }
-//       ];
-//     }
-//   };
-
-//   // Generate time slots based on tourist info
-//   const generateTimeSlots = (touristInfo) => {
-//     if (!touristInfo) return [];
-    
-//     const slots = [];
-//     const startDate = new Date(touristInfo.trip_start);
-//     const endDate = new Date(touristInfo.trip_end);
-    
-//     // Use preferred_dates if available, otherwise generate for trip duration
-//     const datesToUse = touristInfo.preferred_dates && touristInfo.preferred_dates.length > 0 
-//       ? touristInfo.preferred_dates 
-//       : [];
-    
-//     if (datesToUse.length === 0) {
-//       // Generate dates for entire trip duration
-//       for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-//         datesToUse.push(d.toISOString().split('T')[0]);
-//       }
-//     }
-    
-//     // Create time slots for each date
-//     datesToUse.forEach(date => {
-//       slots.push({
-//         date: date,
-//         start_time: touristInfo.preferred_start ? touristInfo.preferred_start.slice(0, 5) : '09:00',
-//         end_time: touristInfo.preferred_end ? touristInfo.preferred_end.slice(0, 5) : '18:00'
-//       });
-//     });
-    
-//     return slots;
-//   };
-
-//   // Fetch venues from database
-//   const fetchVenues = async () => {
-//     const response = await fetch('/api/venues');
-//     if (!response.ok) throw new Error('Failed to fetch venues');
-    
-//     const venuesData = await response.json();
-    
-//     return venuesData
-//       .filter(venue => venue.is_active)
-//       .map(venue => ({
-//         id: `venue_${venue.venue_id}`,
-//         name: venue.name,
-//         cost: parseFloat(venue.cost) || 0,
-//         duration: venue.typical_duration_minutes || 180,
-//         date: venue.available_date || new Date().toISOString().split('T')[0],
-//         start_time: venue.opening_time || '09:00',
-//         end_time: venue.closing_time || '17:00',
-//         tags: venue.categories ? JSON.parse(venue.categories) : [venue.venue_type],
-//         priority: venue.priority || 2,
-//         type: 'venue',
-//         address: venue.address,
-//         description: venue.description,
-//         rating: venue.rating || 0,
-//         image_url: venue.image_url
-//       }));
-//   };
-
-//   // Fetch events from database
-//   const fetchEvents = async () => {
-//     const response = await fetch('/api/events');
-//     if (!response.ok) throw new Error('Failed to fetch events');
-    
-//     const eventsData = await response.json();
-    
-//     return eventsData.map(event => {
-//       const startDate = new Date(event.start_datetime);
-//       const endDate = new Date(event.end_datetime);
-//       const duration = Math.round((endDate - startDate) / (1000 * 60));
-      
-//       return {
-//         id: `event_${event.event_id}`,
-//         name: event.name,
-//         cost: parseFloat(event.cost) || 0,
-//         duration: duration,
-//         date: startDate.toISOString().split('T')[0],
-//         start_time: startDate.toTimeString().slice(0, 5),
-//         end_time: endDate.toTimeString().slice(0, 5),
-//         tags: event.categories ? JSON.parse(event.categories) : [event.event_type],
-//         priority: event.priority || 1,
-//         type: 'event',
-//         venue_location: event.venue_location,
-//         description: event.description,
-//         flyer_image_path: event.flyer_image_path,
-//         organizer: event.organizer
-//       };
-//     });
-//   };
-
-//   // Main data fetching function
-//   const fetchData = async () => {
-//     try {
-//       setLoading(true);
-      
-//       // Fetch tourist info first as other data depends on it
-//       const touristData = await fetchTouristInfo(tourist_id);
-//       setTouristInfo(touristData);
-      
-//       // Fetch remaining data in parallel
-//       const [
-//         userPreferences,
-//         venueActivities,
-//         eventActivities
-//       ] = await Promise.all([
-//         fetchUserPreferences(tourist_id),
-//         fetchVenues(),
-//         fetchEvents()
-//       ]);
-      
-//       // Filter activities based on trip dates
-//       const tripStart = new Date(touristData.trip_start);
-//       const tripEnd = new Date(touristData.trip_end);
-      
-//       const filteredVenues = venueActivities.filter(venue => {
-//         const venueDate = new Date(venue.date);
-//         return venueDate >= tripStart && venueDate <= tripEnd;
-//       });
-      
-//       const filteredEvents = eventActivities.filter(event => {
-//         const eventDate = new Date(event.date);
-//         return eventDate >= tripStart && eventDate <= tripEnd;
-//       });
-      
-//       const allActivities = [...filteredVenues, ...filteredEvents];
-      
-//       setActivities(allActivities);
-//       setPreferences(userPreferences);
-      
-//     } catch (err) {
-//       setError(err.message);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
+//   // Helper functions
 //   const timeToMinutes = (timeStr) => {
 //     const [h, m] = timeStr.split(':').map(Number);
 //     return h * 60 + m;
 //   };
-
+//   //enusres the activities dont clash
 //   const hasTimeConflict = (act1, act2) => {
 //     if (act1.date !== act2.date) return false;
 //     const s1 = timeToMinutes(act1.start_time);
@@ -406,22 +26,576 @@
 //     return !(e1 <= s2 || e2 <= s1);
 //   };
 
+//   //ensuring the activities are within a certain time frame
 //   const fitsPreferredSlot = (activity) => {
 //     if (!touristInfo) return false;
+//     const actStart = timeToMinutes(activity.start_time);
+//     const actEnd = actStart + activity.duration;
+//     const prefStart = timeToMinutes(touristInfo.preferred_start?.substring(0, 5)) || timeToMinutes('09:00');
+//     const prefEnd = timeToMinutes(touristInfo.preferred_end?.substring(0, 5))|| timeToMinutes('18:00');
+//     const overlaps = (actStart <= prefEnd) && (actEnd >= prefStart);
+//     console.log(`Activity: ${activity.name}, Start: ${actStart}, End: ${actEnd}, PrefStart: ${prefStart}, PrefEnd: ${prefEnd}`);
     
-//     const timeSlots = generateTimeSlots(touristInfo);
+
+//   return overlaps;
+//   };
+//  const fitsPreferredDate = (activity) => {
+//   if (!touristInfo || !touristInfo.preferred_dates) return true;
+
+//   if (activity.type === 'event') {
+//     let activityDateStr;
+//     if (activity.date instanceof Date) {
+//       activityDateStr = activity.date.toISOString().split('T')[0];
+//     } else if (typeof activity.date === 'string') {
+//       activityDateStr = activity.date.split('T')[0];
+//     } else {
+//       return false;
+//     }
+//     return touristInfo.preferred_dates.includes(activityDateStr);
+//   }
+
+//   if (activity.type === 'venue') {
+//     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+//     // NO JSON.parse here since days_open is already an object
+//     const daysOpen = activity.days_open;
+
+//     return touristInfo.preferred_dates.some(dateStr => {
+//       const date = new Date(dateStr);
+//       const dayName = dayNames[date.getDay()];
+//       return daysOpen[dayName] === true;
+//     });
+//   }
+
+//   return false;
+// };
+
+
+//   //ensures the venues are open on certain days
+//   const isVenueOpenOnActivityDate = (activity) => {
+//   if (activity.type === 'event') return true;
+
+//   if (activity.type === 'venue') {
+//     const activityDate = new Date(activity.date);
+//     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+//     const dayName = dayNames[activityDate.getDay()];
+
+//     // days_open is already an object, no need to parse:
+//     const daysOpen = activity.days_open;
+
+//     return daysOpen[dayName] === true;
+//   }
+
+//   return false;
+// };
+
+//   const normalizeTag = (text) => {
+//     let normalized = text.toLowerCase().trim();
+//     normalized = normalized.replace(/[()&\-/]/g, ' ');
+//     normalized = normalized.replace(/\s+/g, ' ');
+//     normalized = normalized.replace(/s\b/g, '');
+//     return normalized.trim();
+//   };
+
+//   const calculatePreferenceScore = (activity) => {
+//     let score = 0;
+//     const normTags = activity.tags.map(normalizeTag);
     
-//     for (const slot of timeSlots) {
-//       if (activity.date === slot.date) {
-//         const actStart = timeToMinutes(activity.start_time);
-//         const actEnd = actStart + activity.duration;
-//         const slotStart = timeToMinutes(slot.start_time);
-//         const slotEnd = timeToMinutes(slot.end_time);
-//         if (actStart >= slotStart && actEnd <= slotEnd) {
-//           return true;
+//     for (const pref of preferences) {
+//       const prefNorm = normalizeTag(pref.category);
+//       for (const tag of normTags) {
+//         if (prefNorm === tag || tag.includes(prefNorm) || prefNorm.includes(tag)) {
+//           score += pref.weight * 2;
+//           break;
 //         }
 //       }
 //     }
+    
+//     score += activity.priority * 5;
+//     return score;
+//   };
+
+//   const combinations = (arr, r) => {
+//     if (r === 0) return [[]];
+//     if (r > arr.length) return [];
+//     const [first, ...rest] = arr;
+//     const withFirst = combinations(rest, r - 1).map(combo => [first, ...combo]);
+//     const withoutFirst = combinations(rest, r);
+//     return [...withFirst, ...withoutFirst];
+//   };
+
+//   // Fetch data from API
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         setLoading(true);
+//         setError(null);
+        
+//         // Fetch tourist info and preferences
+//         const touristResponse = await axios.get(`http://localhost:5001/api/prefer/tourists/${touristId}`);
+//         const allTourists = touristResponse.data;
+        
+//         // Find the specific tourist by ID
+//         const currentTourist = allTourists.find(t => t.tourist_id === touristId);
+        
+//         if (!currentTourist) {
+//           throw new Error(`Tourist with ID ${touristId} not found`);
+//         }
+        
+//         const touristData = {
+//           tourist_id: currentTourist.tourist_id,
+//           trip_start: currentTourist.trip_start,
+//           trip_end: currentTourist.trip_end,
+//           budget: currentTourist.budget,
+//           preferred_start: currentTourist.preferred_start,
+//           preferred_end: currentTourist.preferred_end,
+//           preferred_dates: currentTourist.preferred_dates
+//         };
+        
+//         setTouristInfo(touristData);
+//         // console.log('Trip Start:', currentTourist.trip_start);
+//         // console.log('Trip End:', currentTourist.trip_end);
+
+//         // Process preferences
+//         const processedPrefs = currentTourist.preferences && currentTourist.preferences.length > 0
+//         ? currentTourist.preferences.map(pref => ({
+//             category: pref.tag,
+//             weight: pref.weight
+//           }))
+//         : [ //fallback preferences
+//             { category: "Concert", weight: 10 },
+//             { category: "Beach/River", weight: 9 },
+//             { category: "Live Music", weight: 8 },
+//             { category: "Indoor Adventure", weight: 7 },
+//             { category: "Unique Food & Dining", weight: 6 },
+//             { category: "Festival", weight: 5 },
+//             { category: "Museum/Historical Site", weight: 4 },
+//             { category: "Art/Talent", weight: 3 },
+//             { category: "Outdoor Adventure", weight: 2 },
+//             { category: "Local Food/Dining", weight: 1 }
+//           ];
+//         setPreferences(processedPrefs);
+        
+//         // Fetch venues and events
+//         const [venuesResponse, eventsResponse] = await Promise.all([
+//           axios.get('http://localhost:5001/api/venues'),
+//           axios.get('http://localhost:5001/api/events')
+//         ]);
+//         //checking if the routes are working
+//         // console.log('Venues response:', venuesResponse.data);
+//         // console.log('Events response:', eventsResponse.data);
+//         // Process venues
+//         const processedVenues = venuesResponse.data.map(venue => ({
+//           id: `venue_${venue.venue_id}`,
+//           name: venue.name,
+//           cost: parseFloat(venue.cost) || 0,
+//           duration: 180,
+//           start_time: venue.opening_time?.substring(0, 5) || '09:00',
+//           end_time: venue.closing_time?.substring(0, 5) || '17:00',
+//           tags: [venue.venue_type],
+//           priority: 2,
+//           type: 'venue',
+//           address: venue.address,
+//           description: venue.description,
+//           is_active: venue.is_active,
+//           days_open: venue.days_open
+//         })).filter(venue => venue.is_active);
+        
+//         // Process events
+//         const processedEvents = eventsResponse.data.map(event => {
+//           const startDate = new Date(event.start_datetime);
+//           const endDate = new Date(event.end_datetime);
+//           const duration = Math.round((endDate - startDate) / (1000 * 60));
+          
+//           return {
+//             id: `event_${event.event_id}`,
+//             name: event.name,
+//             cost: parseFloat(event.cost) || 0,
+//             duration: duration || 180,
+//             date: startDate.toISOString().split('T')[0],
+//             start_time: startDate.toTimeString().substring(0, 5),
+//             end_time: endDate.toTimeString().substring(0, 5),
+//             tags: [event.event_type],
+//             priority: 1,
+//             type: 'event',
+//             venue_location: event.venue_location,
+//             description: event.description,
+//             flyer_image_path: event.flyer_image_path
+//           };
+//         });
+//         //checking if the venues and events were processed 
+//         // console.log('Processed Venues:', processedVenues);
+//         // console.log('Processed Events:', processedEvents);
+
+//         // Combine and filter activities
+        
+//         const allActivities = [...processedVenues, ...processedEvents];
+//         if (currentTourist.trip_start && currentTourist.trip_end) {
+//           const tripStart = new Date(currentTourist.trip_start);
+//           const tripEnd = new Date(currentTourist.trip_end);
+//           const filteredActivities = allActivities.filter(activity => {
+//           if (activity.date) {
+//             const activityDate = new Date(activity.date);
+//             return activityDate >= tripStart && activityDate <= tripEnd;
+//           }
+//           // If no date (i.e., it's a venue), include it
+//           return true;
+//         });
+//         console.log("Filtered Activities:", filteredActivities);
+
+//           // const filteredActivities = allActivities.filter(activity => {
+//           //   const activityDate = new Date(activity.date);
+//           //   return activityDate >= tripStart && activityDate <= tripEnd;
+//           // });
+//           //console.log('All activities before date filter:', allActivities);
+//           //console.log(' these are the filtered activities', filteredActivities)
+//           setActivities(filteredActivities);
+//         } else {
+//           setActivities(allActivities);
+//         }
+        
+//       } catch (err) {
+//         console.error('Error fetching data:', err);
+//         setError(err.message);
+        
+//         // Fallback data
+//         setPreferences([
+//           { category: "Concert", weight: 10 },
+//           { category: "Beach/River", weight: 9 },
+//           { category: "Live Music", weight: 8 },
+//           { category: "Indoor Adventure", weight: 7 },
+//           { category: "Unique Food & Dining", weight: 6 },
+//           { category: "Festival", weight: 5 },
+//           { category: "Museum/Historical Site", weight: 4 },
+//           { category: "Art/Talent", weight: 3 },
+//           { category: "Outdoor Adventure", weight: 2 },
+//           { category: "Local Food/Dining", weight: 1 }
+//         ]);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+    
+//     fetchData();
+   
+//   }, [touristId]);
+
+
+//   // Generate optimal itinerary
+//   useEffect(() => {
+//     if (activities.length > 0 && preferences.length > 0 && touristInfo) {
+//       console.log('Generating itinerary with:', {
+//         activities,
+//         preferences,
+//         touristInfo
+//       });
+//       // Assign dates to venues that don't have them
+// const activitiesWithDates = activities.map(act => {
+//   if (!act.date && act.type === 'venue') {
+//     // Find first preferred date within trip range
+//     const tripStart = new Date(touristInfo.trip_start);
+//     const tripEnd = new Date(touristInfo.trip_end);
+    
+//     const validPreferredDate = touristInfo.preferred_dates?.find(dateStr => {
+//       const date = new Date(dateStr);
+//       return date >= tripStart && date <= tripEnd;
+//     });
+    
+//     if (validPreferredDate) {
+//       return { ...act, date: validPreferredDate };
+//     } else {
+//       // Fallback to first day of trip
+//       return { ...act, date: tripStart.toISOString().split('T')[0] };
+//     }
+//   }
+//   return act;
+// });
+
+// const validActivities = activitiesWithDates.filter(
+//   act => fitsPreferredSlot(act) && fitsPreferredDate(act)
+// );
+//       // console.log('All activities:', activities);
+//       // console.log('Tourist trip dates:', touristInfo.trip_start, touristInfo.trip_end);
+//       // console.log('Tourist preferred days:', touristInfo.preferred_dates);
+//       // console.log('Tourist budget:', touristInfo.budget);
+//     //  const validActivities = activities.filter(
+//     //   act => fitsPreferredSlot(act) &&
+//     //         fitsPreferredDate(act) //
+//          //isVenueOpenOnActivityDate(act)
+// // );
+//       // console.log('Preferred Dates:', touristInfo.preferred_dates);
+//       // activities.forEach(act => {
+//       //   console.log('Activity date:', act.date, 'Is preferred?', touristInfo.preferred_dates.includes(act.date));
+//       // });console.log('Valid activities count:', validActivities.length);
+// activities.forEach(act => {
+//   console.log(
+//     'Activity:', act.name,
+//     'Preferred slot:', fitsPreferredSlot(act),
+//     'Preferred date:', fitsPreferredDate(act)
+//   );
+// });
+
+//       let bestCombo = [];
+//       let bestScore = 0;
+//       const budget = parseFloat(touristInfo.budget) || 300;
+//       console.log('Valid activities within preferred slot:', validActivities);
+//       if (validActivities.length === 0) {
+//         console.log('No valid activities after time filtering.');
+//         setOptimalActivities([]); 
+//         return;
+//       }
+//       console.log('Valid activities:', validActivities);
+
+
+//       // if (validActivities.length === 0) {
+//       //   console.log('No valid activities for this day');
+//       // } else {
+//       //   const chosenActivity = validActivities[Math.floor(Math.random() * validActivities.length)];
+//       //   console.log('Chosen activity:', chosenActivity);
+//       // }
+
+
+//       for (let r = 1; r <= Math.min(validActivities.length, 10); r++) {
+//         const combos = combinations(validActivities, r);
+//         for (const combo of combos) {
+//           const cost = combo.reduce((sum, a) => sum + a.cost, 0);
+//           if (cost > budget) continue;
+          
+//           const conflict = combo.some((act1, i) => 
+//             combo.slice(i + 1).some(act2 => hasTimeConflict(act1, act2))
+//           );
+//           if (conflict) continue;
+          
+//           const preferenceScore = combo.reduce((sum, a) => sum + calculatePreferenceScore(a), 0);
+//           const costEfficiencyScore = cost > 0 ? preferenceScore / cost : preferenceScore;
+//           const totalScore = preferenceScore + costEfficiencyScore * 0.1;
+          
+//           if (totalScore > bestScore || (totalScore === bestScore && combo.length > bestCombo.length)) {
+//             bestCombo = combo;
+//             bestScore = totalScore;
+//           }
+//         }
+//       }
+      
+//       const sortedCombo = bestCombo.sort((a, b) => {
+//         if (a.date !== b.date) return a.date.localeCompare(b.date);
+//         return a.start_time.localeCompare(b.start_time);
+//       });
+      
+//       setOptimalActivities(sortedCombo);
+//     }
+//   }, [activities, preferences, touristInfo]);
+  
+
+//   // Debug logging
+//   useEffect(() => {
+//     if (!loading) {
+//       console.log('Current state:', {
+//         touristInfo,
+//         preferences,
+//         activities,
+//         optimalActivities
+//       });
+//     }
+//   }, [loading, touristInfo, preferences, activities, optimalActivities]);
+
+//   // Render UI
+//   const totalCost = optimalActivities.reduce((sum, act) => sum + act.cost, 0);
+//   const budget = touristInfo?.budget ? parseFloat(touristInfo.budget) : 300;
+
+//   return (
+//     <div className="p-6 max-w-5xl mx-auto bg-white">
+//       <div className="flex justify-between items-center mb-4">
+//         <h1 className="text-3xl font-bold text-blue-800">Tourist Itinerary Planner</h1>
+//       </div>
+
+//       {loading && (
+//         <div className="text-center py-8">
+//           <div className="text-lg">Loading itinerary for tourist #{touristId}...</div>
+//         </div>
+//       )}
+
+//       {error && (
+//         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+//           <p>Error: {error}</p>
+//           <p className="text-sm mt-2">Showing with fallback data</p>
+//         </div>
+//       )}
+
+//       {touristInfo && (
+//         <div className="bg-blue-50 p-4 rounded-lg mb-6">
+//           <h2 className="text-lg font-semibold mb-2">Tourist Information</h2>
+//           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+//           <div>
+//             <span className="font-medium">Trip:</span> {
+//               new Date(touristInfo.trip_start).toLocaleDateString('en-US', { 
+//                 year: 'numeric', 
+//                 month: 'short', 
+//                 day: 'numeric' 
+//               })
+//             } to {
+//               new Date(touristInfo.trip_end).toLocaleDateString('en-US', { 
+//                 year: 'numeric', 
+//                 month: 'short', 
+//                 day: 'numeric' 
+//               })
+//             }
+//           </div>            <div><span className="font-medium">Budget:</span> ${budget}</div>
+//             <div><span className="font-medium">Preferred Days:</span> {
+//               touristInfo.preferred_dates 
+//                 ? touristInfo.preferred_dates.map(date => 
+//                     new Date(date).toLocaleDateString('en-US', { 
+//                       month: 'short', 
+//                       day: 'numeric' 
+//                     })
+//                   ).join(', ')
+//                 : 'None specified'
+//             }</div>            
+//             <div><span className="font-medium">Preferred Hours:</span> {touristInfo.preferred_start?.substring(0, 5) || '09:00'} - {touristInfo.preferred_end?.substring(0, 5) || '18:00'}</div>
+//           </div>
+//         </div>
+//       )}
+
+//       {!loading && optimalActivities.length > 0 ? (
+//   <div className="bg-green-50 p-4 rounded-lg mb-6">
+//     <h2 className="text-lg font-semibold mb-3">Optimized Itinerary</h2>
+//     <ul className="space-y-3">
+//       {optimalActivities.map((activity) => (
+//         <li key={activity.id} className="border p-3 rounded-lg shadow-sm">
+//           <h3 className="font-bold text-blue-700">{activity.name}</h3>
+//           <p className="text-sm"><span className="font-medium">Type:</span> {activity.type}</p>
+//           <p className="text-sm">
+//             <span className="font-medium">Date:</span> {activity.date}
+//           </p>
+//           <p className="text-sm">
+//             <span className="font-medium">Time:</span> {activity.start_time} - {activity.end_time}
+//           </p>
+//           <p className="text-sm"><span className="font-medium">Cost:</span> ${activity.cost}</p>
+//           {activity.type === 'venue' && (
+//             <p className="text-sm"><span className="font-medium">Address:</span> {activity.address}</p>
+//           )}
+//           <p className="text-sm text-gray-600">Description: {activity.description} </p>
+//           <p className="text-sm text-gray-600"> Activity Tag: {activity.tag} </p>
+//         </li>
+//       ))}
+//     </ul>
+//     <div className="font-bold mt-4 text-green-800">
+//       Total Cost: ${totalCost.toFixed(2)} / ${budget}
+//     </div>
+//   </div>
+// ) : (
+//   !loading && (
+//     <div className="text-gray-500 italic text-sm">No suitable activities found for the selected preferences and trip dates.</div>
+//   )
+// )}
+
+
+//       {!loading && optimalActivities.length === 0 && activities.length > 0 && (
+//         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+//           <p>No valid itinerary found within the given constraints.</p>
+//           <p className="text-sm mt-1">Try adjusting your preferences or budget.</p>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default ItineraryPlanner;
+
+// //working and spreading out across days
+// import React, { useState, useEffect } from 'react';
+// import axios from 'axios';
+
+// const ItineraryPlanner = () => {
+//   const [activities, setActivities] = useState([]);
+//   const [preferences, setPreferences] = useState([]);
+//   const [touristInfo, setTouristInfo] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [touristId, setTouristId] = useState(10);
+//   const [optimalActivities, setOptimalActivities] = useState([]);
+
+//   // Helper functions
+//   const timeToMinutes = (timeStr) => {
+//     const [h, m] = timeStr.split(':').map(Number);
+//     return h * 60 + m;
+//   };
+
+//   // Helper function to calculate end time
+//   const calculateEndTime = (startTime, duration) => {
+//     const [h, m] = startTime.split(':').map(Number);
+//     const startMinutes = h * 60 + m;
+//     const endMinutes = startMinutes + duration;
+//     const hours = Math.floor(endMinutes / 60);
+//     const minutes = endMinutes % 60;
+//     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+//   };
+
+//   // Ensures the activities don't clash
+//   const hasTimeConflict = (act1, act2) => {
+//     if (act1.date !== act2.date) return false;
+//     const s1 = timeToMinutes(act1.start_time);
+//     const e1 = s1 + act1.duration;
+//     const s2 = timeToMinutes(act2.start_time);
+//     const e2 = s2 + act2.duration;
+//     return !(e1 <= s2 || e2 <= s1);
+//   };
+
+//   // Ensuring the activities are within a certain time frame
+//   const fitsPreferredSlot = (activity) => {
+//     if (!touristInfo) return false;
+//     const actStart = timeToMinutes(activity.start_time);
+//     const actEnd = actStart + activity.duration;
+//     const prefStart = timeToMinutes(touristInfo.preferred_start?.substring(0, 5)) || timeToMinutes('09:00');
+//     const prefEnd = timeToMinutes(touristInfo.preferred_end?.substring(0, 5)) || timeToMinutes('18:00');
+//     const overlaps = (actStart <= prefEnd) && (actEnd >= prefStart);
+    
+//     return overlaps;
+//   };
+
+//   const fitsPreferredDate = (activity) => {
+//     if (!touristInfo || !touristInfo.preferred_dates) return true;
+
+//     // Get valid preferred dates within trip period
+//     const tripStart = new Date(touristInfo.trip_start);
+//     const tripEnd = new Date(touristInfo.trip_end);
+//     const validPreferredDates = touristInfo.preferred_dates.filter(dateStr => {
+//       const date = new Date(dateStr);
+//       return date >= tripStart && date <= tripEnd;
+//     });
+
+//     // STRICT CHECK: Activity must be on a valid preferred date
+//     let activityDateStr;
+//     if (activity.date instanceof Date) {
+//       activityDateStr = activity.date.toISOString().split('T')[0];
+//     } else if (typeof activity.date === 'string') {
+//       activityDateStr = activity.date.split('T')[0];
+//     } else {
+//       console.log(`❌ ${activity.name}: No valid date found`);
+//       return false;
+//     }
+
+//     const isOnValidPreferredDate = validPreferredDates.includes(activityDateStr);
+//     console.log(`${activity.name} on ${activityDateStr}: Valid preferred date = ${isOnValidPreferredDate}`);
+//     console.log(`Valid preferred dates: [${validPreferredDates.join(', ')}]`);
+    
+//     return isOnValidPreferredDate;
+//   };
+
+//   // Ensures the venues are open on certain days
+//   const isVenueOpenOnActivityDate = (activity) => {
+//     if (activity.type === 'event') return true;
+
+//     if (activity.type === 'venue') {
+//       const activityDate = new Date(activity.date);
+//       const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+//       const dayName = dayNames[activityDate.getDay()];
+
+//       // days_open is already an object, no need to parse:
+//       const daysOpen = activity.days_open;
+
+//       return daysOpen[dayName] === true;
+//     }
+
 //     return false;
 //   };
 
@@ -447,320 +621,512 @@
 //       }
 //     }
     
-//     score += (activity.priority || 0) * 5;
-//     score += (activity.rating || 0) * 3;
-    
+//     score += activity.priority * 5;
 //     return score;
 //   };
 
-//   const combinations = (arr, r) => {
-//     if (r === 0) return [[]];
-//     if (r > arr.length) return [];
-//     const [first, ...rest] = arr;
-//     const withFirst = combinations(rest, r - 1).map(combo => [first, ...combo]);
-//     const withoutFirst = combinations(rest, r);
-//     return [...withFirst, ...withoutFirst];
-//   };
-
-//   const generateOptimalItinerary = () => {
-//     if (!touristInfo) return [];
-    
-//     const validActivities = activities.filter(fitsPreferredSlot);
-//     let bestCombo = [];
-//     let bestScore = 0;
-    
-//     for (let r = 1; r <= Math.min(validActivities.length, 10); r++) {
-//       const combos = combinations(validActivities, r);
-//       for (const combo of combos) {
-//         const cost = combo.reduce((sum, a) => sum + a.cost, 0);
-//         if (cost > touristInfo.budget) continue;
-        
-//         const conflict = combo.some((act1, i) => 
-//           combo.slice(i + 1).some(act2 => hasTimeConflict(act1, act2))
-//         );
-//         if (conflict) continue;
-        
-//         const preferenceScore = combo.reduce((sum, a) => sum + calculatePreferenceScore(a), 0);
-//         const costEfficiencyScore = cost > 0 ? preferenceScore / cost : preferenceScore;
-//         const totalScore = preferenceScore + costEfficiencyScore * 0.1;
-        
-//         if (totalScore > bestScore || (totalScore === bestScore && combo.length > bestCombo.length)) {
-//           bestCombo = combo;
-//           bestScore = totalScore;
-//         }
-//       }
-//     }
-    
-//     return bestCombo.sort((a, b) => {
-//       if (a.date !== b.date) return a.date.localeCompare(b.date);
-//       return a.start_time.localeCompare(b.start_time);
-//     });
-//   };
-
-//   const weightedKnapsack = (activities, budget) => {
-//     const n = activities.length;
-//     const dp = Array(n + 1).fill(null).map(() => Array(budget + 1).fill(0));
-    
-//     for (let i = 1; i <= n; i++) {
-//       const cost = Math.round(activities[i - 1].cost);
-//       const value = calculatePreferenceScore(activities[i - 1]);
-//       for (let w = 0; w <= budget; w++) {
-//         if (cost <= w) {
-//           dp[i][w] = Math.max(dp[i - 1][w], dp[i - 1][w - cost] + value);
-//         } else {
-//           dp[i][w] = dp[i - 1][w];
-//         }
-//       }
-//     }
-//     return dp[n][budget];
-//   };
-
-//   const formatDate = (dateStr) => {
-//     const date = new Date(dateStr);
-//     return date.toLocaleDateString('en-US', { 
-//       weekday: 'long', 
-//       year: 'numeric', 
-//       month: 'long', 
-//       day: 'numeric' 
-//     });
-//   };
-
-//   const getDaysDifference = (start, end) => {
-//     const startDate = new Date(start);
-//     const endDate = new Date(end);
-//     const diffTime = Math.abs(endDate - startDate);
-//     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-//   };
-
+//   // Fetch data from API
 //   useEffect(() => {
-//     fetchData();
-//   }, [tourist_id]);
+//     const fetchData = async () => {
+//       try {
+//         setLoading(true);
+//         setError(null);
+        
+//         // Fetch tourist info and preferences
+//         const touristResponse = await axios.get(`http://localhost:5001/api/prefer/tourists/${touristId}`);
+//         const allTourists = touristResponse.data;
+        
+//         // Find the specific tourist by ID
+//         const currentTourist = allTourists.find(t => t.tourist_id === touristId);
+        
+//         if (!currentTourist) {
+//           throw new Error(`Tourist with ID ${touristId} not found`);
+//         }
+        
+//         const touristData = {
+//           tourist_id: currentTourist.tourist_id,
+//           trip_start: currentTourist.trip_start,
+//           trip_end: currentTourist.trip_end,
+//           budget: currentTourist.budget,
+//           preferred_start: currentTourist.preferred_start,
+//           preferred_end: currentTourist.preferred_end,
+//           preferred_dates: currentTourist.preferred_dates
+//         };
+        
+//         setTouristInfo(touristData);
 
+//         // Process preferences
+//         const processedPrefs = currentTourist.preferences && currentTourist.preferences.length > 0
+//         ? currentTourist.preferences.map(pref => ({
+//             category: pref.tag,
+//             weight: pref.weight
+//           }))
+//         : [ //fallback preferences
+//             { category: "Concert", weight: 10 },
+//             { category: "Beach/River", weight: 9 },
+//             { category: "Live Music", weight: 8 },
+//             { category: "Indoor Adventure", weight: 7 },
+//             { category: "Unique Food & Dining", weight: 6 },
+//             { category: "Festival", weight: 5 },
+//             { category: "Museum/Historical Site", weight: 4 },
+//             { category: "Art/Talent", weight: 3 },
+//             { category: "Outdoor Adventure", weight: 2 },
+//             { category: "Local Food/Dining", weight: 1 }
+//           ];
+//         setPreferences(processedPrefs);
+        
+//         // Fetch venues and events
+//         const [venuesResponse, eventsResponse] = await Promise.all([
+//           axios.get('http://localhost:5001/api/venues'),
+//           axios.get('http://localhost:5001/api/events')
+//         ]);
+
+//         // Get valid preferred dates within trip period
+//         const tripStart = new Date(currentTourist.trip_start);
+//         const tripEnd = new Date(currentTourist.trip_end);
+//         const validPreferredDates = currentTourist.preferred_dates.filter(dateStr => {
+//           const date = new Date(dateStr);
+//           return date >= tripStart && date <= tripEnd;
+//         });
+
+//         console.log('Valid preferred dates for planning:', validPreferredDates);
+
+//         // Process venues - Create instances ONLY for valid preferred days they're open
+//         const processedVenues = [];
+//         if (validPreferredDates.length > 0) {
+//           venuesResponse.data.forEach(venue => {
+//             if (venue.is_active) {
+//               validPreferredDates.forEach(dateStr => {
+//                 // Check if venue is open on this specific preferred day
+//                 const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+//                 const dateObj = new Date(dateStr);
+//                 const dayName = dayNames[dateObj.getDay()];
+                
+//                 console.log(`Checking ${venue.name} for ${dateStr} (${dayName}):`, venue.days_open);
+                
+//                 if (venue.days_open && venue.days_open[dayName] === true) {
+//                   processedVenues.push({
+//                     id: `venue_${venue.venue_id}_${dateStr}`,
+//                     name: venue.name,
+//                     cost: parseFloat(venue.cost) || 0,
+//                     duration: 180,
+//                     date: dateStr, // This MUST be the exact preferred date
+//                     start_time: venue.opening_time?.substring(0, 5) || '09:00',
+//                     end_time: venue.closing_time?.substring(0, 5) || '17:00',
+//                     tags: [venue.venue_type],
+//                     priority: 2,
+//                     type: 'venue',
+//                     address: venue.address,
+//                     description: venue.description,
+//                     is_active: venue.is_active,
+//                     days_open: venue.days_open
+//                   });
+                  
+//                   console.log(`✓ Added ${venue.name} for preferred day ${dateStr}`);
+//                 } else {
+//                   console.log(`✗ ${venue.name} closed on ${dayName} (${dateStr})`);
+//                 }
+//               });
+//             }
+//           });
+//         }
+        
+//         // Process events - Only include events that occur exactly on valid preferred dates
+//         const processedEvents = eventsResponse.data
+//           .map(event => {
+//             const startDate = new Date(event.start_datetime);
+//             const endDate = new Date(event.end_datetime);
+//             const duration = Math.round((endDate - startDate) / (1000 * 60));
+//             const eventDateStr = startDate.toISOString().split('T')[0];
+            
+//             return {
+//               id: `event_${event.event_id}`,
+//               name: event.name,
+//               cost: parseFloat(event.cost) || 0,
+//               duration: duration || 180,
+//               date: eventDateStr,
+//               start_time: startDate.toTimeString().substring(0, 5),
+//               end_time: endDate.toTimeString().substring(0, 5),
+//               tags: [event.event_type],
+//               priority: 1,
+//               type: 'event',
+//               venue_location: event.venue_location,
+//               description: event.description,
+//               flyer_image_path: event.flyer_image_path
+//             };
+//           })
+//           .filter(event => {
+//             // STRICT: Only include events on valid preferred dates
+//             const isOnValidPreferredDate = validPreferredDates.includes(event.date);
+//             console.log(`Event ${event.name} on ${event.date}: On preferred date = ${isOnValidPreferredDate}`);
+//             return isOnValidPreferredDate;
+//           });
+
+//         // Combine and filter activities
+//         const allActivities = [...processedVenues, ...processedEvents];
+        
+//         console.log('Total venues processed:', processedVenues.length);
+//         console.log('Total events processed:', processedEvents.length);
+//         console.log('Activities by preferred day:');
+//         validPreferredDates.forEach(day => {
+//           const dayActivities = allActivities.filter(act => act.date === day);
+//           console.log(`  ${day}: ${dayActivities.length} activities`);
+//         });
+
+//         setActivities(allActivities);
+        
+//       } catch (err) {
+//         console.error('Error fetching data:', err);
+//         setError(err.message);
+        
+//         // Fallback data
+//         setPreferences([
+//           { category: "Concert", weight: 10 },
+//           { category: "Beach/River", weight: 9 },
+//           { category: "Live Music", weight: 8 },
+//           { category: "Indoor Adventure", weight: 7 },
+//           { category: "Unique Food & Dining", weight: 6 },
+//           { category: "Festival", weight: 5 },
+//           { category: "Museum/Historical Site", weight: 4 },
+//           { category: "Art/Talent", weight: 3 },
+//           { category: "Outdoor Adventure", weight: 2 },
+//           { category: "Local Food/Dining", weight: 1 }
+//         ]);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+    
+//     fetchData();
+   
+//   }, [touristId]);
+
+//   // Memory-efficient activity selection (replaces combinations approach)
+//   const selectOptimalActivities = (validActivities, budget, preferences) => {
+//     console.log('Using memory-efficient selection algorithm...');
+    
+//     // If we have very few activities, just use all valid ones
+//     if (validActivities.length <= 5) {
+//       const totalCost = validActivities.reduce((sum, act) => sum + act.cost, 0);
+//       if (totalCost <= budget) {
+//         console.log('Using all activities - small set');
+//         return validActivities;
+//       }
+//     }
+    
+//     // Score and sort activities by value
+//     const scoredActivities = validActivities.map(activity => ({
+//       ...activity,
+//       score: calculatePreferenceScore(activity),
+//       efficiency: calculatePreferenceScore(activity) / Math.max(activity.cost, 1)
+//     }));
+    
+//     // Sort by efficiency (score per dollar)
+//     scoredActivities.sort((a, b) => b.efficiency - a.efficiency);
+    
+//     // Greedy selection with conflict checking
+//     const selected = [];
+//     let totalCost = 0;
+    
+//     for (const activity of scoredActivities) {
+//       // Check budget constraint
+//       if (totalCost + activity.cost > budget) continue;
+      
+//       // Check time conflicts
+//       const hasConflict = selected.some(existing => hasTimeConflict(existing, activity));
+//       if (hasConflict) continue;
+      
+//       // Check daily activity limit (max 3 activities per day)
+//       const sameDay = selected.filter(existing => existing.date === activity.date);
+//       if (sameDay.length >= 3) continue;
+      
+//       // Add the activity
+//       selected.push(activity);
+//       totalCost += activity.cost;
+      
+//       // Stop if we have enough activities
+//       if (selected.length >= 6) break;
+//     }
+    
+//     console.log(`Selected ${selected.length} activities with total cost ${totalCost}`);
+//     return selected;
+//   };
+
+//   // Generate optimal itinerary - Memory-safe version
 //   useEffect(() => {
 //     if (activities.length > 0 && preferences.length > 0 && touristInfo) {
-//       const optimal = generateOptimalItinerary();
-//       setOptimalActivities(optimal);
-//       setKnapsackScore(weightedKnapsack(activities, Math.round(touristInfo.budget)));
+//       console.log('Generating itinerary for preferred days only...');
+//       console.log('Total activities available:', activities.length);
+
+//       // Filter activities that fit preferred time slots and dates
+//       const validActivities = activities.filter(act => {
+//         const fitsSlot = fitsPreferredSlot(act);
+//         const fitsDate = fitsPreferredDate(act);
+//         const isOpen = isVenueOpenOnActivityDate(act);
+        
+//         console.log(`${act.name} on ${act.date}: slot=${fitsSlot}, date=${fitsDate}, open=${isOpen}`);
+        
+//         return fitsSlot && fitsDate && isOpen;
+//       });
+
+//       console.log('Valid activities after filtering:', validActivities.length);
+
+//       if (validActivities.length === 0) {
+//         console.log('No valid activities found for preferred days and times');
+//         setOptimalActivities([]);
+//         return;
+//       }
+
+//       const budget = parseFloat(touristInfo.budget) || 1200;
+      
+//       // Use memory-efficient selection instead of combinations
+//       const selectedActivities = selectOptimalActivities(validActivities, budget, preferences);
+      
+//       // Sort by date and time
+//       const sortedActivities = selectedActivities.sort((a, b) => {
+//         if (a.date !== b.date) return a.date.localeCompare(b.date);
+//         return a.start_time.localeCompare(b.start_time);
+//       });
+      
+//       console.log('Final optimal activities:', sortedActivities.length);
+//       sortedActivities.forEach(act => {
+//         console.log(`- ${act.name} on ${act.date} at ${act.start_time} (score: ${act.score}, cost: ${act.cost})`);
+//       });
+      
+//       setOptimalActivities(sortedActivities);
 //     }
 //   }, [activities, preferences, touristInfo]);
 
+//   // Debug logging
+//   useEffect(() => {
+//     if (!loading) {
+//       console.log('Current state:', {
+//         touristInfo,
+//         preferences,
+//         activities: activities.length,
+//         optimalActivities: optimalActivities.length
+//       });
+//     }
+//   }, [loading, touristInfo, preferences, activities, optimalActivities]);
+
+//   // Render UI
 //   const totalCost = optimalActivities.reduce((sum, act) => sum + act.cost, 0);
+//   const budget = touristInfo?.budget ? parseFloat(touristInfo.budget) : 300;
 
 //   return (
 //     <div className="p-6 max-w-5xl mx-auto bg-white">
 //       <div className="flex justify-between items-center mb-4">
-//         <h1 className="text-3xl font-bold text-blue-800">=== TOURIST ITINERARY PLANNER ===</h1>
-//         <div className="flex items-center gap-2">
-//           <label htmlFor="tourist_id" className="text-sm font-medium">User ID:</label>
-//           <input
-//             id="tourist_id"
-//             type="number"
-//             value={tourist_id}
-//             onChange={(e) => setTouristId(parseInt(e.target.value))}
-//             className="border rounded px-2 py-1 w-20 text-sm"
-//             min="1"
-//           />
+//         <h1 className="text-3xl font-bold text-blue-800">Tourist Itinerary Planner</h1>
+//         <div className="text-sm text-gray-600">
+//           Preferred Days Planning
 //         </div>
 //       </div>
 
-//       {/* Tourist Info Summary */}
-//       {touristInfo && (
-//         <div className="bg-blue-50 p-4 rounded-lg mb-6">
-//           <h2 className="text-lg font-semibold mb-3 text-blue-800">🧳 Trip Information</h2>
-//           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-//             <div>
-//               <span className="font-medium">📅 Trip Duration:</span>
-//               <div>{formatDate(touristInfo.trip_start)} to {formatDate(touristInfo.trip_end)}</div>
-//               <div className="text-xs text-gray-600">({getDaysDifference(touristInfo.trip_start, touristInfo.trip_end)} days)</div>
-//             </div>
-//             <div>
-//               <span className="font-medium">💰 Budget:</span>
-//               <div className="text-lg font-bold text-green-600">${touristInfo.budget}</div>
-//             </div>
-//             <div>
-//               <span className="font-medium">🕐 Preferred Hours:</span>
-//               <div>{touristInfo.preferred_start?.slice(0, 5)} - {touristInfo.preferred_end?.slice(0, 5)}</div>
-//             </div>
-//             <div>
-//               <span className="font-medium">🚗 Transport Needed:</span>
-//               <div>{touristInfo.need_for_transport ? 'Yes' : 'No'}</div>
-//             </div>
-//             {touristInfo.address && (
-//               <div className="md:col-span-2">
-//                 <span className="font-medium">📍 Address:</span>
-//                 <div>{touristInfo.address}</div>
-//               </div>
-//             )}
-//             {touristInfo.preferred_dates && touristInfo.preferred_dates.length > 0 && (
-//               <div className="md:col-span-2">
-//                 <span className="font-medium">📋 Preferred Dates:</span>
-//                 <div className="text-xs">{touristInfo.preferred_dates.join(', ')}</div>
-//               </div>
-//             )}
-//           </div>
-//         </div>
-//       )}
-
 //       {loading && (
 //         <div className="text-center py-8">
-//           <div className="text-lg">Loading tourist itinerary...</div>
-//           <div className="text-sm text-gray-500 mt-2">Fetching tourist info, preferences, venues, and events...</div>
+//           <div className="text-lg">Loading itinerary for tourist #{touristId}...</div>
 //         </div>
 //       )}
 
 //       {error && (
 //         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-//           <h3 className="font-bold">Database Error:</h3>
-//           <p>{error}</p>
-//           <div className="mt-2 text-sm">
-//             <p>Expected API endpoints:</p>
-//             <ul className="list-disc ml-4">
-//               <li>/api/tourists/user/{tourist_id} - Tourist info from tourists table</li>
-//               <li>/api/users/{tourist_id}/preferences - User preferences</li>
-//               <li>/api/venues - Available venues</li>
-//               <li>/api/events - Available events</li>
-//             </ul>
-//           </div>
+//           <p>Error: {error}</p>
+//           <p className="text-sm mt-2">Showing with fallback data</p>
 //         </div>
 //       )}
 
-//       {!loading && !error && activities.length === 0 && (
-//         <div className="text-center py-8 bg-yellow-50 rounded">
-//           <p className="text-lg">No venues or events found for your trip dates.</p>
-//           <p className="text-sm text-gray-500 mt-2">
-//             Trip: {touristInfo?.trip_start} to {touristInfo?.trip_end}
-//           </p>
-//         </div>
-//       )}
-
-//       {!loading && !error && optimalActivities.length === 0 && activities.length > 0 && (
-//         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
-//           <p className="font-semibold">No valid itinerary found within your constraints.</p>
-//           <div className="text-sm mt-2">
-//             <p>Budget: ${touristInfo?.budget}</p>
-//             <p>Available activities in date range: {activities.length}</p>
-//             <p>Try adjusting your preferred times or increasing your budget.</p>
-//           </div>
-//         </div>
-//       )}
-
-//       {!loading && !error && optimalActivities.length > 0 && (
-//         <>
-//           <div className="mb-6 bg-gray-50 p-4 rounded-lg">
-//             <h2 className="text-xl font-semibold mb-3 text-gray-800">🗓️ Your Personalized Itinerary</h2>
-//             {optimalActivities.reduce((acc, act) => {
-//               const lastDate = acc.length > 0 ? acc[acc.length - 1].date : null;
-//               if (act.date !== lastDate) {
-//                 acc.push({ type: 'date', date: act.date });
+//       {touristInfo && (
+//         <div className="bg-blue-50 p-4 rounded-lg mb-6">
+//           <h2 className="text-lg font-semibold mb-2">Tourist Information</h2>
+//           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+//             <div>
+//               <span className="font-medium">Trip:</span> {
+//                 new Date(touristInfo.trip_start).toLocaleDateString('en-US', { 
+//                   year: 'numeric', 
+//                   month: 'short', 
+//                   day: 'numeric' 
+//                 })
+//               } to {
+//                 new Date(touristInfo.trip_end).toLocaleDateString('en-US', { 
+//                   year: 'numeric', 
+//                   month: 'short', 
+//                   day: 'numeric' 
+//                 })
 //               }
-//               acc.push({ type: 'activity', ...act });
-//               return acc;
-//             }, []).map((item, index) => (
-//               <div key={index}>
-//                 {item.type === 'date' && (
-//                   <h3 className="text-lg font-semibold mt-4 mb-2 text-blue-600 border-b border-blue-200 pb-1">
-//                     📅 {formatDate(item.date)}
+//             </div>
+//             <div><span className="font-medium">Budget:</span> ${budget}</div>
+//             <div>
+//               <span className="font-medium">Preferred Days:</span> {
+//                 touristInfo.preferred_dates 
+//                   ? touristInfo.preferred_dates.map(date => 
+//                       new Date(date).toLocaleDateString('en-US', { 
+//                         month: 'short', 
+//                         day: 'numeric' 
+//                       })
+//                     ).join(', ')
+//                   : 'None specified'
+//               }
+//             </div>            
+//             <div><span className="font-medium">Preferred Hours:</span> {touristInfo.preferred_start?.substring(0, 5) || '09:00'} - {touristInfo.preferred_end?.substring(0, 5) || '18:00'}</div>
+//           </div>
+          
+//           {/* Show which preferred days are valid for planning */}
+//           <div className="mt-3 p-2 bg-blue-100 rounded text-sm">
+//             <span className="font-medium">Valid Planning Days: </span>
+//             {(() => {
+//               const tripStart = new Date(touristInfo.trip_start);
+//               const tripEnd = new Date(touristInfo.trip_end);
+//               const validDays = touristInfo.preferred_dates.filter(dateStr => {
+//                 const date = new Date(dateStr);
+//                 return date >= tripStart && date <= tripEnd;
+//               });
+//               return validDays.length > 0 
+//                 ? validDays.map(date => 
+//                     new Date(date).toLocaleDateString('en-US', { 
+//                       weekday: 'short',
+//                       month: 'short', 
+//                       day: 'numeric' 
+//                     })
+//                   ).join(', ')
+//                 : 'None (no preferred days fall within trip period)';
+//             })()}
+//           </div>
+//         </div>
+//       )}
+
+//       {!loading && optimalActivities.length > 0 && (
+//         <div className="mb-6">
+//           <h2 className="text-xl font-semibold mb-4">Recommended Itinerary</h2>
+          
+//           {/* Show activities for each day */}
+//           {optimalActivities.map((activity, index) => {
+//             // Check if this is the first activity of a new day
+//             const isNewDay = index === 0 || activity.date !== optimalActivities[index - 1].date;
+            
+//             return (
+//               <div key={activity.id} className="mb-4">
+//                 {isNewDay && (
+//                   <h3 className="text-lg font-semibold mt-6 mb-3 flex items-center">
+//                     <span className="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
+//                     {new Date(activity.date + 'T00:00:00').toLocaleDateString('en-US', { 
+//                       weekday: 'long', 
+//                       year: 'numeric', 
+//                       month: 'long', 
+//                       day: 'numeric' 
+//                     })}
 //                   </h3>
 //                 )}
-//                 {item.type === 'activity' && (
-//                   <div className="ml-4 mb-3 p-4 border-l-4 border-blue-300 bg-white rounded-r shadow-sm">
-//                     <div className="font-medium text-lg text-gray-800">
-//                       🕐 {item.start_time} - {item.end_time}: <span className="text-blue-700">{item.name}</span>
+                
+//                 <div className="ml-5 p-4 border-l-4 border-blue-300 bg-gray-50 rounded-r">
+//                   <div className="flex items-center justify-between mb-2">
+//                     <div className="font-medium text-lg">
+//                       {activity.start_time}-{calculateEndTime(activity.start_time, activity.duration)}: {activity.name}
 //                     </div>
-//                     <div className="text-sm text-gray-600 ml-4 mt-2 grid grid-cols-2 gap-2">
-//                       <div>💰 Cost: <span className="font-semibold">${item.cost}</span></div>
-//                       <div>⏱️ Duration: {item.duration} min</div>
-//                       <div>🏷️ Type: {item.type.charAt(0).toUpperCase() + item.type.slice(1)}</div>
-//                       <div>📋 Categories: {item.tags.join(', ')}</div>
-//                       {item.rating && <div>⭐ Rating: {item.rating}/5</div>}
-//                       {touristInfo?.need_for_transport && (
-//                         <div className="col-span-2 text-orange-600">🚗 Transport may be needed</div>
+//                     <div className="flex items-center space-x-2">
+//                       <span className={`px-2 py-1 rounded text-xs ${
+//                         activity.type === 'event' 
+//                           ? 'bg-red-100 text-red-800' 
+//                           : 'bg-blue-100 text-blue-800'
+//                       }`}>
+//                         {activity.type.toUpperCase()}
+//                       </span>
+//                       {activity.cost > 0 && (
+//                         <span className="px-2 py-1 rounded text-xs bg-green-100 text-green-800">
+//                           ${activity.cost}
+//                         </span>
 //                       )}
-//                       {item.address && <div className="col-span-2">📍 {item.address}</div>}
-//                       {item.venue_location && <div className="col-span-2">📍 {item.venue_location}</div>}
-//                       {item.description && <div className="col-span-2 mt-1 text-xs italic">{item.description}</div>}
 //                     </div>
 //                   </div>
-//                 )}
-//               </div>
-//             ))}
-//           </div>
-
-//           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-//             <div className="bg-green-50 p-4 rounded-lg">
-//               <h3 className="font-semibold mb-2 text-green-800">💰 Budget Analysis</h3>
-//               <div className="text-sm space-y-1">
-//                 <div>Total Cost: <span className="font-bold">${totalCost.toFixed(2)}</span></div>
-//                 <div>Budget: <span className="font-bold">${touristInfo?.budget}</span></div>
-//                 <div>Remaining: <span className="font-bold text-green-600">${(touristInfo?.budget - totalCost).toFixed(2)}</span></div>
-//                 <div>Usage: <span className="font-bold">{((totalCost/touristInfo?.budget)*100).toFixed(1)}%</span></div>
-//               </div>
-//             </div>
-
-//             <div className="bg-blue-50 p-4 rounded-lg">
-//               <h3 className="font-semibold mb-2 text-blue-800">📊 Trip Stats</h3>
-//               <div className="text-sm space-y-1">
-//                 <div>Activities: <span className="font-bold">{optimalActivities.length}</span></div>
-//                 <div>Score: <span className="font-bold">{knapsackScore}</span></div>
-//                 <div>Venues: <span className="font-bold">{optimalActivities.filter(a => a.type === 'venue').length}</span></div>
-//                 <div>Events: <span className="font-bold">{optimalActivities.filter(a => a.type === 'event').length}</span></div>
-//               </div>
-//             </div>
-
-//             <div className="bg-purple-50 p-4 rounded-lg">
-//               <h3 className="font-semibold mb-2 text-purple-800">🎯 Preferences</h3>
-//               <div className="text-xs space-y-1">
-//                 {preferences.slice(0, 4).map((pref) => {
-//                   const prefNorm = normalizeTag(pref.category);
-//                   const covered = optimalActivities.some(act =>
-//                     act.tags.some(tag => {
-//                       const tagNorm = normalizeTag(tag);
-//                       return prefNorm === tagNorm || tagNorm.includes(prefNorm) || prefNorm.includes(tagNorm);
-//                     })
-//                   );
-//                   return (
-//                     <div key={pref.category} className={`flex items-center ${covered ? 'text-green-700' : 'text-red-600'}`}>
-//                       <span className="mr-1">{covered ? '✅' : '❌'}</span>
-//                       <span>{pref.category} ({pref.weight})</span>
+                  
+//                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+//                     <div>
+//                       <div><span className="font-medium">Duration:</span> {activity.duration} minutes</div>
+//                       <div><span className="font-medium">Location:</span> {activity.address || activity.venue_location}</div>
+//                       <div><span className="font-medium">Category:</span> {activity.tags.join(', ')}</div>
 //                     </div>
-//                   );
-//                 })}
+//                     <div>
+//                       {activity.description && (
+//                         <div className="text-xs text-gray-500 italic">
+//                           {activity.description}
+//                         </div>
+//                       )}
+//                     </div>
+//                   </div>
+//                 </div>
 //               </div>
-//             </div>
-//           </div>
+//             );
+//           })}
 
-//           <div className="bg-gray-50 p-4 rounded-lg">
-//             <h3 className="font-semibold mb-2 text-gray-800">📈 Database & Processing Info</h3>
+//           {/* Summary */}
+//           <div className="mt-6 p-4 bg-green-50 rounded-lg">
+//             <h3 className="font-semibold text-lg mb-3">Itinerary Summary</h3>
 //             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
 //               <div>
-//                 <div className="font-medium">Total Available:</div>
-//                 <div>{activities.length} activities</div>
+//                 <div className="font-medium">Total Activities</div>
+//                 <div className="text-2xl font-bold text-green-600">{optimalActivities.length}</div>
 //               </div>
 //               <div>
-//                 <div className="font-medium">Venues:</div>
-//                 <div>{activities.filter(a => a.type === 'venue').length}</div>
+//                 <div className="font-medium">Total Cost</div>
+//                 <div className="text-2xl font-bold text-green-600">${totalCost.toFixed(2)}</div>
 //               </div>
 //               <div>
-//                 <div className="font-medium">Events:</div>
-//                 <div>{activities.filter(a => a.type === 'event').length}</div>
+//                 <div className="font-medium">Budget Remaining</div>
+//                 <div className="text-2xl font-bold text-blue-600">${(budget - totalCost).toFixed(2)}</div>
 //               </div>
 //               <div>
-//                 <div className="font-medium">Preferences:</div>
-//                 <div>{preferences.length} categories</div>
+//                 <div className="font-medium">Days Planned</div>
+//                 <div className="text-2xl font-bold text-purple-600">
+//                   {new Set(optimalActivities.map(act => act.date)).size}
+//                 </div>
+//               </div>
+//             </div>
+            
+//             <div className="mt-4 pt-4 border-t border-green-200">
+//               <div className="text-sm">
+//                 <span className="font-medium">Activity Mix: </span>
+//                 {(() => {
+//                   const events = optimalActivities.filter(act => act.type === 'event').length;
+//                   const venues = optimalActivities.filter(act => act.type === 'venue').length;
+//                   return `${events} events, ${venues} venues`;
+//                 })()}
+//               </div>
+//               <div className="text-xs text-gray-500 mt-1">
+//                 Planned only for preferred days within trip period
 //               </div>
 //             </div>
 //           </div>
-//         </>
+//         </div>
+//       )}
+
+//       {!loading && optimalActivities.length === 0 && activities.length > 0 && (
+//         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+//           <div className="font-medium">No optimal itinerary found</div>
+//           <p className="text-sm mt-1">No activities found for your preferred days and time slots.</p>
+//           <div className="text-sm mt-2">
+//             <div>• Available activities: {activities.length}</div>
+//             <div>• Budget: ${budget}</div>
+//             <div>• Try adjusting your preferred days, times, or budget</div>
+//           </div>
+//         </div>
+//       )}
+
+//       {!loading && activities.length === 0 && (
+//         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+//           <div className="font-medium">No activities available</div>
+//           <p className="text-sm mt-1">No activities found for your preferred days within the trip period.</p>
+//         </div>
 //       )}
 //     </div>
 //   );
 // };
 
 // export default ItineraryPlanner;
+
+// //working and activities spread across different days
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const ItineraryPlanner = () => {
-  // State management
   const [activities, setActivities] = useState([]);
   const [preferences, setPreferences] = useState([]);
   const [touristInfo, setTouristInfo] = useState(null);
@@ -768,125 +1134,24 @@ const ItineraryPlanner = () => {
   const [error, setError] = useState(null);
   const [touristId, setTouristId] = useState(10);
   const [optimalActivities, setOptimalActivities] = useState([]);
-  const [knapsackScore, setKnapsackScore] = useState(0);
 
-  // Database fetch functions
-  const fetchFromDatabase = async (endpoint, isJson = false) => {
-    try {
-      const response = await fetch(endpoint);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
-      return isJson ? await response.json() : await response.text();
-    } catch (error) {
-      console.error(`Error fetching ${endpoint}:`, error);
-      throw error;
-    }
-  };
-
-  // Data parsers
-  const parseTouristData = (html) => {
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    return {
-      tourist_id: touristId,
-      trip_start: doc.getElementById('trip-start')?.value || new Date().toISOString().split('T')[0],
-      trip_end: doc.getElementById('trip-end')?.value || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      budget: parseFloat(doc.getElementById('budget')?.value) || 300,
-      need_for_transport: doc.getElementById('transport')?.checked ? 1 : 0,
-      preferred_start: doc.getElementById('pref-start')?.value || '09:00',
-      preferred_end: doc.getElementById('pref-end')?.value || '18:00',
-      address: doc.getElementById('address')?.textContent || null
-    };
-  };
-
-  const parseActivityData = (html, type) => {
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    const items = Array.from(doc.querySelectorAll('.activity-item'));
-    
-    return items.map(item => {
-      const baseData = {
-        id: `${type}_${item.dataset.id}`,
-        name: item.querySelector('.name')?.textContent || `Unknown ${type}`,
-        cost: parseFloat(item.querySelector('.cost')?.textContent) || 0,
-        duration: parseInt(item.querySelector('.duration')?.textContent) || 120,
-        date: item.querySelector('.date')?.textContent || new Date().toISOString().split('T')[0],
-        tags: item.querySelector('.tags')?.textContent.split(',') || [type],
-        type: type,
-        description: item.querySelector('.description')?.textContent || ''
-      };
-
-      if (type === 'venue') {
-        return {
-          ...baseData,
-          start_time: item.querySelector('.opening-time')?.textContent || '09:00',
-          end_time: item.querySelector('.closing-time')?.textContent || '17:00',
-          address: item.querySelector('.address')?.textContent || '',
-          rating: parseFloat(item.querySelector('.rating')?.textContent) || 0
-        };
-      } else { // event
-        const startDate = new Date(item.querySelector('.start-datetime')?.textContent || new Date());
-        const endDate = new Date(item.querySelector('.end-datetime')?.textContent || new Date(Date.now() + 2 * 60 * 60 * 1000));
-        return {
-          ...baseData,
-          start_time: startDate.toTimeString().slice(0, 5),
-          end_time: endDate.toTimeString().slice(0, 5),
-          venue_location: item.querySelector('.location')?.textContent || ''
-        };
-      }
-    });
-  };
-
-  // Data fetching
-  const fetchTouristInfo = async () => {
-    try {
-      const [html, preferredDates] = await Promise.all([
-        fetchFromDatabase(`/api/tourists/${touristId}`),
-        fetchFromDatabase(`/api/tourists/${touristId}/preferences/dates`, true)
-      ]);
-      
-      const data = parseTouristData(html);
-      data.preferred_dates = preferredDates?.dates || [data.trip_start];
-      return data;
-    } catch (error) {
-      console.error('Using fallback tourist data due to error:', error);
-      return getDefaultTouristInfo();
-    }
-  };
-
-  const getDefaultTouristInfo = () => ({
-    tourist_id: touristId,
-    trip_start: new Date().toISOString().split('T')[0],
-    trip_end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    budget: 300,
-    need_for_transport: 0,
-    preferred_start: '09:00',
-    preferred_end: '18:00',
-    address: null,
-    preferred_dates: [new Date().toISOString().split('T')[0]]
-  });
-
-  const fetchActivities = async () => {
-    try {
-      const [venuesHtml, eventsHtml] = await Promise.all([
-        fetchFromDatabase('/api/venues'),
-        fetchFromDatabase('/api/events')
-      ]);
-      
-      return [
-        ...parseActivityData(venuesHtml, 'venue'),
-        ...parseActivityData(eventsHtml, 'event')
-      ];
-    } catch (error) {
-      console.error('Error fetching activities:', error);
-      return [];
-    }
-  };
-
-  // Itinerary generation utilities
+  // Helper functions
   const timeToMinutes = (timeStr) => {
     const [h, m] = timeStr.split(':').map(Number);
     return h * 60 + m;
   };
 
+  // Helper function to calculate end time
+  const calculateEndTime = (startTime, duration) => {
+    const [h, m] = startTime.split(':').map(Number);
+    const startMinutes = h * 60 + m;
+    const endMinutes = startMinutes + duration;
+    const hours = Math.floor(endMinutes / 60);
+    const minutes = endMinutes % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  };
+
+  // Ensures the activities don't clash
   const hasTimeConflict = (act1, act2) => {
     if (act1.date !== act2.date) return false;
     const s1 = timeToMinutes(act1.start_time);
@@ -896,210 +1161,606 @@ const ItineraryPlanner = () => {
     return !(e1 <= s2 || e2 <= s1);
   };
 
-  const calculatePreferenceScore = (activity) => {
-    const categoryWeights = {
-      'Festival': 10,
-      'Museum/Historical Site': 9,
-      'Food & Dining': 8,
-      'Outdoor Adventure': 7,
-      'Indoor Adventure': 6,
-      'Live Music': 5,
-      'Beach/River': 4,
-      'Nightlife': 3,
-      'Concert': 2,
-      'Sport': 1
-    };
+  // Ensuring the activities are within a certain time frame
+  const fitsPreferredSlot = (activity) => {
+    if (!touristInfo) return false;
+    const actStart = timeToMinutes(activity.start_time);
+    const actEnd = actStart + activity.duration;
+    const prefStart = timeToMinutes(touristInfo.preferred_start?.substring(0, 5)) || timeToMinutes('09:00');
+    const prefEnd = timeToMinutes(touristInfo.preferred_end?.substring(0, 5)) || timeToMinutes('18:00');
+    const overlaps = (actStart <= prefEnd) && (actEnd >= prefStart);
     
-    return activity.tags.reduce((score, tag) => {
-      const matchedCategory = Object.keys(categoryWeights).find(cat => 
-        tag.toLowerCase().includes(cat.toLowerCase()));
-      return score + (matchedCategory ? categoryWeights[matchedCategory] : 1);
-    }, 0);
+    return overlaps;
   };
 
-  const generateOptimalItinerary = () => {
-    if (!touristInfo || activities.length === 0) return [];
-    
-    const validActivities = activities.filter(act => {
-      const activityDate = new Date(act.date);
-      const tripStart = new Date(touristInfo.trip_start);
-      const tripEnd = new Date(touristInfo.trip_end);
-      return activityDate >= tripStart && activityDate <= tripEnd;
+  const fitsPreferredDate = (activity) => {
+    if (!touristInfo || !touristInfo.preferred_dates) return true;
+
+    // Get valid preferred dates within trip period
+    const tripStart = new Date(touristInfo.trip_start);
+    const tripEnd = new Date(touristInfo.trip_end);
+    const validPreferredDates = touristInfo.preferred_dates.filter(dateStr => {
+      const date = new Date(dateStr);
+      return date >= tripStart && date <= tripEnd;
     });
 
-    let bestCombo = [];
-    let bestScore = 0;
-    const budget = touristInfo.budget;
+    // STRICT CHECK: Activity must be on a valid preferred date
+    let activityDateStr;
+    if (activity.date instanceof Date) {
+      activityDateStr = activity.date.toISOString().split('T')[0];
+    } else if (typeof activity.date === 'string') {
+      activityDateStr = activity.date.split('T')[0];
+    } else {
+      console.log(`${activity.name}: No valid date found`);
+      return false;
+    }
 
-    // Simple greedy algorithm for demonstration
-    const sortedActivities = [...validActivities]
-      .sort((a, b) => calculatePreferenceScore(b) - calculatePreferenceScore(a));
+    const isOnValidPreferredDate = validPreferredDates.includes(activityDateStr);
+    console.log(`${activity.name} on ${activityDateStr}: Valid preferred date = ${isOnValidPreferredDate}`);
+    console.log(`Valid preferred dates: [${validPreferredDates.join(', ')}]`);
+    
+    return isOnValidPreferredDate;
+  };
 
-    const selectedActivities = [];
-    let totalCost = 0;
+  // Ensures the venues are open on certain days
+  const isVenueOpenOnActivityDate = (activity) => {
+    if (activity.type === 'event') return true;
 
-    for (const activity of sortedActivities) {
-      if (totalCost + activity.cost <= budget) {
-        // Check for time conflicts
-        const hasConflict = selectedActivities.some(selected => 
-          hasTimeConflict(selected, activity));
-        
-        if (!hasConflict) {
-          selectedActivities.push(activity);
-          totalCost += activity.cost;
+    if (activity.type === 'venue') {
+      const activityDate = new Date(activity.date);
+      const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const dayName = dayNames[activityDate.getDay()];
+
+      // days_open is already an object, no need to parse:
+      const daysOpen = activity.days_open;
+
+      return daysOpen[dayName] === true;
+    }
+
+    return false;
+  };
+
+  const normalizeTag = (text) => {
+    let normalized = text.toLowerCase().trim();
+    normalized = normalized.replace(/[()&\-/]/g, ' ');
+    normalized = normalized.replace(/\s+/g, ' ');
+    normalized = normalized.replace(/s\b/g, '');
+    return normalized.trim();
+  };
+
+  const calculatePreferenceScore = (activity) => {
+    let score = 0;
+    const normTags = activity.tags.map(normalizeTag);
+    
+    for (const pref of preferences) {
+      const prefNorm = normalizeTag(pref.category);
+      for (const tag of normTags) {
+        if (prefNorm === tag || tag.includes(prefNorm) || prefNorm.includes(tag)) {
+          score += pref.weight * 2;
+          break;
         }
       }
     }
-
-    return selectedActivities.sort((a, b) => {
-      if (a.date !== b.date) return new Date(a.date) - new Date(b.date);
-      return timeToMinutes(a.start_time) - timeToMinutes(b.start_time);
-    });
+    
+    score += activity.priority * 5;
+    return score;
   };
 
-  // Main data loading effect
+  // Fetch data from API
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
+    const fetchData = async () => {
       try {
-        const [touristData, activitiesData, preferencesData] = await Promise.all([
-          fetchTouristInfo(),
-          fetchActivities(),
-          fetchFromDatabase(`/api/prefer/${touristId}`, true)
+        setLoading(true);
+        setError(null);
+        
+        // Fetch tourist info and preferences
+        const touristResponse = await axios.get(`http://localhost:5001/api/prefer/tourists/${touristId}`);
+        const allTourists = touristResponse.data;
+        
+        // Find the specific tourist by ID
+        const currentTourist = allTourists.find(t => t.tourist_id === touristId);
+        
+        if (!currentTourist) {
+          throw new Error(`Tourist with ID ${touristId} not found`);
+        }
+        
+        const touristData = {
+          tourist_id: currentTourist.tourist_id,
+          trip_start: currentTourist.trip_start,
+          trip_end: currentTourist.trip_end,
+          budget: currentTourist.budget,
+          preferred_start: currentTourist.preferred_start,
+          preferred_end: currentTourist.preferred_end,
+          preferred_dates: currentTourist.preferred_dates
+        };
+        console.log("TOURISTS DAYS",currentTourist.preferred_dates);
+        setTouristInfo(touristData);
+
+        // Process preferences
+        const processedPrefs = currentTourist.preferences && currentTourist.preferences.length > 0
+        ? currentTourist.preferences.map(pref => ({
+            category: pref.tag,
+            weight: pref.weight
+          }))
+        : [ //fallback preferences
+            { category: "Concert", weight: 10 },
+            { category: "Beach/River", weight: 9 },
+            { category: "Live Music", weight: 8 },
+            { category: "Indoor Adventure", weight: 7 },
+            { category: "Unique Food & Dining", weight: 6 },
+            { category: "Festival", weight: 5 },
+            { category: "Museum/Historical Site", weight: 4 },
+            { category: "Art/Talent", weight: 3 },
+            { category: "Outdoor Adventure", weight: 2 },
+            { category: "Local Food/Dining", weight: 1 }
+          ];
+        setPreferences(processedPrefs);
+        
+        // Fetch venues and events
+        const [venuesResponse, eventsResponse] = await Promise.all([
+          axios.get('http://localhost:5001/api/venues'),
+          axios.get('http://localhost:5001/api/events')
         ]);
 
-        setTouristInfo(touristData);
-        setActivities(activitiesData);
-        setPreferences(preferencesData || []);
-      } catch (error) {
-        setError(error.message);
+        // Get valid preferred dates within trip period
+        const tripStart = new Date(currentTourist.trip_start);
+        const tripEnd = new Date(currentTourist.trip_end);
+        const validPreferredDates = currentTourist.preferred_dates.filter(dateStr => {
+          const date = new Date(dateStr);
+          return date >= tripStart && date <= tripEnd;
+        });
+
+        console.log('Valid preferred dates for planning:', validPreferredDates);
+
+        // Process venues - Create instances ONLY for valid preferred days they're open
+        const processedVenues = [];
+        if (validPreferredDates.length > 0) {
+          venuesResponse.data.forEach(venue => {
+            if (venue.is_active) {
+              validPreferredDates.forEach(dateStr => {
+                // Check if venue is open on this specific preferred day
+                const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                const dateObj = new Date(dateStr);
+                const dayName = dayNames[dateObj.getDay()];
+                
+                console.log(`Checking ${venue.name} for ${dateStr} (${dayName}):`, venue.days_open);
+                
+                if (venue.days_open && venue.days_open[dayName] === true) {
+                  processedVenues.push({
+                    id: `venue_${venue.venue_id}_${dateStr}`,
+                    name: venue.name,
+                    cost: parseFloat(venue.cost) || 0,
+                    duration: 180,
+                    date: dateStr, // This MUST be the exact preferred date
+                    start_time: venue.opening_time?.substring(0, 5) || '09:00',
+                    end_time: venue.closing_time?.substring(0, 5) || '17:00',
+                    tags: [venue.venue_type],
+                    priority: 2,
+                    type: 'venue',
+                    address: venue.address,
+                    description: venue.description,
+                    is_active: venue.is_active,
+                    days_open: venue.days_open
+                  });
+                  
+                  console.log(`✓ Added ${venue.name} for preferred day ${dateStr}`);
+                } else {
+                  console.log(`✗ ${venue.name} closed on ${dayName} (${dateStr})`);
+                }
+              });
+            }
+          });
+        }
+        
+        // Process events - Only include events that occur exactly on valid preferred dates
+        const processedEvents = eventsResponse.data
+          .map(event => {
+            const startDate = new Date(event.start_datetime);
+            const endDate = new Date(event.end_datetime);
+            const duration = Math.round((endDate - startDate) / (1000 * 60));
+            const eventDateStr = startDate.toISOString().split('T')[0];
+            
+            return {
+              id: `event_${event.event_id}`,
+              name: event.name,
+              cost: parseFloat(event.cost) || 0,
+              duration: duration || 180,
+              date: eventDateStr,
+              start_time: startDate.toTimeString().substring(0, 5),
+              end_time: endDate.toTimeString().substring(0, 5),
+              tags: [event.event_type],
+              priority: 1,
+              type: 'event',
+              venue_location: event.venue_location,
+              description: event.description,
+              flyer_image_path: event.flyer_image_path
+            };
+          })
+          .filter(event => {
+            // STRICT: Only include events on valid preferred dates
+            const isOnValidPreferredDate = validPreferredDates.includes(event.date);
+            console.log(`Event ${event.name} on ${event.date}: On preferred date = ${isOnValidPreferredDate}`);
+            return isOnValidPreferredDate;
+          });
+
+        // Combine and filter activities
+        //const allActivities = [...processedVenues, ...processedEvents];
+        
+        console.log('Total venues processed:', processedVenues.length);
+        console.log('Total events processed:', processedEvents.length);
+        console.log('Valid preferred dates used for processing:', validPreferredDates);
+        console.log('Activities by preferred day:');
+        validPreferredDates.forEach(day => {
+          const dayActivities = [...processedVenues, ...processedEvents].filter(act => act.date === day);
+          console.log(`  ${day}: ${dayActivities.length} activities`);
+          dayActivities.forEach(act => {
+            console.log(`    - ${act.name} (${act.type})`);
+          });
+        });
+
+        // VALIDATION: Ensure all activities are on valid preferred dates
+        const allActivities = [...processedVenues, ...processedEvents];
+        const invalidActivities = allActivities.filter(act => !validPreferredDates.includes(act.date));
+        
+        if (invalidActivities.length > 0) {
+          console.error('INVALID ACTIVITIES FOUND (not on preferred dates):');
+          invalidActivities.forEach(act => {
+            console.error(`  - ${act.name} on ${act.date} (should be one of: ${validPreferredDates.join(', ')})`);
+          });
+        } else {
+          console.log('All activities are on valid preferred dates');
+        }
+
+        setActivities(allActivities);
+        
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err.message);
+        
+        // Fallback data
+        setPreferences([
+          { category: "Concert", weight: 10 },
+          { category: "Beach/River", weight: 9 },
+          { category: "Live Music", weight: 8 },
+          { category: "Indoor Adventure", weight: 7 },
+          { category: "Unique Food & Dining", weight: 6 },
+          { category: "Festival", weight: 5 },
+          { category: "Museum/Historical Site", weight: 4 },
+          { category: "Art/Talent", weight: 3 },
+          { category: "Outdoor Adventure", weight: 2 },
+          { category: "Local Food/Dining", weight: 1 }
+        ]);
       } finally {
         setLoading(false);
       }
     };
-
-    loadData();
+    
+    fetchData();
+   
   }, [touristId]);
 
-  // Generate itinerary when data changes
-  useEffect(() => {
-    if (touristInfo && activities.length > 0) {
-      const optimal = generateOptimalItinerary();
-      setOptimalActivities(optimal);
+  // Memory-efficient activity selection with venue diversity
+  const selectOptimalActivities = (validActivities, budget, preferences) => {
+    console.log('Using memory-efficient selection with venue diversity...');
+    
+    // Score and sort activities by value
+    const scoredActivities = validActivities.map(activity => ({
+      ...activity,
+      score: calculatePreferenceScore(activity),
+      efficiency: calculatePreferenceScore(activity) / Math.max(activity.cost, 1)
+    }));
+    
+    // Sort by efficiency (score per dollar)
+    scoredActivities.sort((a, b) => b.efficiency - a.efficiency);
+    
+    // Track used venue names to prevent duplicates
+    const usedVenueNames = new Set();
+    const selected = [];
+    let totalCost = 0;
+    
+    for (const activity of scoredActivities) {
+      // Check budget constraint
+      if (totalCost + activity.cost > budget) continue;
+      
+      // Check time conflicts
+      const hasConflict = selected.some(existing => hasTimeConflict(existing, activity));
+      if (hasConflict) continue;
+      
+      // PREVENT VENUE DUPLICATES: Skip if we've already selected this venue
+      if (activity.type === 'venue') {
+        if (usedVenueNames.has(activity.name)) {
+          console.log(` Skipping duplicate venue: ${activity.name}`);
+          continue;
+        }
+      }
+      
+      // Check daily activity limit (max 3 activities per day)
+      const sameDay = selected.filter(existing => existing.date === activity.date);
+      if (sameDay.length >= 3) continue;
+      
+      // Add the activity
+      selected.push(activity);
+      totalCost += activity.cost;
+      
+      // Track venue name if it's a venue
+      if (activity.type === 'venue') {
+        usedVenueNames.add(activity.name);
+        console.log(`✓ Added unique venue: ${activity.name} on ${activity.date}`);
+      } else {
+        console.log(`✓ Added event: ${activity.name} on ${activity.date}`);
+      }
+      
+      // Stop if we have enough activities
+      if (selected.length >= 6) break;
     }
-  }, [touristInfo, activities]);
-
-  // Render helpers
-  const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString('en-US', { 
-      weekday: 'long', month: 'long', day: 'numeric' 
-    });
+    
+    console.log(`Selected ${selected.length} unique activities with total cost ${totalCost}`);
+    console.log('Selected venues:', Array.from(usedVenueNames));
+    return selected;
   };
 
-  const formatTime = (timeStr) => {
-    const [h, m] = timeStr.split(':');
-    const hour = parseInt(h) % 12 || 12;
-    const ampm = parseInt(h) < 12 ? 'AM' : 'PM';
-    return `${hour}:${m} ${ampm}`;
-  };
+  // Generate optimal itinerary - Memory-safe version
+  useEffect(() => {
+    if (activities.length > 0 && preferences.length > 0 && touristInfo) {
+      console.log('Generating itinerary for preferred days only...');
+      console.log('Total activities available:', activities.length);
 
-  // Component rendering
+      // Filter activities that fit preferred time slots and dates
+      const validActivities = activities.filter(act => {
+        const fitsSlot = fitsPreferredSlot(act);
+        const fitsDate = fitsPreferredDate(act);
+        const isOpen = isVenueOpenOnActivityDate(act);
+        
+        console.log(`${act.name} on ${act.date}: slot=${fitsSlot}, date=${fitsDate}, open=${isOpen}`);
+        
+        return fitsSlot && fitsDate && isOpen;
+      });
+
+      console.log('Valid activities after filtering:', validActivities.length);
+
+      if (validActivities.length === 0) {
+        console.log('No valid activities found for preferred days and times');
+        setOptimalActivities([]);
+        return;
+      }
+
+      const budget = parseFloat(touristInfo.budget) || 1200;
+      
+      // Use memory-efficient selection instead of combinations
+      const selectedActivities = selectOptimalActivities(validActivities, budget, preferences);
+      
+      // Sort by date and time
+      const sortedActivities = selectedActivities.sort((a, b) => {
+        if (a.date !== b.date) return a.date.localeCompare(b.date);
+        return a.start_time.localeCompare(b.start_time);
+      });
+      
+      console.log('Final optimal activities:', sortedActivities.length);
+      sortedActivities.forEach(act => {
+        console.log(`- ${act.name} on ${act.date} at ${act.start_time} (score: ${act.score}, cost: ${act.cost})`);
+      });
+      
+      setOptimalActivities(sortedActivities);
+    }
+  }, [activities, preferences, touristInfo]);
+
+  // Debug logging
+  useEffect(() => {
+    if (!loading) {
+      console.log('Current state:', {
+        touristInfo,
+        preferences,
+        activities: activities.length,
+        optimalActivities: optimalActivities.length
+      });
+    }
+  }, [loading, touristInfo, preferences, activities, optimalActivities]);
+
+  // Render UI
+  const totalCost = optimalActivities.reduce((sum, act) => sum + act.cost, 0);
+  const budget = touristInfo?.budget ? parseFloat(touristInfo.budget) : 300;
+
   return (
-    <div className="container mx-auto p-4">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-blue-800">Travel Itinerary Planner</h1>
-        <div className="flex items-center mt-4">
-          <label className="mr-2">User ID:</label>
-          <input
-            type="number"
-            value={touristId}
-            onChange={(e) => setTouristId(parseInt(e.target.value) || 1)}
-            className="border p-2 rounded"
-            min="1"
-          />
+    <div className="p-6 max-w-5xl mx-auto bg-white">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-3xl font-bold text-blue-800">Tourist Itinerary Planner</h1>
+        <div className="text-sm text-gray-600">
+          Preferred Days Planning
         </div>
-      </header>
+      </div>
 
       {loading && (
         <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4">Loading your itinerary...</p>
+          <div className="text-lg">Loading itinerary for tourist #{touristId}...</div>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
-          <p className="font-bold">Error:</p>
-          <p>{error}</p>
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <p>Error: {error}</p>
+          <p className="text-sm mt-2">Showing with fallback data</p>
         </div>
       )}
 
-      {!loading && touristInfo && (
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Trip Information</h2>
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <p><strong>Dates:</strong> {formatDate(touristInfo.trip_start)} to {formatDate(touristInfo.trip_end)}</p>
-            <p><strong>Budget:</strong> ${touristInfo.budget.toFixed(2)}</p>
-            <p><strong>Daily Hours:</strong> {formatTime(touristInfo.preferred_start)} to {formatTime(touristInfo.preferred_end)}</p>
-            {touristInfo.address && <p><strong>Location:</strong> {touristInfo.address}</p>}
+      {touristInfo && (
+        <div className="bg-blue-50 p-4 rounded-lg mb-6">
+          <h2 className="text-lg font-semibold mb-2">Tourist Information</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+            <div>
+              <span className="font-medium">Trip:</span> {
+                new Date(touristInfo.trip_start).toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'short', 
+                  day: 'numeric' 
+                })
+              } to {
+                new Date(touristInfo.trip_end).toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'short', 
+                  day: 'numeric' 
+                })
+              }
+            </div>
+            <div><span className="font-medium">Budget:</span> ${budget}</div>
+            <div>
+              <span className="font-medium">Preferred Days:</span> {
+                touristInfo.preferred_dates 
+                  ? touristInfo.preferred_dates.map(date => 
+                      new Date(date).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })
+                    ).join(', ')
+                  : 'None specified'
+              }
+            </div>            
+            <div><span className="font-medium">Preferred Hours:</span> {touristInfo.preferred_start?.substring(0, 5) || '09:00'} - {touristInfo.preferred_end?.substring(0, 5) || '18:00'}</div>
           </div>
-        </section>
+          
+          {/* Show which preferred days are valid for planning */}
+          <div className="mt-3 p-2 bg-blue-100 rounded text-sm">
+            <span className="font-medium">Valid Planning Days: </span>
+            {(() => {
+              const tripStart = new Date(touristInfo.trip_start);
+              const tripEnd = new Date(touristInfo.trip_end);
+              const validDays = touristInfo.preferred_dates.filter(dateStr => {
+                const date = new Date(dateStr);
+                return date >= tripStart && date <= tripEnd;
+              });
+              return validDays.length > 0 
+                ? validDays.map(date => 
+                    new Date(date).toLocaleDateString('en-US', { 
+                      weekday: 'short',
+                      month: 'short', 
+                      day: 'numeric' 
+                    })
+                  ).join(', ')
+                : 'None (no preferred days fall within trip period)';
+            })()}
+          </div>
+        </div>
       )}
 
       {!loading && optimalActivities.length > 0 && (
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Your Itinerary</h2>
-          <div className="space-y-6">
-            {optimalActivities.reduce((groups, activity) => {
-              const date = activity.date;
-              if (!groups[date]) groups[date] = [];
-              groups[date].push(activity);
-              return groups;
-            }, {}).map((dateActivities, date) => (
-              <div key={date} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <div className="bg-gray-100 px-4 py-2 border-b">
-                  <h3 className="font-semibold">{formatDate(date)}</h3>
-                </div>
-                <div className="divide-y">
-                  {dateActivities.map((activity) => (
-                    <div key={activity.id} className="p-4">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="font-medium text-lg">{activity.name}</h4>
-                          <p className="text-gray-600">
-                            {formatTime(activity.start_time)} - {formatTime(activity.end_time)}
-                            <span className="mx-2">•</span>
-                            {activity.duration} mins
-                            <span className="mx-2">•</span>
-                            ${activity.cost.toFixed(2)}
-                          </p>
-                        </div>
-                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                          {activity.type}
-                        </span>
-                      </div>
-                      {activity.description && (
-                        <p className="mt-2 text-gray-700">{activity.description}</p>
-                      )}
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {activity.tags.map(tag => (
-                          <span key={tag} className="bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold mb-4">Recommended Itinerary</h2>
+          
+          {/* Show activities for each day */}
+          {optimalActivities.map((activity, index) => {
+            // Check if this is the first activity of a new day
+            const isNewDay = index === 0 || activity.date !== optimalActivities[index - 1].date;
+            
+            return (
+              <div key={activity.id} className="mb-4">
+                {isNewDay && (
+                  <h3 className="text-lg font-semibold mt-6 mb-3 flex items-center">
+                    <span className="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
+                    {new Date(activity.date ).toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </h3>
+                )}
+                
+                <div className="ml-5 p-4 border-l-4 border-blue-300 bg-gray-50 rounded-r">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="font-medium text-lg">
+                      {activity.start_time}-{calculateEndTime(activity.start_time, activity.duration)}: {activity.name}
                     </div>
-                  ))}
+                    <div className="flex items-center space-x-2">
+                      <span className={`px-2 py-1 rounded text-xs ${
+                        activity.type === 'event' 
+                          ? 'bg-red-100 text-red-800' 
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {activity.type.toUpperCase()}
+                      </span>
+                      {activity.cost > 0 && (
+                        <span className="px-2 py-1 rounded text-xs bg-green-100 text-green-800">
+                          ${activity.cost}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                    <div>
+                      <div><span className="font-medium">Duration:</span> {activity.duration} minutes</div>
+                      <div><span className="font-medium">Location:</span> {activity.address || activity.venue_location}</div>
+                      <div><span className="font-medium">Category:</span> {activity.tags.join(', ')}</div>
+                    </div>
+                    <div>
+                      {activity.description && (
+                        <div className="text-xs text-gray-500 italic">
+                          {activity.description}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))}
+            );
+          })}
+
+          {/* Summary */}
+          <div className="mt-6 p-4 bg-green-50 rounded-lg">
+            <h3 className="font-semibold text-lg mb-3">Itinerary Summary</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <div className="font-medium">Total Activities</div>
+                <div className="text-2xl font-bold text-green-600">{optimalActivities.length}</div>
+              </div>
+              <div>
+                <div className="font-medium">Total Cost</div>
+                <div className="text-2xl font-bold text-green-600">${totalCost.toFixed(2)}</div>
+              </div>
+              <div>
+                <div className="font-medium">Budget Remaining</div>
+                <div className="text-2xl font-bold text-blue-600">${(budget - totalCost).toFixed(2)}</div>
+              </div>
+              <div>
+                <div className="font-medium">Days Planned</div>
+                <div className="text-2xl font-bold text-purple-600">
+                  {new Set(optimalActivities.map(act => act.date)).size}
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-4 pt-4 border-t border-green-200">
+              <div className="text-sm">
+                <span className="font-medium">Activity Mix: </span>
+                {(() => {
+                  const events = optimalActivities.filter(act => act.type === 'event').length;
+                  const venues = optimalActivities.filter(act => act.type === 'venue').length;
+                  return `${events} events, ${venues} venues`;
+                })()}
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                Planned only for preferred days within trip period
+              </div>
+            </div>
           </div>
-        </section>
+        </div>
       )}
 
-      {!loading && !error && optimalActivities.length === 0 && activities.length > 0 && (
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4">
-          <p>No activities fit your current budget and schedule constraints.</p>
+      {!loading && optimalActivities.length === 0 && activities.length > 0 && (
+        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+          <div className="font-medium">No optimal itinerary found</div>
+          <p className="text-sm mt-1">No activities found for your preferred days and time slots.</p>
+          <div className="text-sm mt-2">
+            <div>• Available activities: {activities.length}</div>
+            <div>• Budget: ${budget}</div>
+            <div>• Try adjusting your preferred days, times, or budget</div>
+          </div>
+        </div>
+      )}
+
+      {!loading && activities.length === 0 && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <div className="font-medium">No activities available</div>
+          <p className="text-sm mt-1">No activities found for your preferred days within the trip period.</p>
         </div>
       )}
     </div>

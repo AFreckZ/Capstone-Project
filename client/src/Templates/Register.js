@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from 'axios';
-import {Navigate, useNavigate} from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 //import React from "react";
 import "../css/Register.css";
 import Beach from "../images/Beach.jpg";
@@ -14,7 +14,7 @@ function Register() {
     confirmPassword: '',
     userType: null
   });
-  
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -47,7 +47,7 @@ function Register() {
     
     setIsSubmitting(true);
     setErrors({});
-    Navigate("/user")
+    
     try {
       const response = await axios.post('http://localhost:5001/api/user/register', {
         name: formData.name,
@@ -58,7 +58,7 @@ function Register() {
 
       setSuccessMessage('Registration successful!');
       console.log('Registration response:', response.data);
-      
+      navigate("/user")
       // Reset form on success
       setFormData({
         name: '',

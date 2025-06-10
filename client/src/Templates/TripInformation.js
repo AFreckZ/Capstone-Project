@@ -161,15 +161,7 @@ export default function TripInformationPage() {
       </div>
     </div>
 
-        <div className="form-group">
-          <label>Preferences</label>
-          <div className="preference-icons">
-            {preferences.map((pref) => (
-              <div key={pref} className="pref-icon"><button> {pref}</button> </div>
-            ))}
-          </div>
-          <div className="edit-preferences">Edit Preferences</div>
-        </div>
+        
         <div className="form-group">
                 <label>Will You Need Transport:</label>
                 <button className="toggle-button" onClick={() => setNeedTransport(!needTransport)}>

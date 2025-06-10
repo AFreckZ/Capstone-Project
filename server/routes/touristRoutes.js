@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET single event
+// GET single tourist
 router.get('/:id', async (req, res) => {
   try {
     const [tourist] = await pool.query('SELECT * FROM Tourist WHERE tourist_id = ?', [req.params.id]);

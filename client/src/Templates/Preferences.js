@@ -1,6 +1,7 @@
 // InterestPage.js
 import React, { useState } from "react";
 import "../css/Preferences.css";
+import { useNavigate} from "react-router-dom";
 
 // list of preference types
 const categories = [
@@ -22,7 +23,7 @@ export default function InterestPage() {
   const [selected, setSelected] = useState([]);
   const [message, setMessage] = useState({ text: '', type: '', visible: false });
   const [isLoading, setIsLoading] = useState(false);
-
+  const navigate = useNavigate();
   const toggleSelection = (category) => {
     if (message.visible) {
       setMessage({ text: '', type: '', visible: false });
@@ -90,6 +91,7 @@ const handleSavePreferences = async () => {
         `Your preferences has been saved`, 
           "success"
       );
+      navigate('/generate');
       // Optionally redirect after successful save
       // setTimeout(() => window.location.href = '/dashboard', 2000);
     } else {
@@ -154,7 +156,8 @@ const handleSavePreferences = async () => {
       </div>
 
       <div className="save-button-wrapper" onClick={handleSavePreferences}>
-        <button className="save-button" >Save Preferences →</button>
+        <button className="save-button" disabled={isLoading}>{isLoading ? 'Saving...' : 'Save Preferences →'}</button>
+         
       </div>
 
       <footer className="interest-footer">
