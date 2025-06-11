@@ -4,6 +4,7 @@ import Register from './Templates/Register';
 import Login from './Templates/Login';
 import ProfilePage from './Templates/ProfilePage';
 import InterestPage from './Templates/Preferences';
+import TouristPreferencesForm from './Templates/TouristPreferences';
 import TripInformationPage from './Templates/TripInformation';
 import logo from './logo.svg';
 import './css/App.css';
@@ -22,6 +23,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/user" element={<ProfilePage />} />
         <Route path="/prefer" element={<InterestPage />} />
+        <Route path="/preferences" element={<TouristPreferencesForm />} /> 
         <Route path="/info" element={<TripInformationPage />} />
         <Route path="/eventinfo" element={<CreateEventPage />} />
         <Route path="/venueinfo" element={<CreateVenuePage />} />
