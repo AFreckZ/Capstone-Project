@@ -27,7 +27,8 @@ const TouristPreferencesForm = () => {
     endTime: '',
     parish: '',
     accommodation: '',
-    groupSize: ''
+    groupSize: '',
+    preferredDays: [] // NEW: Array to store preferred days
   });
 
   const currencies = [
@@ -41,6 +42,17 @@ const TouristPreferencesForm = () => {
     { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
     { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
     { code: 'INR', symbol: '₹', name: 'Indian Rupee' }
+  ];
+
+  // NEW: Days of the week for activity preferences
+  const daysOfWeek = [
+    { id: 'monday', name: 'Monday', short: 'Mon', emoji: '💼' },
+    { id: 'tuesday', name: 'Tuesday', short: 'Tue', emoji: '🌟' },
+    { id: 'wednesday', name: 'Wednesday', short: 'Wed', emoji: '⚡' },
+    { id: 'thursday', name: 'Thursday', short: 'Thu', emoji: '🚀' },
+    { id: 'friday', name: 'Friday', short: 'Fri', emoji: '🎉' },
+    { id: 'saturday', name: 'Saturday', short: 'Sat', emoji: '🌴' },
+    { id: 'sunday', name: 'Sunday', short: 'Sun', emoji: '☀️' }
   ];
 
   const getCurrencySymbol = (currencyCode) => {
@@ -153,6 +165,19 @@ const TouristPreferencesForm = () => {
     });
   };
 
+  // NEW: Function to toggle preferred days
+  const togglePreferredDay = (dayId) => {
+    setUserInfo(prev => ({
+      ...prev,
+      preferredDays: prev.preferredDays.includes(dayId)
+        ? prev.preferredDays.filter(id => id !== dayId)
+        : [...prev.preferredDays, dayId]
+    }));
+    
+    // Clear error when user makes changes
+    if (error) setError(null);
+  };
+
   const getPreferenceRank = (preferenceId) => {
     const index = selectedPreferences.indexOf(preferenceId);
     return index === -1 ? null : index + 1;
@@ -184,6 +209,19 @@ const TouristPreferencesForm = () => {
       formatted += ` at ${timeString}`;
     }
     return formatted;
+  };
+
+  // NEW: Function to format preferred days for display
+  const formatPreferredDays = () => {
+    if (userInfo.preferredDays.length === 0) return 'Any day';
+    if (userInfo.preferredDays.length === 7) return 'Every day';
+    
+    const dayNames = userInfo.preferredDays
+      .map(dayId => daysOfWeek.find(d => d.id === dayId)?.short)
+      .filter(Boolean)
+      .join(', ');
+    
+    return dayNames;
   };
 
   const nextStep = () => {
@@ -230,7 +268,8 @@ const TouristPreferencesForm = () => {
         endTime: userInfo.endTime || '18:00',
         parish: userInfo.parish,
         accommodation: userInfo.accommodation,
-        groupSize: parseInt(userInfo.groupSize)
+        groupSize: parseInt(userInfo.groupSize),
+        preferredDays: userInfo.preferredDays // NEW: Include preferred days
       };
 
       console.log('Saving preferences:', preferencesData);
@@ -479,6 +518,43 @@ const TouristPreferencesForm = () => {
                 )}
               </div>
 
+              {/* NEW: Preferred Activity Days */}
+              <div className="tourist-preferences-glass-container">
+                <div className="tourist-preferences-section-header">
+                  <h3>Preferred Activity Days</h3>
+                  <p>Which days of the week do you prefer for activities and tours?</p>
+                </div>
+                
+                <div className="tourist-preferences-days-grid">
+                  {daysOfWeek.map(day => {
+                    const isSelected = userInfo.preferredDays.includes(day.id);
+                    return (
+                      <button
+                        key={day.id}
+                        onClick={() => togglePreferredDay(day.id)}
+                        className={`tourist-preferences-day-button ${isSelected ? 'selected' : ''}`}
+                        type="button"
+                      >
+                        <div className="tourist-preferences-day-emoji">{day.emoji}</div>
+                        <div className="tourist-preferences-day-name">{day.name}</div>
+                        <div className="tourist-preferences-day-short">{day.short}</div>
+                        {isSelected && (
+                          <div className="tourist-preferences-day-checkmark">✓</div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                <div className="tourist-preferences-days-help">
+                  <p>
+                    💡 <strong>Pro tip:</strong> Select multiple days for more flexible scheduling. 
+                    {userInfo.preferredDays.length === 0 && " We'll assume you're available any day if nothing is selected."}
+                    {userInfo.preferredDays.length > 0 && ` You've selected ${userInfo.preferredDays.length} day${userInfo.preferredDays.length === 1 ? '' : 's'}.`}
+                  </p>
+                </div>
+              </div>
+
               {/* Location Info */}
               <div className="tourist-preferences-glass-container">
                 <div className="tourist-preferences-section-header">
@@ -640,6 +716,17 @@ const TouristPreferencesForm = () => {
                     </div>
                     <span className="tourist-preferences-summary-value">
                       {calculateDuration() || 0} days
+                    </span>
+                  </div>
+
+                  {/* NEW: Preferred Days Summary */}
+                  <div className="tourist-preferences-summary-item">
+                    <div className="tourist-preferences-summary-label">
+                      <span className="tourist-preferences-summary-icon">📆</span>
+                      <span>Preferred Activity Days</span>
+                    </div>
+                    <span className="tourist-preferences-summary-value">
+                      {formatPreferredDays()}
                     </span>
                   </div>
                   

@@ -17,7 +17,8 @@ router.post("/save-preferences", async (req, res) => {
             endTime,
             parish,
             accommodation,
-            groupSize 
+            groupSize,
+            preferredDays  // NEW: Added preferredDays
         } = req.body;
 
         console.log("Saving preferences:", { 
@@ -32,7 +33,8 @@ router.post("/save-preferences", async (req, res) => {
             endTime,
             parish,
             accommodation,
-            groupSize 
+            groupSize,
+            preferredDays  // NEW: Added preferredDays to console log
         });
 
         
@@ -50,6 +52,7 @@ router.post("/save-preferences", async (req, res) => {
                 parish,
                 accommodation,
                 group_size,
+                preferred_days,  -- NEW: Added preferred_days column
                 created_at
             ) 
             VALUES (
@@ -65,6 +68,7 @@ router.post("/save-preferences", async (req, res) => {
                 ${parish || null},
                 ${accommodation || null},
                 ${groupSize},
+                ${JSON.stringify(preferredDays || [])},  -- NEW: Store preferredDays as JSON
                 NOW()
             )
             RETURNING *
@@ -93,7 +97,15 @@ router.get("/get-preferences/:userId", async (req, res) => {
         `;
 
         if (preferences.length > 0) {
-            res.json(preferences[0]);
+            // NEW: Parse JSON fields before sending response
+            const preference = preferences[0];
+            if (preference.preferences) {
+                preference.preferences = JSON.parse(preference.preferences);
+            }
+            if (preference.preferred_days) {
+                preference.preferred_days = JSON.parse(preference.preferred_days);
+            }
+            res.json(preference);
         } else {
             res.status(404).json({ message: "No preferences found" });
         }
@@ -118,7 +130,8 @@ router.put("/update-preferences/:userId", async (req, res) => {
             endTime,
             parish,
             accommodation,
-            groupSize 
+            groupSize,
+            preferredDays  // NEW: Added preferredDays
         } = req.body;
 
         const updatedPreference = await sql`
@@ -135,15 +148,25 @@ router.put("/update-preferences/:userId", async (req, res) => {
                 parish = ${parish},
                 accommodation = ${accommodation},
                 group_size = ${groupSize},
+                preferred_days = ${JSON.stringify(preferredDays || [])},  -- NEW: Added preferred_days update
                 updated_at = NOW()
             WHERE user_id = ${userId}
             RETURNING *
         `;
 
         if (updatedPreference.length > 0) {
+            // NEW: Parse JSON fields before sending response
+            const preference = updatedPreference[0];
+            if (preference.preferences) {
+                preference.preferences = JSON.parse(preference.preferences);
+            }
+            if (preference.preferred_days) {
+                preference.preferred_days = JSON.parse(preference.preferred_days);
+            }
+            
             res.json({
                 success: true,
-                preference: updatedPreference[0],
+                preference: preference,
                 message: "Preferences updated successfully"
             });
         } else {
@@ -186,14 +209,59 @@ router.get("/get-all-preferences/:userId", async (req, res) => {
             ORDER BY created_at DESC
         `;
 
+        // NEW: Parse JSON fields for all preferences
+        const parsedPreferences = preferences.map(preference => {
+            if (preference.preferences) {
+                preference.preferences = JSON.parse(preference.preferences);
+            }
+            if (preference.preferred_days) {
+                preference.preferred_days = JSON.parse(preference.preferred_days);
+            }
+            return preference;
+        });
+
         res.json({
             success: true,
-            preferences: preferences,
-            count: preferences.length
+            preferences: parsedPreferences,
+            count: parsedPreferences.length
         });
     } catch (err) {
         console.error("Error fetching all preferences:", err.message);
         res.status(500).json({ error: "Server error fetching preferences" });
+    }
+});
+
+// NEW: Additional route to get preferences with day filtering
+router.get("/get-preferences-by-day/:userId/:day", async (req, res) => {
+    try {
+        const { userId, day } = req.params;
+
+        const preferences = await sql`
+            SELECT * FROM user_preferences 
+            WHERE user_id = ${userId}
+            AND preferred_days::jsonb ? ${day}
+            ORDER BY created_at DESC
+        `;
+
+        const parsedPreferences = preferences.map(preference => {
+            if (preference.preferences) {
+                preference.preferences = JSON.parse(preference.preferences);
+            }
+            if (preference.preferred_days) {
+                preference.preferred_days = JSON.parse(preference.preferred_days);
+            }
+            return preference;
+        });
+
+        res.json({
+            success: true,
+            preferences: parsedPreferences,
+            count: parsedPreferences.length,
+            day: day
+        });
+    } catch (err) {
+        console.error("Error fetching preferences by day:", err.message);
+        res.status(500).json({ error: "Server error fetching preferences by day" });
     }
 });
 
