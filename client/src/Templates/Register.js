@@ -33,7 +33,7 @@ const {register, login, isAuthenticated, user, userType} = useAuth();
           navigate('/business-profile');
           break;
         case 'transport-agency':
-          navigate('/transport-profile');
+          navigate('/travel-profile');
           break;
         
       }

@@ -6,21 +6,11 @@ import { Link } from 'react-router-dom';
 import {useNavigate} from "react-router-dom";
 
 
-const TouristProfilePage = () => {
+const BusinessProfilePage = () => {
     const { user, userId, userType, loading, isAuthenticated,logout } = useAuth();
     const navigate= useNavigate();
-    const [trip] = useState({
-      name: "My Trip",
-      dates: "October 5 - October 15",
-      image: "https://source.unsplash.com/600x300/?cityscape"
-    });
-
-  const favorites = [
-    { label: "Restaurants", count: 10, image: "https://source.unsplash.com/100x100/?food" },
-    { label: "Attractions", count: 50, image: "https://source.unsplash.com/100x100/?museum" },
-    { label: "Cities", count: 2, image: "https://source.unsplash.com/100x100/?city" },
-    { label: "Beaches", count: 3, image: "https://source.unsplash.com/100x100/?beach" }
-  ];
+   
+  
   if (loading) {
       return <div>Loading...</div>;
     }
@@ -38,8 +28,8 @@ const handleLogout = () => {
     logout();
     navigate('/login');
   };
-  const enterinfo=()=>{
-    navigate('/preferences')
+  const addev=()=>{
+    navigate('/EVregister')
   }
 
   return (
@@ -81,25 +71,16 @@ const handleLogout = () => {
 
       <main className="main-content">
         <section className="my-trip">
-          <img src={trip.image} alt="Trip" className="trip-image" />
+          <img  alt="Trip" className="trip-image" />
           <div className="trip-details">
-            <h2>{trip.name}</h2>
-            <p>{trip.dates}</p>
-            <button className="btn" onClick={enterinfo}>Create Itinerary</button>
+          
+            <button className="btn" onClick={addev}>Add another venue/Event</button>
           </div>
         </section>
 
         <section className="favorites">
-          <h2>My Favorites</h2>
-          <div className="favorite-items">
-            {favorites.map((item, index) => (
-              <div className="favorite-card" key={index}>
-                <img src={item.image} alt={item.label} />
-                <p>{item.label}</p>
-                <small>{item.count} {item.label.toLowerCase()}</small>
-              </div>
-            ))}
-          </div>
+          <h2> Your venues / Events</h2>
+          <button Link= "/"></button>
         </section>
 
         <footer className="footer">
@@ -128,4 +109,4 @@ const handleLogout = () => {
   );
 };
 
-export default TouristProfilePage;
+export default BusinessProfilePage;

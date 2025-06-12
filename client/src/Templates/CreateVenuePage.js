@@ -124,7 +124,7 @@ export default function CreateVenuePage() {
 
   return (
     <div className="event-container">
-     <header className="trip-header">
+     {/* <header className="trip-header">
         <div className="header-content">
           <div className="logo">Yaad Quest</div>
           <nav className="nav-links">
@@ -136,15 +136,15 @@ export default function CreateVenuePage() {
           </nav>
           <div className="avatar"></div>
         </div>
-      </header>
+      </header> */}
 
-      <div className="trip-banner">
+      {/* <div className="trip-banner">
         <button className="back-button">⟵ Back</button>
         <div className="banner-content">
           <h1>Create Venue</h1>
           <p>Enter the details for your venue</p>
         </div>
-      </div>
+      </div> */}
 
 
       <div className="event-form">
@@ -193,7 +193,7 @@ export default function CreateVenuePage() {
         </div>
       </div>
 
-      <footer className="trip-footer">
+      {/* <footer className="trip-footer">
         <div className="footer-content">
           <div className="footer-section">
             <div className="footer-logo">Yaad Quest</div>
@@ -215,7 +215,7 @@ export default function CreateVenuePage() {
             </div>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 }

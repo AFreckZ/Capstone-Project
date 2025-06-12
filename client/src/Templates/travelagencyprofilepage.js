@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import {useNavigate} from "react-router-dom";
 
 
-const TouristProfilePage = () => {
+const TravelProfilePage = () => {
     const { user, userId, userType, loading, isAuthenticated,logout } = useAuth();
     const navigate= useNavigate();
     const [trip] = useState({
@@ -38,9 +38,6 @@ const handleLogout = () => {
     logout();
     navigate('/login');
   };
-  const enterinfo=()=>{
-    navigate('/preferences')
-  }
 
   return (
 
@@ -85,7 +82,7 @@ const handleLogout = () => {
           <div className="trip-details">
             <h2>{trip.name}</h2>
             <p>{trip.dates}</p>
-            <button className="btn" onClick={enterinfo}>Create Itinerary</button>
+            <button className="btn">View Itinerary</button>
           </div>
         </section>
 
@@ -128,4 +125,4 @@ const handleLogout = () => {
   );
 };
 
-export default TouristProfilePage;
+export default TravelProfilePage;

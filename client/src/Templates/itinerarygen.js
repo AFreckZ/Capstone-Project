@@ -622,6 +622,8 @@
 // //working and activities spread across different days
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+// import Header from './Header';
+// import Footer from './Footer';
 
 const ItineraryPlanner = () => {
   const [activities, setActivities] = useState([]);
@@ -1058,8 +1060,10 @@ const ItineraryPlanner = () => {
   const budget = touristInfo?.budget ? parseFloat(touristInfo.budget) : 300;
 
   return (
+    
     <div className="p-6 max-w-5xl mx-auto bg-white">
       <div className="flex justify-between items-center mb-4">
+        
         <h1 className="text-3xl font-bold text-blue-800">Tourist Itinerary Planner</h1>
         
       </div>
@@ -1256,6 +1260,7 @@ const ItineraryPlanner = () => {
           <p className="text-sm mt-1">No activities found for your preferred days within the trip period.</p>
         </div>
       )}
+      
     </div>
   );
 };

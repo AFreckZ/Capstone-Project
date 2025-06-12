@@ -12,10 +12,12 @@ import CreateEventPage from './Templates/CreateEventPage';
 import Welcome from './Templates/WelcomePage';
 import ItineraryGenerator from './Templates/itinerarygen';
 import CreateVenuePage from './Templates/CreateVenuePage';
-import Header from './Templates/Header';
 import ProtectedRoute from './Templates/ProtectedRoutes';
 import DebugUser from './Templates/debuguser';
 import { AuthProvider } from './contexts/AuthContext';
+import TravelProfilePage from './Templates/travelagencyprofilepage';
+import BusinessProfilePage from './Templates/businessprofilepage';
+import EventVenueCreator from './Templates/EventVenueCreator';
 //used to manage user sessions
 import AuthDebug from './Templates/debugAuth';
 function App() {
@@ -35,6 +37,9 @@ function App() {
         <Route path="/eventinfo" element={<CreateEventPage />} />
         <Route path="/venueinfo" element={<CreateVenuePage />} />
         <Route path="/generate" element={<ItineraryGenerator />} />
+        <Route path="/business-profile" element={<BusinessProfilePage/>} />
+        <Route path ="/travel-profile" element= {<TravelProfilePage/>}/>
+        <Route path ="/EVregister" element={<EventVenueCreator/>}/>
       </Routes>
       </AuthProvider>
   );

@@ -28,7 +28,7 @@ function Login() {
           navigate('/business-profile');
           break;
         case 'transport-agency':
-          navigate('/transport-profile');
+          navigate('/travel-profile');
           break;
         default:
           navigate('/user'); // fallback

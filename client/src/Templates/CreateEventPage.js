@@ -78,7 +78,7 @@ export default function CreateEventPage() {
 
   return (
     <div className="event-container">
-      <header className="trip-header">
+      {/* <header className="trip-header">
         <div className="header-content">
           <div className="logo">Yaad Quest</div>
           <nav className="nav-links">
@@ -90,15 +90,15 @@ export default function CreateEventPage() {
           </nav>
           <div className="avatar"></div>
         </div>
-      </header>
+      </header> */}
 
-      <div className="trip-banner">
+      {/* <div className="trip-banner">
         <button className="back-button">⟵ Back</button>
         <div className="banner-content">
           <h1>Create Event</h1>
           <p>Enter the details for your events</p>
         </div>
-      </div>
+      </div> */}
       
       <div className="event-form">
         <div className="form-group">
@@ -206,7 +206,7 @@ export default function CreateEventPage() {
         </div>
       </div>
 
-      <footer className="trip-footer">
+      {/* <footer className="trip-footer">
         <div className="footer-content">
           <div className="footer-section">
             <div className="footer-logo">Yaad Quest</div>
@@ -228,7 +228,7 @@ export default function CreateEventPage() {
             </div>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 }
