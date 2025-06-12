@@ -8,36 +8,93 @@ const jwt= require('jsonwebtoken');
 
 router.use(bodyParser.json());
 
+
 //register user
 router.post('/register', async (req, res) => {
+  const connection = await pool.getConnection();
   try {
     const { name, email, password, userType } = req.body;
+    console.log('Registration attempt:', { name, email, userType }); // Debug log
 
-    // Validation (same as before)
+    // Validate input
     if (!name || !email || !password || !userType) {
-      return res.status(400).json({ message: 'All fields are required' });
+      throw new Error('All fields are required');
     }
 
-    // Check if user exists
-    const [users] = await pool.query('SELECT user_id FROM user WHERE email = ?', [email]);
-    if (users.length > 0) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
+    // Start transaction
+    await connection.query('START TRANSACTION');
+    console.log('Transaction started'); // Debug log
 
-    // Hash password and insert
+    // 1. Insert into main users table
     const hashedPassword = await bcrypt.hash(password, 10);
-    const [result] = await pool.query(
-      'INSERT INTO user (username, password, email, usertype) VALUES (?, ?, ?, ?)',
-      [name, hashedPassword, email, userType]
+    const [userResult] = await connection.query(
+      `INSERT INTO user (username, password, email, usertype) 
+       VALUES (?, ?, ?, ?)`,
+      [name, hashedPassword,email, userType]
     );
+    console.log('Main user created:', userResult); // Debug log
+
+    // 2. Insert into type-specific table
+    let profileQuery, profileParams;
+    switch (userType) {
+      case 'tourist':
+        profileQuery = `INSERT INTO tourist (user_id) VALUES (?)`;
+        profileParams = [userResult.insertId];
+        break;
+      case 'business-owner':
+        profileQuery = `INSERT INTO businessowner (user_id) VALUES (?)`;
+        profileParams = [userResult.insertId];
+        break;
+      case 'transport-agency':
+        profileQuery = `INSERT INTO transportagency (user_id) VALUES (?)`;
+        profileParams = [userResult.insertId];
+        break;
+      default:
+        throw new Error(`Invalid user type: ${userType}`);
+    }
+
+    const [profileResult] = await connection.query(profileQuery, profileParams);
+    console.log('Profile created:', profileResult); // Debug log
+
+    // Commit transaction
+    await connection.query('COMMIT');
+    console.log('Transaction committed'); // Debug log
 
     res.status(201).json({
-      message: 'User registered successfully',
-      userId: result.insertId,
+      success: true,
+      userId: userResult.insertId,
+      profileId: profileResult.insertId,
+      userType: userType
     });
+
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ message: 'Internal server error', error: error.message });
+    // Rollback on error
+    await connection.query('ROLLBACK');
+    console.error('Registration failed:', error);
+
+    // Specific error handling
+    let statusCode = 500;
+    let message = 'Registration failed';
+
+    if (error.message.includes('All fields are required')) {
+      statusCode = 400;
+      message = error.message;
+    } else if (error.code === 'ER_DUP_ENTRY') {
+      statusCode = 409;
+      message = 'Email already exists';
+    } else if (error.message.includes('Invalid user type')) {
+      statusCode = 400;
+      message = error.message;
+    }
+
+    res.status(statusCode).json({ 
+      success: false,
+      message,
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  } finally {
+    connection.release();
+    console.log('Connection released'); // Debug log
   }
 });
 

@@ -1564,9 +1564,7 @@ const ItineraryPlanner = () => {
     <div className="p-6 max-w-5xl mx-auto bg-white">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-3xl font-bold text-blue-800">Tourist Itinerary Planner</h1>
-        <div className="text-sm text-gray-600">
-          Preferred Days Planning
-        </div>
+        
       </div>
 
       {loading && (
@@ -1728,7 +1726,7 @@ const ItineraryPlanner = () => {
               </div>
             </div>
             
-            <div className="mt-4 pt-4 border-t border-green-200">
+            {/* <div className="mt-4 pt-4 border-t border-green-200">
               <div className="text-sm">
                 <span className="font-medium">Activity Mix: </span>
                 {(() => {
@@ -1737,10 +1735,8 @@ const ItineraryPlanner = () => {
                   return `${events} events, ${venues} venues`;
                 })()}
               </div>
-              <div className="text-xs text-gray-500 mt-1">
-                Planned only for preferred days within trip period
-              </div>
-            </div>
+             
+            </div> */}
           </div>
         </div>
       )}
