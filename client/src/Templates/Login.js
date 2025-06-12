@@ -1,6 +1,7 @@
 //Import CSS
 import React, { useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {useAuth} from '../contexts/AuthContext';
 import  "../css/Login.css"
 import SunsetImage from "../images/sunset.jpg";
 // import ProfilePage from './Templates/ProfilePage';
@@ -12,8 +13,28 @@ function Login() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-
-   const navigate = useNavigate();
+  const {login, isAuthenticated,user, userType} = useAuth();
+  const navigate = useNavigate();
+  
+   React.useEffect(() => {
+    if (isAuthenticated && user) {
+      const currentUserType = userType || user.userType || user.usertype;
+      
+      switch(currentUserType) {
+        case 'tourist':
+          navigate('/tourist-profile');
+          break;
+        case 'business-owner':
+          navigate('/business-profile');
+          break;
+        case 'transport-agency':
+          navigate('/transport-profile');
+          break;
+        default:
+          navigate('/user'); // fallback
+      }
+    }
+  }, [isAuthenticated, user, userType, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,52 +48,51 @@ function Login() {
 
     setIsLoading(true);
 
+  
     try {
-      const response = await fetch("http://localhost:5001/api/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
-      }
-
-      // Store token based on remember me preference
-      if (rememberMe) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+      // Use the AuthContext login function instead of direct fetch
+      const result = await login({ email, password });
+      
+      if (result.success) {
+        setSuccessMessage("Login successful!");
+        setError(""); 
+        
+        // Handle remember me - store in localStorage if checked
+        if (rememberMe && result.user) {
+          localStorage.setItem("rememberUser", "true");
+        }
+        
+        // Navigate based on user type
+        const userType = result.user?.userType || result.user?.usertype;
+        console.log('User type for navigation:', userType);
+        
+        switch(userType) {
+          case 'tourist':
+            navigate('/tourist-profile');
+            break;
+          case 'business-owner':
+            navigate('/business-dashboard');
+            break;
+          case 'transport-agency':
+            navigate('/transport-dashboard');
+            break;
+          default:
+            navigate('/user');
+        }
+        
+        // Clear form
+        setEmail("");
+        setPassword("");
+        setRememberMe(false);
       } else {
-        sessionStorage.setItem("token", data.token);
-        sessionStorage.setItem("user", JSON.stringify(data.user));
+        setError(result.error || "Login failed. Please try again.");
       }
-
-      
-      setSuccessMessage("Login successful!");
-      setError(""); // Clear any errors  
-      navigate("/user");    
-      setEmail("");
-      setPassword("");
-      setRememberMe(false);
-      setTimeout(() => {
-      
-      console.log("Redirecting to dashboard...");
-    }, 1500);
-      
     } catch (err) {
       setError(err.message || "Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
-
   const togglePasswordVisibility = () => {
     const passwordInput = document.querySelector(".password-input input");
     passwordInput.type = passwordInput.type === "password" ? "text" : "password";

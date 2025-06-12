@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import '../css/ProfilePage.css';
-import profileImage from '../images/sunset.jpg'; // Replace with real asset
+import profileImage from '../images/sunset.jpg'; 
 import { Link } from 'react-router-dom';
-const ProfilePage = () => {
-  const [trip] = useState({
-    name: "My Trip",
-    dates: "October 5 - October 15",
-    image: "https://source.unsplash.com/600x300/?cityscape"
-  });
+import {useNavigate} from "react-router-dom";
+ 
+
+
+const TouristProfilePage = () => {
+    const { user, userId, userType, loading, isAuthenticated,logout } = useAuth();
+    const navigate= useNavigate();
+    const [trip] = useState({
+      name: "My Trip",
+      dates: "October 5 - October 15",
+      image: "https://source.unsplash.com/600x300/?cityscape"
+    });
 
   const favorites = [
     { label: "Restaurants", count: 10, image: "https://source.unsplash.com/100x100/?food" },
@@ -15,6 +22,23 @@ const ProfilePage = () => {
     { label: "Cities", count: 2, image: "https://source.unsplash.com/100x100/?city" },
     { label: "Beaches", count: 3, image: "https://source.unsplash.com/100x100/?beach" }
   ];
+  if (loading) {
+      return <div>Loading...</div>;
+    }
+
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+      return <div>Please log in to view your profile.</div>;
+    }
+
+    // Show message if user data is not available
+    if (!user) {
+      return <div>User data not available. Please try logging in again.</div>;
+    }
+const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
 
@@ -32,12 +56,15 @@ const ProfilePage = () => {
             <a href="#">Contact</a>
           </nav>
           <div className="avatar"></div>
+          <button onClick={handleLogout}>logout</button>
         </div>
       </header>
+      <div>
+
     <div className="content-body">
       <aside className="sidebar">
         <img src={profileImage} alt="User" className="profile-pic" />
-        <h2>Mary Jane</h2>
+        <h2>Welcome {user.username}</h2>
         <a href="#" className="edit-link">Edit Profile</a>
 
         <h3>Preferences</h3>
@@ -95,7 +122,8 @@ const ProfilePage = () => {
       </main>
     </div>
   </div>
+  </div>
   );
 };
 
-export default ProfilePage;
+export default TouristProfilePage;

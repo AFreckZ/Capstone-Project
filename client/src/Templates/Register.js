@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import axios from 'axios';
 import { useNavigate} from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 //import React from "react";
 import "../css/Register.css";
 import Beach from "../images/Beach.jpg";
 
 
 function Register() {
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,6 +20,25 @@ function Register() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+const {register, login, isAuthenticated, user, userType} = useAuth();  
+  React.useEffect(() => {
+    if (isAuthenticated && user) {
+      const currentUserType = userType || user.userType || user.usertype;
+      
+      switch(currentUserType) {
+        case 'tourist':
+          navigate('/tourist-profile');
+          break;
+        case 'business-owner':
+          navigate('/business-profile');
+          break;
+        case 'transport-agency':
+          navigate('/transport-profile');
+          break;
+        
+      }
+    }
+  }, [isAuthenticated, user, userType, navigate]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -48,30 +69,72 @@ function Register() {
     setIsSubmitting(true);
     setErrors({});
     
-    try {
-      const response = await axios.post('http://localhost:5001/api/user/register', {
+  
+  try {
+      // Step 1: Register the user
+      const registerResult = await register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         userType: formData.userType
       });
 
-      setSuccessMessage('Registration successful!');
-      console.log('Registration response:', response.data);
-      navigate("/user")
-      // Reset form on success
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        userType: null
-      });
+      if (registerResult.success) {
+        setSuccessMessage('Registration successful! Logging you in...');
+        console.log('Registration successful:', registerResult.data);
+        
+        // Step 2: Automatically log the user in
+        const loginResult = await login({
+          email: formData.email,
+          password: formData.password
+        });
+
+        if (loginResult.success) {
+          console.log('Auto-login successful:', loginResult.user);
+          
+          // Step 3: Navigate to appropriate profile/dashboard based on user type
+          const userType = loginResult.user?.userType || loginResult.user?.usertype || formData.userType;
+          
+          switch(userType) {
+            case 'tourist':
+              navigate('/tourist-profile'); 
+              break;
+            case 'business-owner':
+              navigate('/business-profile'); 
+              break;
+            case 'transport-agency':
+              navigate('/transport-profile'); 
+              break;
+            default:
+              navigate('/user'); // fallback
+          }
+        } else {
+          // Registration worked but login failed - redirect to login page
+          setSuccessMessage('Registration successful! Please log in.');
+          setTimeout(() => {
+            navigate("/login");
+          }, 2000);
+        }
+        
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          userType: null
+        });
+
+      } else {
+        setErrors({
+          submit: registerResult.error || 'Registration failed. Please try again.'
+        });
+      }
 
     } catch (error) {
-      console.error('Registration error:', error.response?.data);
+      console.error('Registration/Login error:', error);
       setErrors({
-        submit: error.response?.data?.message || 'Registration failed. Please try again.'
+        submit: error.message || 'Registration failed. Please try again.'
       });
     } finally {
       setIsSubmitting(false);
