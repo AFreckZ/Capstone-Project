@@ -1,4 +1,6 @@
+
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import '../css/TouristPreferences.css';
 import beachImg from '../images/beach2.jpg';
 import natureImg from '../images/bluemountain.jpg';
@@ -11,12 +13,14 @@ import nightlifeImg from '../images/party.png';
 import wellnessImg from '../images/spa.jpg';
 
 const TouristPreferencesForm = () => {
+  // Add useAuth hook to get current user data
+  const { user, userId, isAuthenticated, getAuthHeaders } = useAuth();
+  
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [currentStep, setCurrentStep] = useState(1);
-  
-  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState('');
   
   const [userInfo, setUserInfo] = useState({
     budget: '',
@@ -28,7 +32,9 @@ const TouristPreferencesForm = () => {
     parish: '',
     accommodation: '',
     groupSize: '',
-    preferredDays: [] // NEW: Array to store preferred days
+    preferredDays: [],
+    preferredStartTime: '09:00', // NEW: Simple start time
+    preferredEndTime: '17:00'   // NEW: Simple end time
   });
 
   const currencies = [
@@ -44,30 +50,13 @@ const TouristPreferencesForm = () => {
     { code: 'INR', symbol: '₹', name: 'Indian Rupee' }
   ];
 
-  // NEW: Days of the week for activity preferences
-  const daysOfWeek = [
-    { id: 'monday', name: 'Monday', short: 'Mon', emoji: '💼' },
-    { id: 'tuesday', name: 'Tuesday', short: 'Tue', emoji: '🌟' },
-    { id: 'wednesday', name: 'Wednesday', short: 'Wed', emoji: '⚡' },
-    { id: 'thursday', name: 'Thursday', short: 'Thu', emoji: '🚀' },
-    { id: 'friday', name: 'Friday', short: 'Fri', emoji: '🎉' },
-    { id: 'saturday', name: 'Saturday', short: 'Sat', emoji: '🌴' },
-    { id: 'sunday', name: 'Sunday', short: 'Sun', emoji: '☀️' }
-  ];
-
-  const getCurrencySymbol = (currencyCode) => {
-    const currency = currencies.find(c => c.code === currencyCode);
-    return currency ? currency.symbol : '$';
-  };
-
-  // UPDATED: Added weights and tags for itinerary integration
+  // Preference categories without fixed weights - weights calculated dynamically
   const preferenceCategories = [
     { 
       id: 'beaches', 
       name: 'Pristine Beaches', 
       description: 'Crystal clear waters and pristine white sand beaches',
       image: beachImg,
-      weight: 10,
       tags: ['beach', 'water sports', 'relaxation', 'swimming']
     },
     { 
@@ -75,7 +64,6 @@ const TouristPreferencesForm = () => {
       name: 'Nature & Wildlife', 
       description: 'Lush rainforests, cascading waterfalls, and exotic wildlife',
       image: natureImg,
-      weight: 9,
       tags: ['nature', 'hiking', 'wildlife', 'outdoor adventure', 'waterfalls']
     },
     { 
@@ -83,7 +71,6 @@ const TouristPreferencesForm = () => {
       name: 'Cultural Heritage', 
       description: 'Rich history, museums, and cultural landmarks',
       image: cultureImg,
-      weight: 8,
       tags: ['culture', 'history', 'museum', 'heritage', 'historical site']
     },
     { 
@@ -91,7 +78,6 @@ const TouristPreferencesForm = () => {
       name: 'Adventure Sports', 
       description: 'Thrilling zip-lines, diving, and extreme sports',
       image: adventureImg,
-      weight: 7,
       tags: ['adventure', 'extreme sports', 'zip-line', 'diving', 'outdoor adventure']
     },
     { 
@@ -99,7 +85,6 @@ const TouristPreferencesForm = () => {
       name: 'Culinary Journey', 
       description: 'Authentic jerk cuisine and local delicacies',
       image: foodImg,
-      weight: 6,
       tags: ['food', 'dining', 'local cuisine', 'jerk chicken', 'restaurant']
     },
     { 
@@ -107,7 +92,6 @@ const TouristPreferencesForm = () => {
       name: 'Music & Festivals', 
       description: 'Reggae rhythms and vibrant cultural festivals',
       image: musicImg,
-      weight: 5,
       tags: ['music', 'festival', 'reggae', 'entertainment', 'live music']
     },
     { 
@@ -115,7 +99,6 @@ const TouristPreferencesForm = () => {
       name: 'Local Markets', 
       description: 'Artisan crafts and bustling local markets',
       image: shoppingImg,
-      weight: 4,
       tags: ['shopping', 'market', 'crafts', 'souvenirs', 'local market']
     },
     { 
@@ -123,7 +106,6 @@ const TouristPreferencesForm = () => {
       name: 'Vibrant Nightlife', 
       description: 'Exciting bars, clubs, and evening entertainment',
       image: nightlifeImg,
-      weight: 3,
       tags: ['nightlife', 'bars', 'clubs', 'party', 'entertainment']
     },
     { 
@@ -131,28 +113,22 @@ const TouristPreferencesForm = () => {
       name: 'Wellness & Spa', 
       description: 'Rejuvenating spas and peaceful relaxation',
       image: wellnessImg,
-      weight: 2,
       tags: ['wellness', 'spa', 'relaxation', 'massage', 'health']
     }
   ];
 
   const jamaicaParishes = [
-    'Kingston',
-    'St. Andrew',
-    'St. Thomas',
-    'Portland',
-    'St. Mary',
-    'St. Ann',
-    'Trelawny',
-    'St. James',
-    'Hanover',
-    'Westmoreland',
-    'St. Elizabeth',
-    'Manchester',
-    'Clarendon',
-    'St. Catherine'
+    'Kingston', 'St. Andrew', 'St. Thomas', 'Portland', 'St. Mary', 'St. Ann',
+    'Trelawny', 'St. James', 'Hanover', 'Westmoreland', 'St. Elizabeth', 
+    'Manchester', 'Clarendon', 'St. Catherine'
   ];
 
+  const getCurrencySymbol = (currencyCode) => {
+    const currency = currencies.find(c => c.code === currencyCode);
+    return currency ? currency.symbol : '$';
+  };
+
+  // Dynamic preference selection with order-based weighting
   const togglePreference = (preferenceId) => {
     setSelectedPreferences(prev => {
       const currentIndex = prev.indexOf(preferenceId);
@@ -165,17 +141,53 @@ const TouristPreferencesForm = () => {
     });
   };
 
-  // NEW: Function to toggle preferred days
-  const togglePreferredDay = (dayId) => {
+  // Calculate dynamic weights based on selection order
+  const calculatePreferenceWeights = () => {
+    const weights = {};
+    const maxWeight = selectedPreferences.length;
+    
+    selectedPreferences.forEach((prefId, index) => {
+      weights[prefId] = maxWeight - index;
+    });
+    
+    return weights;
+  };
+
+  // Get weight for a specific preference
+  const getPreferenceWeight = (preferenceId) => {
+    const index = selectedPreferences.indexOf(preferenceId);
+    if (index === -1) return 0;
+    return selectedPreferences.length - index;
+  };
+
+  // Function to add preferred dates
+  const addPreferredDate = () => {
+    if (selectedDate && !userInfo.preferredDays.includes(selectedDate)) {
+      if (userInfo.startDate && userInfo.endDate) {
+        const dateToAdd = new Date(selectedDate);
+        const startDate = new Date(userInfo.startDate);
+        const endDate = new Date(userInfo.endDate);
+        
+        if (dateToAdd < startDate || dateToAdd > endDate) {
+          setError('Selected date must be within your travel period');
+          return;
+        }
+      }
+      
+      setUserInfo(prev => ({
+        ...prev,
+        preferredDays: [...prev.preferredDays, selectedDate].sort()
+      }));
+      setSelectedDate('');
+      if (error) setError(null);
+    }
+  };
+
+  const removePreferredDate = (dateToRemove) => {
     setUserInfo(prev => ({
       ...prev,
-      preferredDays: prev.preferredDays.includes(dayId)
-        ? prev.preferredDays.filter(id => id !== dayId)
-        : [...prev.preferredDays, dayId]
+      preferredDays: prev.preferredDays.filter(date => date !== dateToRemove)
     }));
-    
-    // Clear error when user makes changes
-    if (error) setError(null);
   };
 
   const getPreferenceRank = (preferenceId) => {
@@ -185,7 +197,28 @@ const TouristPreferencesForm = () => {
 
   const handleUserInfoChange = (field, value) => {
     setUserInfo(prev => ({ ...prev, [field]: value }));
-    // NEW: Clear error when user makes changes
+    
+    if (field === 'startDate' || field === 'endDate') {
+      const newUserInfo = { ...userInfo, [field]: value };
+      if (newUserInfo.startDate && newUserInfo.endDate) {
+        const startDate = new Date(newUserInfo.startDate);
+        const endDate = new Date(newUserInfo.endDate);
+        
+        const validDates = userInfo.preferredDays.filter(dateStr => {
+          const date = new Date(dateStr);
+          return date >= startDate && date <= endDate;
+        });
+        
+        if (validDates.length !== userInfo.preferredDays.length) {
+          setUserInfo(prevUserInfo => ({
+            ...prevUserInfo,
+            [field]: value,
+            preferredDays: validDates
+          }));
+        }
+      }
+    }
+    
     if (error) setError(null);
   };
 
@@ -211,17 +244,32 @@ const TouristPreferencesForm = () => {
     return formatted;
   };
 
-  // NEW: Function to format preferred days for display
-  const formatPreferredDays = () => {
-    if (userInfo.preferredDays.length === 0) return 'Any day';
-    if (userInfo.preferredDays.length === 7) return 'Every day';
-    
-    const dayNames = userInfo.preferredDays
-      .map(dayId => daysOfWeek.find(d => d.id === dayId)?.short)
-      .filter(Boolean)
-      .join(', ');
-    
-    return dayNames;
+  const formatSingleDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const options = { 
+      weekday: 'short', 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    };
+    return date.toLocaleDateString('en-US', options);
+  };
+
+  const formatPreferredDates = () => {
+    if (userInfo.preferredDays.length === 0) return 'No specific dates selected';
+    if (userInfo.preferredDays.length === 1) return '1 preferred date';
+    return `${userInfo.preferredDays.length} preferred dates`;
+  };
+
+  // NEW: Format time for display
+  const formatTime = (timeString) => {
+    if (!timeString) return '';
+    const [hours, minutes] = timeString.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${displayHour}:${minutes} ${ampm}`;
   };
 
   const nextStep = () => {
@@ -232,9 +280,13 @@ const TouristPreferencesForm = () => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  
+  // Handle submit with all data including preferred times
   const handleSubmit = async () => {
-    // Basic validation
+    if (!isAuthenticated || !userId) {
+      setError('You must be logged in to save preferences. Please log in and try again.');
+      return;
+    }
+
     if (selectedPreferences.length === 0) {
       setError('Please select at least one preference');
       return;
@@ -247,18 +299,41 @@ const TouristPreferencesForm = () => {
       setError('End date must be after start date');
       return;
     }
+    if (userInfo.preferredStartTime && userInfo.preferredEndTime && userInfo.preferredStartTime >= userInfo.preferredEndTime) {
+      setError('Preferred end time must be after start time');
+      return;
+    }
 
     try {
       setLoading(true);
       setError(null);
 
-      
       const duration = calculateDuration();
+      const preferenceWeights = calculatePreferenceWeights();
 
-      // Format data for the backend 
+      // Create weighted preferences array
+      const weightedPreferences = selectedPreferences.map((prefId, index) => {
+        const category = preferenceCategories.find(cat => cat.id === prefId);
+        return {
+          id: prefId,
+          name: category.name,
+          selectionOrder: index + 1,
+          weight: selectedPreferences.length - index,
+          tags: category.tags
+        };
+      });
+
+      // Complete JSON data structure
       const preferencesData = {
-        userId: 1, // You can get this from your auth system
+        userId: userId,
+        userEmail: user?.email,
+        
+        // Preference data with dynamic weights
         preferences: selectedPreferences,
+        weightedPreferences: weightedPreferences,
+        preferenceWeights: preferenceWeights,
+        
+        // Trip details
         budget: parseFloat(userInfo.budget),
         currency: userInfo.currency,
         duration: duration,
@@ -266,18 +341,30 @@ const TouristPreferencesForm = () => {
         startTime: userInfo.startTime || '09:00',
         endDate: userInfo.endDate,
         endTime: userInfo.endTime || '18:00',
+        
+        // Location and accommodation
         parish: userInfo.parish,
         accommodation: userInfo.accommodation,
         groupSize: parseInt(userInfo.groupSize),
-        preferredDays: userInfo.preferredDays // NEW: Include preferred days
+        
+        // Activity preferences
+        preferredDays: userInfo.preferredDays,
+        preferredStartTime: userInfo.preferredStartTime,
+        preferredEndTime: userInfo.preferredEndTime,
+        
+        // Metadata
+        createdAt: new Date().toISOString(),
+        formVersion: '2.0'
       };
 
-      console.log('Saving preferences:', preferencesData);
+      console.log('=== COMPLETE JSON BEING SENT TO BACKEND ===');
+      console.log(JSON.stringify(preferencesData, null, 2));
+      console.log('=== END JSON ===');
 
-      // Save preferences to your existing backend
-      const response = await fetch('http://localhost:5001/preferences/save-preferences', {
+      const response = await fetch('http://localhost:5001/api/preferences/save-preferences', {
         method: 'POST',
         headers: {
+          ...getAuthHeaders(),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(preferencesData)
@@ -285,44 +372,74 @@ const TouristPreferencesForm = () => {
       
       if (response.ok) {
         const result = await response.json();
-        console.log('Preferences saved:', result);
+        console.log('Preferences saved successfully:', result);
 
+        // Save to localStorage with user ID
+        localStorage.setItem(`touristPreferences_${userId}`, JSON.stringify(preferencesData));
+        localStorage.setItem(`userInfo_${userId}`, JSON.stringify(userInfo));
+        localStorage.setItem(`selectedPreferences_${userId}`, JSON.stringify(selectedPreferences));
+        localStorage.setItem(`preferenceWeights_${userId}`, JSON.stringify(preferenceWeights));
         
+        sessionStorage.setItem('currentTouristPreferences', JSON.stringify(preferencesData));
         
-        // Method 1: Save to localStorage 
-        localStorage.setItem('touristPreferences', JSON.stringify(preferencesData));
-        localStorage.setItem('userInfo', JSON.stringify(userInfo));
-        localStorage.setItem('selectedPreferences', JSON.stringify(selectedPreferences));
-        
-        // Method 2: Save to sessionStorage (alternative)
-        sessionStorage.setItem('touristPreferences', JSON.stringify(preferencesData));
-        
-        // Method 3: Set global window variable (if needed)
         window.touristData = {
           preferences: preferencesData,
           userInfo: userInfo,
-          selectedPreferences: selectedPreferences
+          selectedPreferences: selectedPreferences,
+          preferenceWeights: preferenceWeights,
+          userId: userId
         };
 
-        // Show success message
-        alert('Preferences saved! Redirecting to itinerary planner...');
-        
+        alert(`Preferences saved successfully for ${user?.username || user?.email}! Your top priority is ${preferenceCategories.find(p => p.id === selectedPreferences[0])?.name}. Preferred activity time: ${formatTime(userInfo.preferredStartTime)} - ${formatTime(userInfo.preferredEndTime)}. Redirecting to itinerary planner...`);
         
         setTimeout(() => {
-          window.location.href = '/itinerarygen'; // Change this to your actual itinerary page path
+          window.location.href = '/itinerarygen';
         }, 1000);
         
       } else {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to save preferences');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save preferences');
       }
     } catch (error) {
       console.error('Error saving preferences:', error);
-      setError('Sorry, there was an error saving your preferences. Please try again.');
+      if (error.message.includes('401') || error.message.includes('unauthorized')) {
+        setError('Your session has expired. Please log in again.');
+      } else {
+        setError('Sorry, there was an error saving your preferences. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  // Authentication check
+  if (!isAuthenticated) {
+    return (
+      <div style={{ 
+        textAlign: 'center', 
+        padding: '50px', 
+        maxWidth: '600px', 
+        margin: '0 auto' 
+      }}>
+        <h2>Please Log In</h2>
+        <p>You need to be logged in to set your travel preferences.</p>
+        <button 
+          onClick={() => window.location.href = '/login'}
+          style={{
+            padding: '12px 24px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '16px'
+          }}
+        >
+          Go to Login
+        </button>
+      </div>
+    );
+  }
 
   const getStepContent = () => {
     switch(currentStep) {
@@ -337,14 +454,14 @@ const TouristPreferencesForm = () => {
                 </span>
               </h1>
               <p className="tourist-preferences-hero-subtitle">
-                Select your interests and let us craft a personalized journey through paradise. 
-                Rank them by priority to get the perfect recommendations.
+                Select your interests in order of priority. Your first choice gets the highest weight in recommendations!
               </p>
             </div>
             
             <div className="tourist-preferences-grid">
               {preferenceCategories.map(category => {
                 const rank = getPreferenceRank(category.id);
+                const weight = getPreferenceWeight(category.id);
                 const isSelected = rank !== null;
                 
                 return (
@@ -375,7 +492,7 @@ const TouristPreferencesForm = () => {
                     
                     {isSelected && (
                       <div className="tourist-preferences-priority-badge">
-                        Priority #{rank}
+                        Priority #{rank} • Weight: {weight}
                       </div>
                     )}
                   </button>
@@ -393,7 +510,7 @@ const TouristPreferencesForm = () => {
                 </div>
                 {selectedPreferences.length > 0 && (
                   <div className="tourist-preferences-stats-subtext">
-                    ✨ Perfectly ranked for you
+                    ✨ Weighted by selection order: "{preferenceCategories.find(p => p.id === selectedPreferences[0])?.name}" has highest priority
                   </div>
                 )}
               </div>
@@ -518,40 +635,174 @@ const TouristPreferencesForm = () => {
                 )}
               </div>
 
-              {/* NEW: Preferred Activity Days */}
+              {/* Preferred Activity Dates */}
               <div className="tourist-preferences-glass-container">
                 <div className="tourist-preferences-section-header">
-                  <h3>Preferred Activity Days</h3>
-                  <p>Which days of the week do you prefer for activities and tours?</p>
+                  <h3>Preferred Activity Dates</h3>
+                  <p>Select specific dates when you'd prefer to do activities and tours</p>
                 </div>
                 
-                <div className="tourist-preferences-days-grid">
-                  {daysOfWeek.map(day => {
-                    const isSelected = userInfo.preferredDays.includes(day.id);
-                    return (
-                      <button
-                        key={day.id}
-                        onClick={() => togglePreferredDay(day.id)}
-                        className={`tourist-preferences-day-button ${isSelected ? 'selected' : ''}`}
-                        type="button"
-                      >
-                        <div className="tourist-preferences-day-emoji">{day.emoji}</div>
-                        <div className="tourist-preferences-day-name">{day.name}</div>
-                        <div className="tourist-preferences-day-short">{day.short}</div>
-                        {isSelected && (
-                          <div className="tourist-preferences-day-checkmark">✓</div>
-                        )}
-                      </button>
-                    );
-                  })}
+                <div className="tourist-preferences-date-selector">
+                  <div className="tourist-preferences-date-input-wrapper">
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      min={userInfo.startDate || undefined}
+                      max={userInfo.endDate || undefined}
+                      className="tourist-preferences-date-select-input"
+                    />
+                    <button
+                      type="button"
+                      onClick={addPreferredDate}
+                      disabled={!selectedDate || userInfo.preferredDays.includes(selectedDate)}
+                      style={{
+                        padding: '10px 20px',
+                        backgroundColor: !selectedDate || userInfo.preferredDays.includes(selectedDate) ? '#ccc' : '#007bff',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: !selectedDate || userInfo.preferredDays.includes(selectedDate) ? 'not-allowed' : 'pointer',
+                        marginLeft: '10px'
+                      }}
+                    >
+                      Add Date
+                    </button>
+                  </div>
+                  
+                  {userInfo.preferredDays.length > 0 && (
+                    <div className="tourist-preferences-selected-dates">
+                      <h4 style={{ marginBottom: '15px', color: '#333' }}>Selected Preferred Dates:</h4>
+                      <div className="tourist-preferences-dates-list">
+                        {userInfo.preferredDays.map((dateStr, index) => (
+                          <div
+                            key={index}
+                            className="tourist-preferences-date-item"
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              padding: '12px 16px',
+                              backgroundColor: '#f8f9fa',
+                              border: '1px solid #e9ecef',
+                              borderRadius: '8px',
+                              marginBottom: '8px'
+                            }}
+                          >
+                            <span style={{ fontWeight: '500', color: '#495057' }}>
+                              📅 {formatSingleDate(dateStr)}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removePreferredDate(dateStr)}
+                              style={{
+                                backgroundColor: '#dc3545',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                padding: '4px 8px',
+                                cursor: 'pointer',
+                                fontSize: '12px'
+                              }}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="tourist-preferences-dates-help">
+                    <p>
+                      💡 <strong>Pro tip:</strong> Select specific dates when you want to be most active. 
+                      {userInfo.preferredDays.length === 0 && " Leave empty if you're flexible with any day during your trip."}
+                      {userInfo.preferredDays.length > 0 && ` You've selected ${userInfo.preferredDays.length} preferred date${userInfo.preferredDays.length === 1 ? '' : 's'}.`}
+                    </p>
+                    {userInfo.startDate && userInfo.endDate && (
+                      <p style={{ fontSize: '14px', color: '#666', marginTop: '8px' }}>
+                        You can only select dates between {formatDate(userInfo.startDate)} and {formatDate(userInfo.endDate)}.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* NEW: Preferred Activity Times */}
+              <div className="tourist-preferences-glass-container">
+                <div className="tourist-preferences-section-header">
+                  <h3>Preferred Activity Times</h3>
+                  <p>Set your preferred start and end times for daily activities</p>
                 </div>
                 
-                <div className="tourist-preferences-days-help">
-                  <p>
-                    💡 <strong>Pro tip:</strong> Select multiple days for more flexible scheduling. 
-                    {userInfo.preferredDays.length === 0 && " We'll assume you're available any day if nothing is selected."}
-                    {userInfo.preferredDays.length > 0 && ` You've selected ${userInfo.preferredDays.length} day${userInfo.preferredDays.length === 1 ? '' : 's'}.`}
-                  </p>
+                <div className="tourist-preferences-time-preferences">
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '20px',
+                    marginBottom: '20px'
+                  }}>
+                    <div>
+                      <label className="tourist-preferences-input-label">Preferred Start Time</label>
+                      <input
+                        type="time"
+                        value={userInfo.preferredStartTime}
+                        onChange={(e) => handleUserInfoChange('preferredStartTime', e.target.value)}
+                        className="tourist-preferences-time-input"
+                        style={{
+                          width: '100%',
+                          padding: '12px',
+                          border: '2px solid #e9ecef',
+                          borderRadius: '8px',
+                          fontSize: '16px'
+                        }}
+                      />
+                      <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                        When you prefer activities to begin
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <label className="tourist-preferences-input-label">Preferred End Time</label>
+                      <input
+                        type="time"
+                        value={userInfo.preferredEndTime}
+                        onChange={(e) => handleUserInfoChange('preferredEndTime', e.target.value)}
+                        className="tourist-preferences-time-input"
+                        style={{
+                          width: '100%',
+                          padding: '12px',
+                          border: '2px solid #e9ecef',
+                          borderRadius: '8px',
+                          fontSize: '16px'
+                        }}
+                      />
+                      <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                        When you prefer activities to end
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {userInfo.preferredStartTime && userInfo.preferredEndTime && (
+                    <div style={{
+                      backgroundColor: '#e8f5e8',
+                      border: '1px solid #4caf50',
+                      borderRadius: '8px',
+                      padding: '15px',
+                      textAlign: 'center'
+                    }}>
+                      <p style={{ margin: 0, color: '#2e7d32', fontWeight: '500' }}>
+                        🕐 Your preferred activity window: {formatTime(userInfo.preferredStartTime)} - {formatTime(userInfo.preferredEndTime)}
+                      </p>
+                    </div>
+                  )}
+                  
+                  <div className="tourist-preferences-time-help" style={{ marginTop: '15px' }}>
+                    <p>
+                      💡 <strong>Pro tip:</strong> We'll try to schedule most activities within your preferred time window. 
+                      {!userInfo.preferredStartTime && !userInfo.preferredEndTime && " Default is 9:00 AM - 5:00 PM if not specified."}
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -634,13 +885,13 @@ const TouristPreferencesForm = () => {
 
             <div className="tourist-preferences-review-grid">
               
-              {/* Priorities */}
+              {/* Weighted priorities */}
               <div className="tourist-preferences-glass-container">
                 <div className="tourist-preferences-review-header">
                   <span className="tourist-preferences-review-icon">🏆</span>
                   <div>
-                    <h3 className="tourist-preferences-review-title">Your Priorities</h3>
-                    <p className="tourist-preferences-review-subtitle">Perfectly ranked experiences</p>
+                    <h3 className="tourist-preferences-review-title">Your Weighted Priorities</h3>
+                    <p className="tourist-preferences-review-subtitle">Ranked by selection order with dynamic weights</p>
                   </div>
                 </div>
                 
@@ -648,6 +899,7 @@ const TouristPreferencesForm = () => {
                   <div className="tourist-preferences-priority-list">
                     {selectedPreferences.slice(0, 5).map((prefId, index) => {
                       const pref = preferenceCategories.find(p => p.id === prefId);
+                      const weight = selectedPreferences.length - index;
                       return (
                         <div key={prefId} className="tourist-preferences-priority-item">
                           <div className="tourist-preferences-priority-number">
@@ -662,14 +914,16 @@ const TouristPreferencesForm = () => {
                           </div>
                           <div className="tourist-preferences-priority-info">
                             <div className="tourist-preferences-priority-name">{pref.name}</div>
-                            <div className="tourist-preferences-priority-desc">Top priority experience</div>
+                            <div className="tourist-preferences-priority-desc">
+                              Weight: {weight} • {index === 0 ? 'Highest Priority' : `Priority ${index + 1}`}
+                            </div>
                           </div>
                         </div>
                       );
                     })}
                     {selectedPreferences.length > 5 && (
                       <div className="tourist-preferences-priority-more">
-                        + {selectedPreferences.length - 5} more experiences
+                        + {selectedPreferences.length - 5} more experiences with weights {selectedPreferences.length - 5} to 1
                       </div>
                     )}
                   </div>
@@ -719,16 +973,60 @@ const TouristPreferencesForm = () => {
                     </span>
                   </div>
 
-                  {/* NEW: Preferred Days Summary */}
                   <div className="tourist-preferences-summary-item">
                     <div className="tourist-preferences-summary-label">
                       <span className="tourist-preferences-summary-icon">📆</span>
-                      <span>Preferred Activity Days</span>
+                      <span>Preferred Activity Dates</span>
                     </div>
                     <span className="tourist-preferences-summary-value">
-                      {formatPreferredDays()}
+                      {formatPreferredDates()}
                     </span>
                   </div>
+
+                  {/* NEW: Preferred Activity Times Summary */}
+                  <div className="tourist-preferences-summary-item">
+                    <div className="tourist-preferences-summary-label">
+                      <span className="tourist-preferences-summary-icon">🕐</span>
+                      <span>Preferred Activity Times</span>
+                    </div>
+                    <span className="tourist-preferences-summary-value">
+                      {userInfo.preferredStartTime && userInfo.preferredEndTime 
+                        ? `${formatTime(userInfo.preferredStartTime)} - ${formatTime(userInfo.preferredEndTime)}`
+                        : 'Default hours (9:00 AM - 5:00 PM)'
+                      }
+                    </span>
+                  </div>
+                  
+                  {userInfo.preferredDays.length > 0 && (
+                    <div className="tourist-preferences-summary-item" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                      <div className="tourist-preferences-summary-label" style={{ marginBottom: '8px' }}>
+                        <span className="tourist-preferences-summary-icon">📋</span>
+                        <span>Selected Dates</span>
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        {userInfo.preferredDays.slice(0, 3).map((dateStr, index) => (
+                          <span
+                            key={index}
+                            style={{
+                              backgroundColor: '#e3f2fd',
+                              color: '#1565c0',
+                              padding: '4px 8px',
+                              borderRadius: '12px',
+                              fontSize: '12px',
+                              fontWeight: '500'
+                            }}
+                          >
+                            {formatSingleDate(dateStr)}
+                          </span>
+                        ))}
+                        {userInfo.preferredDays.length > 3 && (
+                          <span style={{ fontSize: '12px', color: '#666' }}>
+                            +{userInfo.preferredDays.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="tourist-preferences-summary-item">
                     <div className="tourist-preferences-summary-label">
@@ -763,7 +1061,6 @@ const TouristPreferencesForm = () => {
               </div>
             </div>
 
-            {/* NEW: Error Display */}
             {error && (
               <div className="tourist-preferences-error-message">
                 <span>⚠️</span>
@@ -867,7 +1164,7 @@ const TouristPreferencesForm = () => {
         )}
       </div>
 
-      {/* NEW: Loading Overlay */}
+      {/* Loading Overlay */}
       {loading && (
         <div style={{
           position: 'fixed',
@@ -897,8 +1194,8 @@ const TouristPreferencesForm = () => {
               animation: 'spin 1s linear infinite',
               margin: '0 auto 1rem auto'
             }}></div>
-            <h3>Saving Your Preferences</h3>
-            <p>Preparing your personalized Jamaica experience...</p>
+            <h3>Saving Your Weighted Preferences</h3>
+            <p>Preparing your personalized Jamaica experience with priority weights and time preferences...</p>
           </div>
         </div>
       )}
