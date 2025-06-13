@@ -91,7 +91,7 @@ const handleSavePreferences = async () => {
         `Your preferences has been saved`, 
           "success"
       );
-      navigate('/generate');
+      //navigate('/generate');
       // Optionally redirect after successful save
       // setTimeout(() => window.location.href = '/dashboard', 2000);
     } else {

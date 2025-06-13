@@ -11,16 +11,17 @@ import musicImg from '../images/bobmarley.jpg';
 import shoppingImg from '../images/craftmarket.png';
 import nightlifeImg from '../images/party.png';
 import wellnessImg from '../images/spa.jpg';
+import foreigncuisine from '../images/foreigncuisine.jpeg';
 
 const TouristPreferencesForm = () => {
   // Add useAuth hook to get current user data
   const { user, userId, isAuthenticated, getAuthHeaders } = useAuth();
-  
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState('');
+  const [success, setSuccess] = useState(null);
   
   const [userInfo, setUserInfo] = useState({
     budget: '',
@@ -57,14 +58,14 @@ const TouristPreferencesForm = () => {
       name: 'Pristine Beaches', 
       description: 'Crystal clear waters and pristine white sand beaches',
       image: beachImg,
-      tags: ['beach', 'water sports', 'relaxation', 'swimming']
+      tags: ['Beach/River', 'beach', 'river' ]
     },
     { 
       id: 'nature', 
       name: 'Nature & Wildlife', 
       description: 'Lush rainforests, cascading waterfalls, and exotic wildlife',
       image: natureImg,
-      tags: ['nature', 'hiking', 'wildlife', 'outdoor adventure', 'waterfalls']
+      tags: ['outdoor adventure', 'nature']
     },
     { 
       id: 'culture', 
@@ -82,7 +83,7 @@ const TouristPreferencesForm = () => {
     },
     { 
       id: 'food', 
-      name: 'Culinary Journey', 
+      name: 'Local Cuisine', 
       description: 'Authentic jerk cuisine and local delicacies',
       image: foodImg,
       tags: ['food', 'dining', 'local cuisine', 'jerk chicken', 'restaurant']
@@ -92,7 +93,7 @@ const TouristPreferencesForm = () => {
       name: 'Music & Festivals', 
       description: 'Reggae rhythms and vibrant cultural festivals',
       image: musicImg,
-      tags: ['music', 'festival', 'reggae', 'entertainment', 'live music']
+      tags: ['concert','live music', 'festival']
     },
     { 
       id: 'shopping', 
@@ -106,14 +107,22 @@ const TouristPreferencesForm = () => {
       name: 'Vibrant Nightlife', 
       description: 'Exciting bars, clubs, and evening entertainment',
       image: nightlifeImg,
-      tags: ['nightlife', 'bars', 'clubs', 'party', 'entertainment']
+      tags: ['bars', 'clubs', 'party', 'entertainment', 'Bar/Club/Party']
     },
-    { 
-      id: 'wellness', 
-      name: 'Wellness & Spa', 
-      description: 'Rejuvenating spas and peaceful relaxation',
-      image: wellnessImg,
-      tags: ['wellness', 'spa', 'relaxation', 'massage', 'health']
+    // { 
+    //   id: 'wellness', 
+    //   name: 'Wellness & Spa', 
+    //   description: 'Rejuvenating spas and peaceful relaxation',
+    //   image: wellnessImg,
+    //   tags: ['wellness', 'spa', 'relaxation', 'massage', 'health']
+    // },
+    {
+      id: 'unique food',
+      name:'Foreign Cuisine',
+      description:'Enjoy our local twist on foreign cuisine from other cultures',
+      image: foreigncuisine,
+      tags:['Unique Food & Dining']
+
     }
   ];
 
@@ -280,137 +289,157 @@ const TouristPreferencesForm = () => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  // Handle submit with all data including preferred times
-  const handleSubmit = async () => {
-    if (!isAuthenticated || !userId) {
-      setError('You must be logged in to save preferences. Please log in and try again.');
-      return;
-    }
+  
 
-    if (selectedPreferences.length === 0) {
-      setError('Please select at least one preference');
-      return;
-    }
-    if (!userInfo.budget || !userInfo.startDate || !userInfo.endDate || !userInfo.groupSize) {
-      setError('Please fill in all required fields (budget, dates, and group size)');
-      return;
-    }
-    if (new Date(userInfo.startDate) >= new Date(userInfo.endDate)) {
-      setError('End date must be after start date');
-      return;
-    }
-    if (userInfo.preferredStartTime && userInfo.preferredEndTime && userInfo.preferredStartTime >= userInfo.preferredEndTime) {
-      setError('Preferred end time must be after start time');
-      return;
-    }
+// Handle submit with simplified preference structure
+const handleSubmit = async () => {
+  if (!isAuthenticated || !userId) {
+    setError('You must be logged in to save preferences. Please log in and try again.');
+    return;
+  }
 
-    try {
-      setLoading(true);
-      setError(null);
+  if (selectedPreferences.length === 0) {
+    setError('Please select at least one preference');
+    return;
+  }
+  if (!userInfo.budget || !userInfo.startDate || !userInfo.endDate || !userInfo.groupSize) {
+    setError('Please fill in all required fields (budget, dates, and group size)');
+    return;
+  }
+  if (new Date(userInfo.startDate) >= new Date(userInfo.endDate)) {
+    setError('End date must be after start date');
+    return;
+  }
+  if (userInfo.preferredStartTime && userInfo.preferredEndTime && userInfo.preferredStartTime >= userInfo.preferredEndTime) {
+    setError('Preferred end time must be after start time');
+    return;
+  }
 
-      const duration = calculateDuration();
-      const preferenceWeights = calculatePreferenceWeights();
+  try {
+    setLoading(true);
+    setError(null);
 
-      // Create weighted preferences array
-      const weightedPreferences = selectedPreferences.map((prefId, index) => {
-        const category = preferenceCategories.find(cat => cat.id === prefId);
-        return {
-          id: prefId,
-          name: category.name,
-          selectionOrder: index + 1,
-          weight: selectedPreferences.length - index,
-          tags: category.tags
-        };
-      });
+    const duration = calculateDuration();
+    const preferenceWeights = calculatePreferenceWeights();
 
-      // Complete JSON data structure
-      const preferencesData = {
-        userId: userId,
-        userEmail: user?.email,
-        
-        // Preference data with dynamic weights
+    // Map category IDs to descriptive tag names
+    const categoryTagMapping = {
+      'beaches': 'Pristine Beaches',
+      'nature': 'Nature & Wildlife', 
+      'culture': 'Museum/Historical Site',
+      'adventure': 'Adventure Sports',
+      'food': 'Local Food/Dining',
+      'music': 'Live Music',
+      'shopping': 'Local Markets',
+      'nightlife': 'Club/Bar/Party',
+      'wellness': 'Wellness & Spa'
+    };
+
+    // Create simplified weighted preferences array - ONLY tag and weight
+    const weightedPreferences = selectedPreferences.map((prefId, index) => {
+      return {
+        tag: categoryTagMapping[prefId] || prefId, // Use descriptive name or fallback to ID
+        weight: selectedPreferences.length - index  // Higher weight for earlier selections
+      };
+    });
+
+    // Create trip data object
+    const tripData = {
+      userId: userId,
+      userEmail: user?.email,
+      
+      // Trip details
+      budget: parseFloat(userInfo.budget),
+      currency: userInfo.currency,
+      duration: duration,
+      startDate: userInfo.startDate,
+      startTime: userInfo.startTime || '09:00',
+      endDate: userInfo.endDate,
+      endTime: userInfo.endTime || '18:00',
+      
+      // Location and accommodation
+      parish: userInfo.parish,
+      accommodation: userInfo.accommodation,
+      groupSize: parseInt(userInfo.groupSize),
+      
+      // Activity preferences
+      preferredDays: userInfo.preferredDays,
+      preferredStartTime: userInfo.preferredStartTime || '09:00',
+      preferredEndTime: userInfo.preferredEndTime || '17:00',
+      
+      // Metadata
+      createdAt: new Date().toISOString(),
+      formVersion: '2.0'
+    };
+
+    // Structure data the way backend expects it
+    const requestData = {
+      tripData: tripData,
+      weightedPreferences: weightedPreferences
+    };
+
+    console.log('=== SIMPLIFIED PREFERENCES BEING SENT ===');
+    console.log('Weighted Preferences:', JSON.stringify(weightedPreferences, null, 2));
+    console.log('Trip Data:', JSON.stringify(tripData, null, 2));
+    console.log('=== END REQUEST DATA ===');
+
+    const response = await fetch('http://localhost:5001/api/tourists/save-preferences', {
+      method: 'POST',
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData)
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Preferences saved successfully:', result);
+
+      // Save to localStorage with user ID (keep the complete data structure for frontend use)
+      const completePreferencesData = {
+        ...tripData,
         preferences: selectedPreferences,
         weightedPreferences: weightedPreferences,
-        preferenceWeights: preferenceWeights,
-        
-        // Trip details
-        budget: parseFloat(userInfo.budget),
-        currency: userInfo.currency,
-        duration: duration,
-        startDate: userInfo.startDate,
-        startTime: userInfo.startTime || '09:00',
-        endDate: userInfo.endDate,
-        endTime: userInfo.endTime || '18:00',
-        
-        // Location and accommodation
-        parish: userInfo.parish,
-        accommodation: userInfo.accommodation,
-        groupSize: parseInt(userInfo.groupSize),
-        
-        // Activity preferences
-        preferredDays: userInfo.preferredDays,
-        preferredStartTime: userInfo.preferredStartTime,
-        preferredEndTime: userInfo.preferredEndTime,
-        
-        // Metadata
-        createdAt: new Date().toISOString(),
-        formVersion: '2.0'
+        preferenceWeights: preferenceWeights
       };
 
-      console.log('=== COMPLETE JSON BEING SENT TO BACKEND ===');
-      console.log(JSON.stringify(preferencesData, null, 2));
-      console.log('=== END JSON ===');
-
-      const response = await fetch('http://localhost:5001/api/preferences/save-preferences', {
-        method: 'POST',
-        headers: {
-          ...getAuthHeaders(),
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(preferencesData)
-      });
+      localStorage.setItem(`touristPreferences_${userId}`, JSON.stringify(completePreferencesData));
+      localStorage.setItem(`userInfo_${userId}`, JSON.stringify(userInfo));
+      localStorage.setItem(`selectedPreferences_${userId}`, JSON.stringify(selectedPreferences));
+      localStorage.setItem(`preferenceWeights_${userId}`, JSON.stringify(preferenceWeights));
       
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Preferences saved successfully:', result);
+      sessionStorage.setItem('currentTouristPreferences', JSON.stringify(completePreferencesData));
+      
+      window.touristData = {
+        preferences: completePreferencesData,
+        userInfo: userInfo,
+        selectedPreferences: selectedPreferences,
+        preferenceWeights: preferenceWeights,
+        userId: userId
+      };
 
-        // Save to localStorage with user ID
-        localStorage.setItem(`touristPreferences_${userId}`, JSON.stringify(preferencesData));
-        localStorage.setItem(`userInfo_${userId}`, JSON.stringify(userInfo));
-        localStorage.setItem(`selectedPreferences_${userId}`, JSON.stringify(selectedPreferences));
-        localStorage.setItem(`preferenceWeights_${userId}`, JSON.stringify(preferenceWeights));
-        
-        sessionStorage.setItem('currentTouristPreferences', JSON.stringify(preferencesData));
-        
-        window.touristData = {
-          preferences: preferencesData,
-          userInfo: userInfo,
-          selectedPreferences: selectedPreferences,
-          preferenceWeights: preferenceWeights,
-          userId: userId
-        };
-
-        alert(`Preferences saved successfully for ${user?.username || user?.email}! Your top priority is ${preferenceCategories.find(p => p.id === selectedPreferences[0])?.name}. Preferred activity time: ${formatTime(userInfo.preferredStartTime)} - ${formatTime(userInfo.preferredEndTime)}. Redirecting to itinerary planner...`);
-        
-        setTimeout(() => {
-          window.location.href = '/itinerarygen';
-        }, 1000);
-        
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to save preferences');
-      }
-    } catch (error) {
-      console.error('Error saving preferences:', error);
-      if (error.message.includes('401') || error.message.includes('unauthorized')) {
-        setError('Your session has expired. Please log in again.');
-      } else {
-        setError('Sorry, there was an error saving your preferences. Please try again.');
-      }
-    } finally {
-      setLoading(false);
+      //alert(`Preferences saved successfully for ${user?.username || user?.email}! Your top priority is ${weightedPreferences[0]?.tag} (weight: ${weightedPreferences[0]?.weight}). Preferred activity time: ${formatTime(userInfo.preferredStartTime || '09:00')} - ${formatTime(userInfo.preferredEndTime || '17:00')}. Redirecting to itinerary planner...`);
+      
+      setTimeout(() => {
+        window.location.href = '/tourist-profile';
+      }, 1000);
+      
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to save preferences');
     }
-  };
+  } catch (error) {
+    console.error('Error saving preferences:', error);
+    if (error.message.includes('401') || error.message.includes('unauthorized')) {
+      setError('Your session has expired. Please log in again.');
+    } else {
+      setError('Sorry, there was an error saving your preferences. Please try again.');
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Authentication check
   if (!isAuthenticated) {
