@@ -1,8 +1,8 @@
-CREATE DATABASE Capstone;
+CREATE DATABASE IF NOT EXISTS Capstone;
+USE Capstone;
 
 CREATE TABLE users(
-    user_id uuid PRIMARY KEY DEFAULT
-    uuid_generate_v4(),
+    user_id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     user_name VARCHAR(255) NOT NULL,
     user_email VARCHAR(255) NOT NULL,
     user_password VARCHAR(255) NOT NULL
