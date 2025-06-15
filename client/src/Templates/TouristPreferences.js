@@ -420,7 +420,11 @@ const handleSubmit = async () => {
       };
 
       //alert(`Preferences saved successfully for ${user?.username || user?.email}! Your top priority is ${weightedPreferences[0]?.tag} (weight: ${weightedPreferences[0]?.weight}). Preferred activity time: ${formatTime(userInfo.preferredStartTime || '09:00')} - ${formatTime(userInfo.preferredEndTime || '17:00')}. Redirecting to itinerary planner...`);
-      
+      setSuccess({
+        title: 'Preferences Saved Successfully!',
+        message: `Your top priority is ${weightedPreferences[0]?.tag} (weight: ${weightedPreferences[0]?.weight}). Preferred activity time: ${formatTime(userInfo.preferredStartTime || '09:00')} - ${formatTime(userInfo.preferredEndTime || '17:00')}.`,
+        redirect: 'Redirecting to itinerary planner in 3 seconds...'
+      });
       setTimeout(() => {
         window.location.href = '/tourist-profile';
       }, 1000);

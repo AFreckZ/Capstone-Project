@@ -163,7 +163,7 @@ export default function CreateEventPage() {
         </div>
 
         <div className="form-group">
-          <label>Cost (JMD):</label>
+          <label>Average Cost (JMD):</label>
           <input type="number" value={cost} onChange={(e) => setCost(e.target.value)} />
         </div>
 
