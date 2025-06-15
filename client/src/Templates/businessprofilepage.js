@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import '../css/ProfilePage.css';
+import '../css/businessprofile.css';
 import profileImage from '../images/sunset.jpg'; 
 import { Link } from 'react-router-dom';
 import {useNavigate} from "react-router-dom";
