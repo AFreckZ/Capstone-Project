@@ -11,14 +11,11 @@ import BusinessProfileForm from './Templates/BusinessProfileForm';
 import CreateEventPage from './Templates/CreateEventPage';
 import CreateVenuePage from './Templates/CreateVenuePage';
 import Welcome from './Templates/WelcomePage';
+import AgencyProfilePage from './Templates/AgencyProfilePage';
 
 function App() {
 
   return (
-    /*<div>
-      <BusinessProfileForm />
-    </div>*/
-    
     <Router>
       <Routes>
         <Route path="/" element={<Welcome />} />
@@ -31,6 +28,7 @@ function App() {
         <Route path="/business-profile" element={<BusinessProfileForm />} />
         <Route path="/create-event" element={<CreateEventPage />} />
         <Route path="/create-venue" element={<CreateVenuePage />} />
+        <Route path="/agencyprofilepage" element={<AgencyProfilePage />} />
       </Routes>
     </Router>
   );
