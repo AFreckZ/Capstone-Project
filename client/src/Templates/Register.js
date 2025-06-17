@@ -6,6 +6,7 @@ import Beach from "../images/Beach.jpg";
 //import { Icon } from "react-icons-kit";
 //import { eye } from "react-icons-kit/feather/eye.js";
 //import { eyeOff } from "react-icons-kit/feather/eyeOff.js";
+import logo from "../images/Logo(YaadQuest).png";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -105,7 +106,7 @@ function Register() {
       <div className="register-right">
         <div className="register-form-container">
           <div className="register-logo">
-            <img src="/path-to-logo.png" alt="Logo" />
+            <img src={logo} alt="Logo" />
           </div>
           <h2 className="register-title">Register</h2>
           

@@ -147,11 +147,7 @@ export default function CreateEventPage() {
       </header>
 
       <div className="trip-banner">
-        <button className="back-button">⟵ Back</button>
-        <div className="banner-content">
-          <h1>Create Event</h1>
-          <p>Enter the details for your events</p>
-        </div>
+        
         <button className="back-button">⟵ Back</button>
         <div className="banner-content">
           <h1>Create Event</h1>
@@ -198,22 +194,7 @@ export default function CreateEventPage() {
               <input type="file" accept="image/*" onChange={(e) => setFlyerImage(e.target.files[0])} />
             </div>
           )}
-          <select
-            value={eventType}
-            onChange={(e) => setEventType(e.target.value)}
-          >
-            <option value="">Select an event type</option>
-            <option value="Concert">Concert</option>
-            <option value="Festival">Festival</option>
-            <option value="Food Fair">Food Fair</option>
-            <option value="Cultural Show">Cultural Show</option>
-            <option value="Tour">Tour</option>
-            <option value="Beach Party">Beach Party</option>
-            <option value="Community Market">Community Market</option>
-            <option value="Wellness Retreat">Wellness Retreat</option>
-            <option value="Nightlife">Nightlife</option>
-            <option value="Other">Other</option>
-          </select>
+          
 
           {["Food Fair", "Restaurant"].includes(eventType) && (
             <div className="form-group">
@@ -308,7 +289,6 @@ export default function CreateEventPage() {
 
 
         <div className="action-buttons">
-          <button className="finish-button" onClick={handleCreateEvent}>Create Event</button>
           <button className="finish-button" onClick={handleCreateEvent}>Create Event</button>
           <button className="cancel-button">Cancel</button>
         </div>
