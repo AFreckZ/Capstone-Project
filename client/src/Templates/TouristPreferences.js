@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import '../css/TouristPreferences.css';
+import JamaicanAddressForm from "./JamaicanAddressForm";
 import beachImg from '../images/beach2.jpg';
 import natureImg from '../images/bluemountain.jpg';
 import cultureImg from '../images/halfwaytree.jpg';
@@ -22,6 +23,7 @@ const TouristPreferencesForm = () => {
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState('');
   const [success, setSuccess] = useState(null);
+  const [convertedAmount, setConvertedAmount] = useState(0);
   
   const [userInfo, setUserInfo] = useState({
     budget: '',
@@ -50,7 +52,18 @@ const TouristPreferencesForm = () => {
     { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
     { code: 'INR', symbol: '₹', name: 'Indian Rupee' }
   ];
-
+  const currencyToJMD = {
+    'USD': 157.50,  // 1 USD = 157.50 JMD (approximate)
+    'JMD': 1.00,    // 1 JMD = 1 JMD
+    'EUR': 172.30,  // 1 EUR = 172.30 JMD (approximate)
+    'GBP': 200.45,  // 1 GBP = 200.45 JMD (approximate)
+    'CAD': 116.25,  // 1 CAD = 116.25 JMD (approximate)
+    'AUD': 102.80,  // 1 AUD = 102.80 JMD (approximate)
+    'CHF': 175.90,  // 1 CHF = 175.90 JMD (approximate)
+    'JPY': 1.05,    // 1 JPY = 1.05 JMD (approximate)
+    'CNY': 21.75,   // 1 CNY = 21.75 JMD (approximate)
+    'INR': 1.88     // 1 INR = 1.88 JMD (approximate)
+  };
   // Preference categories without fixed weights - weights calculated dynamically
   const preferenceCategories = [
     { 
@@ -136,6 +149,18 @@ const TouristPreferencesForm = () => {
     const currency = currencies.find(c => c.code === currencyCode);
     return currency ? currency.symbol : '$';
   };
+  const formatCurrencyDisplay = (amount, currency) => {
+  if (!amount) return '';
+  const symbol = getCurrencySymbol(currency);
+  return `${symbol}${parseFloat(amount).toLocaleString()}`;
+  };
+
+  const convertToJMD = (amount, fromCurrency) => {
+  if (!amount || !fromCurrency) return 0;
+  const rate = currencyToJMD[fromCurrency] || 1;
+  return parseFloat(amount) * rate;
+  };
+
 
   // Dynamic preference selection with order-based weighting
   const togglePreference = (preferenceId) => {
@@ -204,32 +229,39 @@ const TouristPreferencesForm = () => {
     return index === -1 ? null : index + 1;
   };
 
-  const handleUserInfoChange = (field, value) => {
-    setUserInfo(prev => ({ ...prev, [field]: value }));
-    
-    if (field === 'startDate' || field === 'endDate') {
-      const newUserInfo = { ...userInfo, [field]: value };
-      if (newUserInfo.startDate && newUserInfo.endDate) {
-        const startDate = new Date(newUserInfo.startDate);
-        const endDate = new Date(newUserInfo.endDate);
-        
-        const validDates = userInfo.preferredDays.filter(dateStr => {
-          const date = new Date(dateStr);
-          return date >= startDate && date <= endDate;
-        });
-        
-        if (validDates.length !== userInfo.preferredDays.length) {
-          setUserInfo(prevUserInfo => ({
-            ...prevUserInfo,
-            [field]: value,
-            preferredDays: validDates
-          }));
-        }
+const handleUserInfoChange = (field, value) => {
+  setUserInfo(prev => ({ ...prev, [field]: value }));
+  
+  // Calculate JMD conversion when budget or currency changes
+  if (field === 'budget' || field === 'currency') {
+    const newUserInfo = { ...userInfo, [field]: value };
+    const jmdAmount = convertToJMD(newUserInfo.budget, newUserInfo.currency);
+    setConvertedAmount(jmdAmount);
+  }
+  
+  if (field === 'startDate' || field === 'endDate') {
+    const newUserInfo = { ...userInfo, [field]: value };
+    if (newUserInfo.startDate && newUserInfo.endDate) {
+      const startDate = new Date(newUserInfo.startDate);
+      const endDate = new Date(newUserInfo.endDate);
+      
+      const validDates = userInfo.preferredDays.filter(dateStr => {
+        const date = new Date(dateStr);
+        return date >= startDate && date <= endDate;
+      });
+      
+      if (validDates.length !== userInfo.preferredDays.length) {
+        setUserInfo(prevUserInfo => ({
+          ...prevUserInfo,
+          [field]: value,
+          preferredDays: validDates
+        }));
       }
     }
-    
-    if (error) setError(null);
-  };
+  }
+  
+  if (error) setError(null);
+};
 
   const calculateDuration = () => {
     if (userInfo.startDate && userInfo.endDate) {
@@ -292,6 +324,158 @@ const TouristPreferencesForm = () => {
   
 
 // Handle submit with simplified preference structure
+// const handleSubmit = async () => {
+//   if (!isAuthenticated || !userId) {
+//     setError('You must be logged in to save preferences. Please log in and try again.');
+//     return;
+//   }
+
+//   if (selectedPreferences.length === 0) {
+//     setError('Please select at least one preference');
+//     return;
+//   }
+//   if (!userInfo.budget || !userInfo.startDate || !userInfo.endDate || !userInfo.groupSize) {
+//     setError('Please fill in all required fields (budget, dates, and group size)');
+//     return;
+//   }
+//   if (new Date(userInfo.startDate) >= new Date(userInfo.endDate)) {
+//     setError('End date must be after start date');
+//     return;
+//   }
+//   if (userInfo.preferredStartTime && userInfo.preferredEndTime && userInfo.preferredStartTime >= userInfo.preferredEndTime) {
+//     setError('Preferred end time must be after start time');
+//     return;
+//   }
+
+//   try {
+//     setLoading(true);
+//     setError(null);
+
+//     const duration = calculateDuration();
+//     const preferenceWeights = calculatePreferenceWeights();
+
+//     // Map category IDs to descriptive tag names
+//     const categoryTagMapping = {
+//       'beaches': 'Pristine Beaches',
+//       'nature': 'Nature & Wildlife', 
+//       'culture': 'Museum/Historical Site',
+//       'adventure': 'Adventure Sports',
+//       'food': 'Local Food/Dining',
+//       'music': 'Live Music',
+//       'shopping': 'Local Markets',
+//       'nightlife': 'Club/Bar/Party',
+//       'wellness': 'Wellness & Spa'
+//     };
+
+//     // Create simplified weighted preferences array - ONLY tag and weight
+//     const weightedPreferences = selectedPreferences.map((prefId, index) => {
+//       return {
+//         tag: categoryTagMapping[prefId] || prefId, // Use descriptive name or fallback to ID
+//         weight: selectedPreferences.length - index  // Higher weight for earlier selections
+//       };
+//     });
+
+//     // Create trip data object
+//     const tripData = {
+//       userId: userId,
+//       userEmail: user?.email,
+      
+//       // Trip details
+//       budget: parseFloat(userInfo.budget),
+//       currency: userInfo.currency,
+//       duration: duration,
+//       startDate: userInfo.startDate,
+//       startTime: userInfo.startTime || '09:00',
+//       endDate: userInfo.endDate,
+//       endTime: userInfo.endTime || '18:00',
+      
+//       // Location and accommodation
+//       parish: userInfo.parish,
+//       accommodation: userInfo.accommodation,
+//       groupSize: parseInt(userInfo.groupSize),
+      
+//       // Activity preferences
+//       preferredDays: userInfo.preferredDays,
+//       preferredStartTime: userInfo.preferredStartTime || '09:00',
+//       preferredEndTime: userInfo.preferredEndTime || '17:00',
+      
+//       // Metadata
+//       createdAt: new Date().toISOString(),
+//       formVersion: '2.0'
+//     };
+
+//     // Structure data the way backend expects it
+//     const requestData = {
+//       tripData: tripData,
+//       weightedPreferences: weightedPreferences
+//     };
+
+//     console.log('=== SIMPLIFIED PREFERENCES BEING SENT ===');
+//     console.log('Weighted Preferences:', JSON.stringify(weightedPreferences, null, 2));
+//     console.log('Trip Data:', JSON.stringify(tripData, null, 2));
+//     console.log('=== END REQUEST DATA ===');
+
+//     const response = await fetch('http://localhost:5001/api/tourists/save-preferences', {
+//       method: 'POST',
+//       headers: {
+//         ...getAuthHeaders(),
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify(requestData)
+//     });
+    
+//     if (response.ok) {
+//       const result = await response.json();
+//       console.log('Preferences saved successfully:', result);
+
+//       // Save to localStorage with user ID (keep the complete data structure for frontend use)
+//       const completePreferencesData = {
+//         ...tripData,
+//         preferences: selectedPreferences,
+//         weightedPreferences: weightedPreferences,
+//         preferenceWeights: preferenceWeights
+//       };
+
+//       localStorage.setItem(`touristPreferences_${userId}`, JSON.stringify(completePreferencesData));
+//       localStorage.setItem(`userInfo_${userId}`, JSON.stringify(userInfo));
+//       localStorage.setItem(`selectedPreferences_${userId}`, JSON.stringify(selectedPreferences));
+//       localStorage.setItem(`preferenceWeights_${userId}`, JSON.stringify(preferenceWeights));
+      
+//       sessionStorage.setItem('currentTouristPreferences', JSON.stringify(completePreferencesData));
+      
+//       window.touristData = {
+//         preferences: completePreferencesData,
+//         userInfo: userInfo,
+//         selectedPreferences: selectedPreferences,
+//         preferenceWeights: preferenceWeights,
+//         userId: userId
+//       };
+
+//       //alert(`Preferences saved successfully for ${user?.username || user?.email}! Your top priority is ${weightedPreferences[0]?.tag} (weight: ${weightedPreferences[0]?.weight}). Preferred activity time: ${formatTime(userInfo.preferredStartTime || '09:00')} - ${formatTime(userInfo.preferredEndTime || '17:00')}. Redirecting to itinerary planner...`);
+//       setSuccess({
+//         title: 'Preferences Saved Successfully!',
+//         message: `Your top priority is ${weightedPreferences[0]?.tag} (weight: ${weightedPreferences[0]?.weight}). Preferred activity time: ${formatTime(userInfo.preferredStartTime || '09:00')} - ${formatTime(userInfo.preferredEndTime || '17:00')}.`,
+//         redirect: 'Redirecting to itinerary planner in 3 seconds...'
+//       });
+//       setTimeout(() => {
+//         window.location.href = '/tourist-profile';
+//       }, 1000);
+      
+//     } else {
+//       const errorData = await response.json();
+//       throw new Error(errorData.message || 'Failed to save preferences');
+//     }
+//   } catch (error) {
+//     console.error('Error saving preferences:', error);
+//     if (error.message.includes('401') || error.message.includes('unauthorized')) {
+//       setError('Your session has expired. Please log in again.');
+//     } else {
+//       setError('Sorry, there was an error saving your preferences. Please try again.');
+//     }
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 const handleSubmit = async () => {
   if (!isAuthenticated || !userId) {
     setError('You must be logged in to save preferences. Please log in and try again.');
@@ -322,6 +506,9 @@ const handleSubmit = async () => {
     const duration = calculateDuration();
     const preferenceWeights = calculatePreferenceWeights();
 
+    // Convert budget to JMD
+    const budgetInJMD = convertToJMD(userInfo.budget, userInfo.currency);
+
     // Map category IDs to descriptive tag names
     const categoryTagMapping = {
       'beaches': 'Pristine Beaches',
@@ -332,25 +519,28 @@ const handleSubmit = async () => {
       'music': 'Live Music',
       'shopping': 'Local Markets',
       'nightlife': 'Club/Bar/Party',
-      'wellness': 'Wellness & Spa'
+      'wellness': 'Wellness & Spa',
+      'unique food': 'Unique Food & Dining'
     };
 
-    // Create simplified weighted preferences array - ONLY tag and weight
+    // Create simplified weighted preferences array
     const weightedPreferences = selectedPreferences.map((prefId, index) => {
       return {
-        tag: categoryTagMapping[prefId] || prefId, // Use descriptive name or fallback to ID
-        weight: selectedPreferences.length - index  // Higher weight for earlier selections
+        tag: categoryTagMapping[prefId] || prefId,
+        weight: selectedPreferences.length - index
       };
     });
 
-    // Create trip data object
+    // Create trip data object with converted budget
     const tripData = {
       userId: userId,
       userEmail: user?.email,
       
-      // Trip details
-      budget: parseFloat(userInfo.budget),
-      currency: userInfo.currency,
+      // Trip details - budget converted to JMD, currency saved as JMD
+      budget: parseFloat(budgetInJMD.toFixed(2)), // Convert to JMD and round to 2 decimals
+      originalBudget: parseFloat(userInfo.budget), // Keep original amount for reference
+      originalCurrency: userInfo.currency, // Keep original currency for reference
+      currency: 'JMD', // Always save as JMD in database
       duration: duration,
       startDate: userInfo.startDate,
       startTime: userInfo.startTime || '09:00',
@@ -378,8 +568,11 @@ const handleSubmit = async () => {
       weightedPreferences: weightedPreferences
     };
 
-    console.log('=== SIMPLIFIED PREFERENCES BEING SENT ===');
-    console.log('Weighted Preferences:', JSON.stringify(weightedPreferences, null, 2));
+    console.log('=== CURRENCY CONVERSION INFO ===');
+    console.log(`Original: ${getCurrencySymbol(userInfo.currency)}${userInfo.budget} ${userInfo.currency}`);
+    console.log(`Converted: J$${budgetInJMD.toFixed(2)} JMD`);
+    console.log(`Conversion rate: 1 ${userInfo.currency} = ${currencyToJMD[userInfo.currency]} JMD`);
+    console.log('=== TRIP DATA BEING SENT ===');
     console.log('Trip Data:', JSON.stringify(tripData, null, 2));
     console.log('=== END REQUEST DATA ===');
 
@@ -396,7 +589,7 @@ const handleSubmit = async () => {
       const result = await response.json();
       console.log('Preferences saved successfully:', result);
 
-      // Save to localStorage with user ID (keep the complete data structure for frontend use)
+      // Save to localStorage with user ID
       const completePreferencesData = {
         ...tripData,
         preferences: selectedPreferences,
@@ -419,14 +612,14 @@ const handleSubmit = async () => {
         userId: userId
       };
 
-      //alert(`Preferences saved successfully for ${user?.username || user?.email}! Your top priority is ${weightedPreferences[0]?.tag} (weight: ${weightedPreferences[0]?.weight}). Preferred activity time: ${formatTime(userInfo.preferredStartTime || '09:00')} - ${formatTime(userInfo.preferredEndTime || '17:00')}. Redirecting to itinerary planner...`);
       setSuccess({
         title: 'Preferences Saved Successfully!',
-        message: `Your top priority is ${weightedPreferences[0]?.tag} (weight: ${weightedPreferences[0]?.weight}). Preferred activity time: ${formatTime(userInfo.preferredStartTime || '09:00')} - ${formatTime(userInfo.preferredEndTime || '17:00')}.`,
+        message: `Your top priority is ${weightedPreferences[0]?.tag} (weight: ${weightedPreferences[0]?.weight}). Budget converted: ${getCurrencySymbol(userInfo.currency)}${userInfo.budget} ${userInfo.currency} → J$${budgetInJMD.toFixed(2)} JMD. Preferred activity time: ${formatTime(userInfo.preferredStartTime || '09:00')} - ${formatTime(userInfo.preferredEndTime || '17:00')}.`,
         redirect: 'Redirecting to itinerary planner in 3 seconds...'
       });
+      
       setTimeout(() => {
-        window.location.href = '/tourist-profile';
+        window.location.href = '/generate';
       }, 1000);
       
     } else {
@@ -444,7 +637,6 @@ const handleSubmit = async () => {
     setLoading(false);
   }
 };
-
   // Authentication check
   if (!isAuthenticated) {
     return (
@@ -572,7 +764,7 @@ const handleSubmit = async () => {
               <div className="tourist-preferences-glass-container">
                 <div className="tourist-preferences-section-header">
                   <h3>Your Travel Budget *</h3>
-                  <p>Enter your daily budget per person</p>
+                  <p>Enter your daily budget per person (will be converted to JMD)</p>
                 </div>
                 
                 <div className="tourist-preferences-budget-input-container">
@@ -605,12 +797,48 @@ const handleSubmit = async () => {
                         step="10"
                         required
                       />
+                                  </div>
+                                {/* Conversion Display */}
+                  {userInfo.budget && userInfo.currency !== 'JMD' && (
+                    <div style={{
+                      backgroundColor: '#e8f5e8',
+                      border: '1px solid #4caf50',
+                      borderRadius: '8px',
+                      padding: '12px',
+                      marginTop: '10px',
+                      textAlign: 'center'
+                    }}>
+                      <p style={{ margin: 0, color: '#2e7d32', fontWeight: '500' }}>
+                        💱 Converts to: <strong>J${convertedAmount.toLocaleString()} JMD</strong>
+                        <br />
+                        <span style={{ fontSize: '12px', opacity: 0.8 }}>
+                          (Rate: 1 {userInfo.currency} = {currencyToJMD[userInfo.currency]} JMD)
+                        </span>
+                      </p>
                     </div>
-                  </div>
+                  )}
+                  
+                  {userInfo.budget && userInfo.currency === 'JMD' && (
+                    <div style={{
+                      backgroundColor: '#e3f2fd',
+                      border: '1px solid #2196f3',
+                      borderRadius: '8px',
+                      padding: '12px',
+                      marginTop: '10px',
+                      textAlign: 'center'
+                    }}>
+                      <p style={{ margin: 0, color: '#1565c0', fontWeight: '500' }}>
+                        Already in Jamaican Dollars
+                      </p>
+                    </div>
+                  )}
+                  
                   <p className="tourist-preferences-budget-help">
                     This helps us recommend experiences within your comfort zone
                   </p>
                 </div>
+              </div>
+
               </div>
 
               {/* Travel Dates */}
@@ -978,13 +1206,19 @@ const handleSubmit = async () => {
                 <div className="tourist-preferences-summary-list">
                   <div className="tourist-preferences-summary-item">
                     <div className="tourist-preferences-summary-label">
-                      <span className="tourist-preferences-summary-icon">💰</span>
+                      <span className="tourist-preferences-summary-icon"></span>
                       <span>Daily Budget</span>
                     </div>
                     <span className="tourist-preferences-summary-value">
-                      {getCurrencySymbol(userInfo.currency)}{userInfo.budget || '0'} {userInfo.currency} per person
+                      {getCurrencySymbol(userInfo.currency)}{userInfo.budget || '0'} {userInfo.currency}
+                      {userInfo.currency !== 'JMD' && userInfo.budget && (
+                        <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+                          (≈ J${convertToJMD(userInfo.budget, userInfo.currency).toLocaleString()} JMD)
+                        </div>
+                      )}
                     </span>
-                  </div>
+                </div>
+
                   
                   <div className="tourist-preferences-summary-item">
                     <div className="tourist-preferences-summary-label">
@@ -1016,7 +1250,6 @@ const handleSubmit = async () => {
                     </span>
                   </div>
 
-                  {/* NEW: Preferred Activity Times Summary */}
                   <div className="tourist-preferences-summary-item">
                     <div className="tourist-preferences-summary-label">
                       <span className="tourist-preferences-summary-icon">🕐</span>
@@ -1191,8 +1424,8 @@ const handleSubmit = async () => {
             disabled={loading}
             className="tourist-preferences-nav-button submit"
           >
-            <span>{loading ? 'Saving & Redirecting...' : 'Start My Journey'}</span>
-            <span>{loading ? '⏳' : '🚀'}</span>
+            <span>{loading ? 'Saving & Redirecting...' : 'Generate your Itinerary'}</span>
+            
           </button>
         )}
       </div>

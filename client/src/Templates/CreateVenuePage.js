@@ -1,4 +1,4 @@
-// CreateVenuePage.js - Updated for your existing schema
+// CreateVenuePage.js 
 import React, { useState } from "react";
 import "../css/CreateEventPage.css";
 import JamaicanAddressForm from "./JamaicanAddressForm";
@@ -7,7 +7,7 @@ const daysOfWeek = [
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
 ];
 
-// Venue types from your database enum
+// Venue types 
 const venueTypes = [
   'Beach/River',
   'Outdoor Adventure',

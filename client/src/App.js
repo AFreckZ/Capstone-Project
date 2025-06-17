@@ -13,7 +13,6 @@ import Welcome from './Templates/WelcomePage';
 import ItineraryGenerator from './Templates/itinerarygen';
 import CreateVenuePage from './Templates/CreateVenuePage';
 import ProtectedRoute from './Templates/ProtectedRoutes';
-import DebugUser from './Templates/debuguser';
 import { AuthProvider } from './contexts/AuthContext';
 import TravelProfilePage from './Templates/travelagencyprofilepage';
 import BusinessProfilePage from './Templates/businessprofilepage';
@@ -24,9 +23,8 @@ function App() {
 
   return (
    <AuthProvider>
-      <AuthDebug/>
+      
       <Routes>
-        <Route path="/debug" element={<DebugUser/>}/>
         <Route path ="/" element={<Welcome/>}/>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
@@ -41,6 +39,7 @@ function App() {
         <Route path ="/travel-profile" element= {<TravelProfilePage/>}/>
         <Route path ="/EVregister" element={<EventVenueCreator/>}/>
       </Routes>
+      <AuthDebug/>
       </AuthProvider>
   );
 }
