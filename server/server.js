@@ -12,6 +12,9 @@ const itineraryRoutes= require('./routes/itineraryRoutes');
 const transportRoutes = require('./routes/transportRoutes');
 const userRoutes = require('./routes/userRoutes');
 const preferenceRoutes = require('./routes/preferencesRoutes');
+
+//allowing the pictures to be uploaded
+app.use('/uploads', express.static('uploads'));
 //middleware
 app.use(express.json());//Access Body of client
 app.use(express.urlencoded({extended: true}));
