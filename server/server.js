@@ -12,6 +12,7 @@ const itineraryRoutes= require('./routes/itineraryRoutes');
 const transportRoutes = require('./routes/transportRoutes');
 const userRoutes = require('./routes/userRoutes');
 const preferenceRoutes = require('./routes/preferencesRoutes');
+const searchRoutes = require('./routes/search');
 
 //allowing the pictures to be uploaded
 app.use('/uploads', express.static('uploads'));
@@ -35,6 +36,8 @@ app.use ('/api/transports', transportRoutes);
 app.use ('/api/user', userRoutes);
 // preference routes
 app.use ('/api/prefer', preferenceRoutes);
+//search routes
+app.use('/api/search',searchRoutes);
 
 
 //testing the server

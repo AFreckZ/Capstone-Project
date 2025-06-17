@@ -22,6 +22,7 @@ function Header() {
                <a href="#">Activities</a>
                <a href="#">About Us</a>
                <a href="#">Contact</a>
+               
              </nav>
              <div className="avatar"></div>
              <button onClick={handleLogout}>logout</button>

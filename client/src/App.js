@@ -17,6 +17,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import TravelProfilePage from './Templates/travelagencyprofilepage';
 import BusinessProfilePage from './Templates/businessprofilepage';
 import EventVenueCreator from './Templates/EventVenueCreator';
+import SearchEvent from './Templates/eventSearchPage';
 //used to manage user sessions
 import AuthDebug from './Templates/debugAuth';
 function App() {
@@ -38,6 +39,7 @@ function App() {
         <Route path="/business-profile" element={<BusinessProfilePage/>} />
         <Route path ="/travel-profile" element= {<TravelProfilePage/>}/>
         <Route path ="/EVregister" element={<EventVenueCreator/>}/>
+        <Route path ="/searchevent" element ={<SearchEvent/>}/>
       </Routes>
       <AuthDebug/>
       </AuthProvider>
