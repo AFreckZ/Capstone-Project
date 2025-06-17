@@ -3,32 +3,6 @@ const router = express.Router();
 const pool = require('../db');
 const jwt = require('jsonwebtoken');
 
-// GET all venues
-router.get('/', async (req, res) => {
-  try {
-    const [venues] = await pool.query('SELECT * FROM Venue');
-    res.json(venues);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch venues' });
-  }
-});
-
-// GET single venue
-router.get('/:id', async (req, res) => {
-  try {
-    const [venue] = await pool.query('SELECT * FROM Venue WHERE venue_id = ?', [req.params.id]);
-    if (venue.length === 0) {
-      return res.status(404).json({ error: 'Venue not found' });
-    }
-    res.json(venue[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch venue' });
-  }
-});
-
-//adding a venue to the database
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -46,60 +20,223 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Validation function for venue data
-const validateVenueData = (data) => {
-    const errors = [];
+// POST /api/venues/create - Create a new venue (following tourist preferences pattern)
+router.post('/create', authenticateToken, async (req, res) => {
+  const connection = await pool.getConnection();
+  
+  try {
+    const {
+      name,
+      venue_type,
+      opening_time,
+      closing_time,
+      cost,
+      address,
+      description,
+      days_open,
+      user_id
+    } = req.body;
     
-    // Required fields
-    if (!data.name || data.name.trim().length === 0) {
-        errors.push('Venue name is required');
-    }
+    const authenticated_user_id = req.user.userId; // Get from JWT like tourists
     
-    if (!data.venue_type) {
-        errors.push('Venue type is required');
-    }
-    
-    if (!data.address || data.address.trim().length === 0) {
-        errors.push('Address is required');
-    }
-    
-    // Validate venue type against allowed values
-    const allowedTypes = [
-        'Beach/River', 'Outdoor Adventure', 'Indoor Adventure',
-        'Museum/Historical Site', 'Food & Dining (Local)', 
-        'Food & Dining (Unique)', 'Club/Bar/Party', 'Live Music', 'Festival'
-    ];
-    
-    if (data.venue_type && !allowedTypes.includes(data.venue_type)) {
-        errors.push('Invalid venue type');
-    }
-    
-    // Validate cost if provided
-    if (data.cost !== null && data.cost !== undefined && (isNaN(data.cost) || data.cost < 0)) {
-        errors.push('Cost must be a positive number');
-    }
-    
-    // Validate coordinates if provided
-    if (data.latitude !== null && data.latitude !== undefined) {
-        if (isNaN(data.latitude) || data.latitude < -90 || data.latitude > 90) {
-            errors.push('Latitude must be between -90 and 90');
-        }
-    }
-    
-    if (data.longitude !== null && data.longitude !== undefined) {
-        if (isNaN(data.longitude) || data.longitude < -180 || data.longitude > 180) {
-            errors.push('Longitude must be between -180 and 180');
-        }
-    }
-    
-    // Validate times
-    if (data.opening_time && data.closing_time && data.opening_time >= data.closing_time) {
-        errors.push('Closing time must be after opening time');
-    }
-    
-    return errors;
-};
+    console.log('=== VENUE CREATION REQUEST ===');
+    console.log('Request body:', req.body);
+    console.log('Authenticated user ID:', authenticated_user_id);
+    console.log('=== END REQUEST DATA ===');
 
+    // Validate required fields
+    if (!name || !venue_type || !address) {
+      return res.status(400).json({ 
+        error: 'Name, venue type, and address are required' 
+      });
+    }
+
+    // Security check: ensure user can only create venues for themselves
+    const final_user_id = user_id || authenticated_user_id;
+    if (final_user_id.toString() !== authenticated_user_id.toString()) {
+      return res.status(403).json({ 
+        error: 'You can only create venues for your own account' 
+      });
+    }
+
+    await connection.query('START TRANSACTION');
+
+    // getting the business id from the business owner table
+    const [businessOwnerRecord] = await connection.query('SELECT bid FROM businessowner WHERE user_id = ?', [authenticated_user_id]);
+    
+    let bid;
+    if (businessOwnerRecord.length > 0 && businessOwnerRecord[0].bid) {
+      bid = businessOwnerRecord[0].bid;
+      console.log('Found bid for user:', { user_id: authenticated_user_id, bid });
+    } else {
+      return res.status(400).json({ 
+        error: 'No business found for this user. Please ensure you are registered as a business owner before creating venues.' 
+      });
+    }
+
+    // Prepare venue data
+    const venueData = {
+      bid: bid, // Using bid as in your table structure
+      name: name.trim(),
+      venue_type,
+      opening_time: opening_time || null,
+      closing_time: closing_time || null,
+      cost: cost ? parseFloat(cost) : null,
+      address: address.trim(),
+      description: description ? description.trim() : null,
+      days_open: JSON.stringify(days_open || []), // Store as JSON like tourist preferences
+      is_active: 1 // Set active by default
+    };
+
+    console.log('Prepared venue data:', venueData);
+
+    // Insert venue into database using your table structure
+    const [insertResult] = await connection.query(`
+      INSERT INTO venue 
+      (bid, name, venue_type, opening_time, closing_time, cost, address, description, days_open, is_active) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      venueData.bid,
+      venueData.name,
+      venueData.venue_type,
+      venueData.opening_time,
+      venueData.closing_time,
+      venueData.cost,
+      venueData.address,
+      venueData.description,
+      venueData.days_open,
+      venueData.is_active
+    ]);
+
+    const venue_id = insertResult.insertId;
+    console.log("New venue created with venue_id:", venue_id);
+
+    await connection.query('COMMIT');
+
+    // Return success response in your format
+    res.status(201).json({
+      message: 'Venue created successfully',
+      venue_id: venue_id,
+      bid: venueData.bid,
+      user_id: authenticated_user_id,
+      venue: {
+        venue_id: venue_id,
+        bid: venueData.bid,
+        name: venueData.name,
+        venue_type: venueData.venue_type,
+        opening_time: venueData.opening_time,
+        closing_time: venueData.closing_time,
+        cost: venueData.cost,
+        address: venueData.address,
+        description: venueData.description,
+        days_open: days_open || [],
+        is_active: venueData.is_active
+      }
+    });
+
+    console.log('=== VENUE CREATION SUCCESS ===');
+
+  } catch (error) {
+    await connection.query('ROLLBACK');
+    console.error('=== VENUE CREATION ERROR ===');
+    console.error('DB error:', error);
+    console.error('Error message:', error.message);
+    console.error('Error code:', error.code);
+    
+    // Handle specific database errors like tourists
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ 
+        error: 'A venue with this name already exists' 
+      });
+    }
+    
+    if (error.code === 'ER_NO_SUCH_TABLE') {
+      return res.status(500).json({ 
+        error: 'Venues table not found. Please ensure table exists.' 
+      });
+    }
+
+    if (error.code === 'ER_BAD_FIELD_ERROR') {
+      return res.status(500).json({ 
+        error: 'Database column error. Please check table structure.' 
+      });
+    }
+
+    if (error.code === 'ER_NO_REFERENCED_ROW_2') {
+      return res.status(400).json({ 
+        error: 'Invalid user/business ID.' 
+      });
+    }
+    
+    res.status(500).json({ 
+      error: 'Failed to create venue',
+      details: error.message 
+    });
+  } finally {
+    connection.release();
+  }
+});
+
+// GET venues for authenticated user
+router.get('/user', authenticateToken, async (req, res) => {
+  try {
+    const user_id = req.user.userId;
+
+    // First, get the user's bid using user_id (same pattern as tourist lookup)
+    let bid;
+    const [userRecord] = await pool.query('SELECT bid FROM users WHERE id = ?', [user_id]);
+    if (userRecord.length > 0 && userRecord[0].bid) {
+      bid = userRecord[0].bid;
+    } else {
+      const [businessRecord] = await pool.query('SELECT id as bid FROM businesses WHERE user_id = ?', [user_id]);
+      if (businessRecord.length > 0) {
+        bid = businessRecord[0].bid;
+      } else {
+        bid = user_id; // Fallback
+      }
+    }
+
+    console.log('Getting venues for user:', { user_id, bid });
+
+    // Get venues by the found bid
+    const [venues] = await pool.query(`
+      SELECT 
+        venue_id,
+        bid,
+        name,
+        venue_type,
+        opening_time,
+        closing_time,
+        cost,
+        address,
+        description,
+        days_open,
+        is_active
+      FROM venues 
+      WHERE bid = ? AND is_active = 1
+      ORDER BY venue_id DESC
+    `, [bid]);
+
+    // Parse days_open JSON for each venue
+    const venuesWithParsedData = venues.map(venue => ({
+      ...venue,
+      days_open: venue.days_open ? JSON.parse(venue.days_open) : []
+    }));
+
+    res.json({
+      venues: venuesWithParsedData,
+      total: venuesWithParsedData.length,
+      user_id: user_id
+    });
+
+  } catch (error) {
+    console.error('Error fetching user venues:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch venues',
+      details: error.message 
+    });
+  }
+});
 // GET all venues
 router.get('/', async (req, res) => {
   try {
@@ -142,125 +279,5 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST /api/venues/create - Create a new venue
-router.post('/create', authenticateToken, async (req, res) => {
-  const connection = await pool.getConnection();
-  
-  try {
-    const venueData = req.body;
-    const user_id = req.user.userId; // Use authenticated user ID
-    
-    console.log('=== RECEIVED VENUE DATA ===');
-    console.log('Venue Data:', JSON.stringify(venueData, null, 2));
-    console.log('User ID:', user_id);
-    console.log('=== END RECEIVED DATA ===');
 
-    // Validate input data
-    const validationErrors = validateVenueData(venueData);
-    if (validationErrors.length > 0) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        details: validationErrors
-      });
-    }
-
-    // Validate days_open if provided
-    if (venueData.days_open && !Array.isArray(venueData.days_open)) {
-      return res.status(400).json({
-        error: 'days_open must be an array'
-      });
-    }
-
-    const daysOpenJson = venueData.days_open ? JSON.stringify(venueData.days_open) : null;
-
-    await connection.query('START TRANSACTION');
-
-    // Insert venue
-    const [result] = await connection.query(
-      `INSERT INTO venues (
-        name, venue_type, opening_time, closing_time, cost,
-        address, description, days_open, latitude, longitude
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        venueData.name.trim(),
-        venueData.venue_type,
-        venueData.opening_time || null,
-        venueData.closing_time || null,
-        venueData.cost || null,
-        venueData.address.trim(),
-        venueData.description ? venueData.description.trim() : null,
-        daysOpenJson,
-        venueData.latitude || null,
-        venueData.longitude || null
-      ]
-    );
-
-    const venue_id = result.insertId;
-    console.log("New venue created with venue_id:", venue_id);
-
-    // Get the created venue details
-    const [createdVenue] = await connection.query(
-      'SELECT * FROM venues WHERE venue_id = ?',
-      [venue_id]
-    );
-
-    await connection.query('COMMIT');
-
-    const venue = createdVenue[0];
-    
-    // Parse JSON fields for response
-    if (venue.days_open) {
-      venue.days_open = JSON.parse(venue.days_open);
-    }
-
-    console.log('Venue created successfully:', venue);
-
-    res.status(201).json({
-      message: 'Venue created successfully',
-      venue: venue,
-      venue_id: venue_id,
-      user_id: user_id,
-      venue_details: {
-        name: venueData.name,
-        type: venueData.venue_type,
-        address: venueData.address,
-        cost: venueData.cost ? `JMD $${venueData.cost}` : 'Free',
-        operating_hours: venueData.opening_time && venueData.closing_time 
-          ? `${venueData.opening_time} - ${venueData.closing_time}` 
-          : 'Not specified',
-        days_count: venueData.days_open ? venueData.days_open.length : 0
-      }
-    });
-
-  } catch (error) {
-    await connection.query('ROLLBACK');
-    console.error('DB error:', error);
-    
-    // Handle specific database errors
-    if (error.code === 'ER_DUP_ENTRY') {
-      res.status(409).json({
-        error: 'A venue with this name already exists'
-      });
-    } else if (error.code === 'ER_DATA_TOO_LONG') {
-      res.status(400).json({
-        error: 'One or more fields exceed maximum length'
-      });
-    } else if (error.code === 'ER_ACCESS_DENIED_ERROR') {
-      res.status(500).json({
-        error: 'Database access denied. Check your credentials.'
-      });
-    } else if (error.code === 'ECONNREFUSED') {
-      res.status(500).json({
-        error: 'Cannot connect to database. Make sure MySQL is running.'
-      });
-    } else {
-      res.status(500).json({
-        error: 'Failed to create venue',
-        details: error.message
-      });
-    }
-  } finally {
-    connection.release();
-  }
-});
 module.exports = router;
