@@ -231,7 +231,6 @@ router.get("/get-all-preferences/:userId", async (req, res) => {
     }
 });
 
-// NEW: Additional route to get preferences with day filtering
 router.get("/get-preferences-by-day/:userId/:day", async (req, res) => {
     try {
         const { userId, day } = req.params;

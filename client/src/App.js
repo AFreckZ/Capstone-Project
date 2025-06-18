@@ -41,7 +41,7 @@ function App() {
         <Route path ="/EVregister" element={<EventVenueCreator/>}/>
         <Route path ="/searchevent" element ={<SearchEvent/>}/>
       </Routes>
-      <AuthDebug/>
+      
       </AuthProvider>
   );
 }

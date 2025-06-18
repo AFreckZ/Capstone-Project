@@ -353,49 +353,6 @@ router.post('/create', authenticateToken, async (req, res) => {
   }
 });
 
-// GET all events (with file paths)
-router.get('/', async (req, res) => {
-  try {
-    const [events] = await pool.query(`
-      SELECT 
-        e.*,
-        bo.business_name
-      FROM event e
-      LEFT JOIN businessowner bo ON e.bid = bo.bid
-      ORDER BY e.start_datetime ASC
-    `);
-    
-    res.json({
-      events: events,
-      total: events.length
-    });
-  } catch (err) {
-    console.error('Error fetching events:', err);
-    res.status(500).json({ error: 'Failed to fetch events' });
-  }
-});
-
-// GET single event (with file paths)
-router.get('/:id', async (req, res) => {
-  try {
-    const [event] = await pool.query(`
-      SELECT 
-        e.*,
-        bo.business_name
-      FROM event e
-      LEFT JOIN businessowner bo ON e.bid = bo.bid
-      WHERE e.event_id = ?
-    `, [req.params.id]);
-    
-    if (event.length === 0) {
-      return res.status(404).json({ error: 'Event not found' });
-    }
-    res.json(event[0]);
-  } catch (err) {
-    console.error('Error fetching event:', err);
-    res.status(500).json({ error: 'Failed to fetch event' });
-  }
-});
 
 // GET events for authenticated user (with file paths)
 router.get('/user/my-events', authenticateToken, async (req, res) => {
@@ -440,37 +397,62 @@ router.get('/user/my-events', authenticateToken, async (req, res) => {
     });
   }
 });
-
-// Test endpoint to check business owner record
-router.get('/test/business-owner', authenticateToken, async (req, res) => {
+// GET all events
+router.get('/', async (req, res) => {
   try {
-    const user_id = req.user.userId;
-    
-    console.log('Checking business_owner table for user_id:', user_id);
-    
-    const [businessOwnerRecord] = await pool.query('SELECT * FROM businessowner WHERE user_id = ?', [user_id]);
-    
-    if (businessOwnerRecord.length > 0) {
-      res.json({ 
-        message: 'Business owner record found',
-        user_id: user_id,
-        business_owner_data: businessOwnerRecord[0]
-      });
-    } else {
-      res.status(404).json({ 
-        message: 'No business owner record found for this user',
-        user_id: user_id,
-        suggestion: 'User needs to be registered as a business owner first'
-      });
-    }
-    
-  } catch (error) {
-    console.error('Business owner test error:', error);
-    res.status(500).json({ 
-      error: 'Failed to check business owner table',
-      details: error.message 
-    });
+    const [events] = await pool.query('SELECT * FROM Event');
+    res.json(events);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch events' });
   }
 });
+
+// GET single event
+router.get('/:id', async (req, res) => {
+  try {
+    const [event] = await pool.query('SELECT * FROM Event WHERE event_id = ?', [req.params.id]);
+    if (event.length === 0) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    res.json(event[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch event' });
+  }
+});
+
+
+// Test endpoint to check business owner record
+// router.get('/test/business-owner', authenticateToken, async (req, res) => {
+//   try {
+//     const user_id = req.user.userId;
+    
+//     console.log('Checking business_owner table for user_id:', user_id);
+    
+//     const [businessOwnerRecord] = await pool.query('SELECT * FROM businessowner WHERE user_id = ?', [user_id]);
+    
+//     if (businessOwnerRecord.length > 0) {
+//       res.json({ 
+//         message: 'Business owner record found',
+//         user_id: user_id,
+//         business_owner_data: businessOwnerRecord[0]
+//       });
+//     } else {
+//       res.status(404).json({ 
+//         message: 'No business owner record found for this user',
+//         user_id: user_id,
+//         suggestion: 'User needs to be registered as a business owner first'
+//       });
+//     }
+    
+//   } catch (error) {
+//     console.error('Business owner test error:', error);
+//     res.status(500).json({ 
+//       error: 'Failed to check business owner table',
+//       details: error.message 
+//     });
+//   }
+// });
 
 module.exports = router;

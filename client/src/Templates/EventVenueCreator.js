@@ -21,7 +21,7 @@ const EventVenueToggle = () => {
             border: 'none',
             borderRadius: '5px',
             cursor: 'pointer',
-            marginBottom: '20px',
+            marginBottom: '10px',
             fontSize: '14px'
           }}
         >

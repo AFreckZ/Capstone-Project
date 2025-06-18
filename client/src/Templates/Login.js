@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from '../contexts/AuthContext';
 import  "../css/Login.css"
 import SunsetImage from "../images/sunset.jpg";
-// import ProfilePage from './Templates/ProfilePage';
+import logo from "../images/logo.png";
 
 function Login() {
  const [email, setEmail] = useState("");
@@ -110,7 +110,7 @@ function Login() {
       <div className="form-side">
         <div className="form-box">
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Eco-icon.png/600px-Eco-icon.png"
+            src={logo}
             alt="Logo"
             className="logo"
           />

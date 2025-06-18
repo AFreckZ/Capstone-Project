@@ -20,7 +20,7 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// POST /api/venues/create - Create a new venue (following tourist preferences pattern)
+// POST /api/venues/create 
 router.post('/create', authenticateToken, async (req, res) => {
   const connection = await pool.getConnection();
   
@@ -237,47 +237,70 @@ router.get('/user', authenticateToken, async (req, res) => {
     });
   }
 });
+// // GET all venues
+// router.get('/', async (req, res) => {
+//   try {
+//     const [venues] = await pool.query('SELECT * FROM venue');
+    
+//     // Parse JSON fields
+//     const parsedVenues = venues.map(venue => ({
+//       ...venue,
+//       days_open: venue.days_open ? JSON.parse(venue.days_open) : null
+//     }));
+    
+//     res.json({
+//       venues: parsedVenues,
+//       count: parsedVenues.length
+//     });
+//   } catch (err) {
+//     console.error('Error fetching venues:', err);
+//     res.status(500).json({ error: 'Failed to fetch venues' });
+//   }
+// });
+
+// // GET single venue
+// router.get('/:id', async (req, res) => {
+//   try {
+//     const [venue] = await pool.query('SELECT * FROM venue WHERE venue_id = ?', [req.params.id]);
+    
+//     if (venue.length === 0) {
+//       return res.status(404).json({ error: 'Venue not found' });
+//     }
+    
+//     const venueData = venue[0];
+//     if (venueData.days_open) {
+//       venueData.days_open = JSON.parse(venueData.days_open);
+//     }
+    
+//     res.json({ venue: venueData });
+//   } catch (err) {
+//     console.error('Error fetching venue:', err);
+//     res.status(500).json({ error: 'Failed to fetch venue' });
+//   }
+// });
+
 // GET all venues
 router.get('/', async (req, res) => {
   try {
-    const [venues] = await pool.query('SELECT * FROM venues ORDER BY created_at DESC');
-    
-    // Parse JSON fields
-    const parsedVenues = venues.map(venue => ({
-      ...venue,
-      days_open: venue.days_open ? JSON.parse(venue.days_open) : null
-    }));
-    
-    res.json({
-      venues: parsedVenues,
-      count: parsedVenues.length
-    });
+    const [events] = await pool.query('SELECT * FROM venue');
+    res.json(events);
   } catch (err) {
-    console.error('Error fetching venues:', err);
-    res.status(500).json({ error: 'Failed to fetch venues' });
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch events' });
   }
 });
 
-// GET single venue
+// GET single event
 router.get('/:id', async (req, res) => {
   try {
-    const [venue] = await pool.query('SELECT * FROM venues WHERE venue_id = ?', [req.params.id]);
-    
-    if (venue.length === 0) {
-      return res.status(404).json({ error: 'Venue not found' });
+    const [event] = await pool.query('SELECT * FROM venue WHERE venue_id = ?', [req.params.id]);
+    if (event.length === 0) {
+      return res.status(404).json({ error: 'Event not found' });
     }
-    
-    const venueData = venue[0];
-    if (venueData.days_open) {
-      venueData.days_open = JSON.parse(venueData.days_open);
-    }
-    
-    res.json({ venue: venueData });
+    res.json(event[0]);
   } catch (err) {
-    console.error('Error fetching venue:', err);
-    res.status(500).json({ error: 'Failed to fetch venue' });
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch event' });
   }
 });
-
-
 module.exports = router;

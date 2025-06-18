@@ -6,7 +6,6 @@ function JamaicanAddressForm({ onAddressChange }) {
   const [unit, setUnit] = useState("");
   const [postalZone, setPostalZone] = useState("");
   const [parish, setParish] = useState("");
-  // const [country] = useState("Jamaica");
 
   useEffect(() => {
     const fullAddress = `${street}${unit ? `, ${unit}` : ""}, ${postalZone}, ${parish}`;

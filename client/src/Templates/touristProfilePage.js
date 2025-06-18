@@ -10,9 +10,9 @@ const TouristProfilePage = () => {
     const { user, userId, userType, loading, isAuthenticated,logout } = useAuth();
     const navigate= useNavigate();
     const [trip] = useState({
-      name: "My Trip",
-      dates: "October 5 - October 15",
-      image: "https://source.unsplash.com/600x300/?cityscape"
+      name: "Create your dream vacation by entering your preferences below",
+    
+     
     });
 
   const favorites = [
@@ -54,10 +54,9 @@ const handleLogout = () => {
             <a href="#">Home</a>
             <a href="#">Explore</a>
             <a href="#">Activities</a>
-            <a href="#">About Us</a>
-            <a href="#">Contact</a>
+            {/* <a href="#">About Us</a>
+            <a href="#">Contact</a> */}
           </nav>
-          <div className="avatar"></div>
           <button onClick={handleLogout}>logout</button>
         </div>
       </header>
@@ -67,7 +66,6 @@ const handleLogout = () => {
       <aside className="sidebar">
         <img src={profileImage} alt="User" className="profile-pic" />
         <h2>Welcome {user.username}</h2>
-        <a href="#" className="edit-link">Edit Profile</a>
 
         <h3>Preferences</h3>
         <div className="preferences">
@@ -81,7 +79,6 @@ const handleLogout = () => {
 
       <main className="main-content">
         <section className="my-trip">
-          <img src={trip.image} alt="Trip" className="trip-image" />
           <div className="trip-details">
             <h2>{trip.name}</h2>
             <p>{trip.dates}</p>
@@ -90,7 +87,7 @@ const handleLogout = () => {
         </section>
 
         <section className="favorites">
-          <h2>My Favorites</h2>
+          <h2>Explore Venues and Events</h2>
           <div className="favorite-items">
             {favorites.map((item, index) => (
               <div className="favorite-card" key={index}>

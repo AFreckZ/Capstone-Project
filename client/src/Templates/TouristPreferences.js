@@ -323,159 +323,8 @@ const handleUserInfoChange = (field, value) => {
 
   
 
-// Handle submit with simplified preference structure
-// const handleSubmit = async () => {
-//   if (!isAuthenticated || !userId) {
-//     setError('You must be logged in to save preferences. Please log in and try again.');
-//     return;
-//   }
 
-//   if (selectedPreferences.length === 0) {
-//     setError('Please select at least one preference');
-//     return;
-//   }
-//   if (!userInfo.budget || !userInfo.startDate || !userInfo.endDate || !userInfo.groupSize) {
-//     setError('Please fill in all required fields (budget, dates, and group size)');
-//     return;
-//   }
-//   if (new Date(userInfo.startDate) >= new Date(userInfo.endDate)) {
-//     setError('End date must be after start date');
-//     return;
-//   }
-//   if (userInfo.preferredStartTime && userInfo.preferredEndTime && userInfo.preferredStartTime >= userInfo.preferredEndTime) {
-//     setError('Preferred end time must be after start time');
-//     return;
-//   }
 
-//   try {
-//     setLoading(true);
-//     setError(null);
-
-//     const duration = calculateDuration();
-//     const preferenceWeights = calculatePreferenceWeights();
-
-//     // Map category IDs to descriptive tag names
-//     const categoryTagMapping = {
-//       'beaches': 'Pristine Beaches',
-//       'nature': 'Nature & Wildlife', 
-//       'culture': 'Museum/Historical Site',
-//       'adventure': 'Adventure Sports',
-//       'food': 'Local Food/Dining',
-//       'music': 'Live Music',
-//       'shopping': 'Local Markets',
-//       'nightlife': 'Club/Bar/Party',
-//       'wellness': 'Wellness & Spa'
-//     };
-
-//     // Create simplified weighted preferences array - ONLY tag and weight
-//     const weightedPreferences = selectedPreferences.map((prefId, index) => {
-//       return {
-//         tag: categoryTagMapping[prefId] || prefId, // Use descriptive name or fallback to ID
-//         weight: selectedPreferences.length - index  // Higher weight for earlier selections
-//       };
-//     });
-
-//     // Create trip data object
-//     const tripData = {
-//       userId: userId,
-//       userEmail: user?.email,
-      
-//       // Trip details
-//       budget: parseFloat(userInfo.budget),
-//       currency: userInfo.currency,
-//       duration: duration,
-//       startDate: userInfo.startDate,
-//       startTime: userInfo.startTime || '09:00',
-//       endDate: userInfo.endDate,
-//       endTime: userInfo.endTime || '18:00',
-      
-//       // Location and accommodation
-//       parish: userInfo.parish,
-//       accommodation: userInfo.accommodation,
-//       groupSize: parseInt(userInfo.groupSize),
-      
-//       // Activity preferences
-//       preferredDays: userInfo.preferredDays,
-//       preferredStartTime: userInfo.preferredStartTime || '09:00',
-//       preferredEndTime: userInfo.preferredEndTime || '17:00',
-      
-//       // Metadata
-//       createdAt: new Date().toISOString(),
-//       formVersion: '2.0'
-//     };
-
-//     // Structure data the way backend expects it
-//     const requestData = {
-//       tripData: tripData,
-//       weightedPreferences: weightedPreferences
-//     };
-
-//     console.log('=== SIMPLIFIED PREFERENCES BEING SENT ===');
-//     console.log('Weighted Preferences:', JSON.stringify(weightedPreferences, null, 2));
-//     console.log('Trip Data:', JSON.stringify(tripData, null, 2));
-//     console.log('=== END REQUEST DATA ===');
-
-//     const response = await fetch('http://localhost:5001/api/tourists/save-preferences', {
-//       method: 'POST',
-//       headers: {
-//         ...getAuthHeaders(),
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify(requestData)
-//     });
-    
-//     if (response.ok) {
-//       const result = await response.json();
-//       console.log('Preferences saved successfully:', result);
-
-//       // Save to localStorage with user ID (keep the complete data structure for frontend use)
-//       const completePreferencesData = {
-//         ...tripData,
-//         preferences: selectedPreferences,
-//         weightedPreferences: weightedPreferences,
-//         preferenceWeights: preferenceWeights
-//       };
-
-//       localStorage.setItem(`touristPreferences_${userId}`, JSON.stringify(completePreferencesData));
-//       localStorage.setItem(`userInfo_${userId}`, JSON.stringify(userInfo));
-//       localStorage.setItem(`selectedPreferences_${userId}`, JSON.stringify(selectedPreferences));
-//       localStorage.setItem(`preferenceWeights_${userId}`, JSON.stringify(preferenceWeights));
-      
-//       sessionStorage.setItem('currentTouristPreferences', JSON.stringify(completePreferencesData));
-      
-//       window.touristData = {
-//         preferences: completePreferencesData,
-//         userInfo: userInfo,
-//         selectedPreferences: selectedPreferences,
-//         preferenceWeights: preferenceWeights,
-//         userId: userId
-//       };
-
-//       //alert(`Preferences saved successfully for ${user?.username || user?.email}! Your top priority is ${weightedPreferences[0]?.tag} (weight: ${weightedPreferences[0]?.weight}). Preferred activity time: ${formatTime(userInfo.preferredStartTime || '09:00')} - ${formatTime(userInfo.preferredEndTime || '17:00')}. Redirecting to itinerary planner...`);
-//       setSuccess({
-//         title: 'Preferences Saved Successfully!',
-//         message: `Your top priority is ${weightedPreferences[0]?.tag} (weight: ${weightedPreferences[0]?.weight}). Preferred activity time: ${formatTime(userInfo.preferredStartTime || '09:00')} - ${formatTime(userInfo.preferredEndTime || '17:00')}.`,
-//         redirect: 'Redirecting to itinerary planner in 3 seconds...'
-//       });
-//       setTimeout(() => {
-//         window.location.href = '/tourist-profile';
-//       }, 1000);
-      
-//     } else {
-//       const errorData = await response.json();
-//       throw new Error(errorData.message || 'Failed to save preferences');
-//     }
-//   } catch (error) {
-//     console.error('Error saving preferences:', error);
-//     if (error.message.includes('401') || error.message.includes('unauthorized')) {
-//       setError('Your session has expired. Please log in again.');
-//     } else {
-//       setError('Sorry, there was an error saving your preferences. Please try again.');
-//     }
-//   } finally {
-//     setLoading(false);
-//   }
-// };
 const handleSubmit = async () => {
   if (!isAuthenticated || !userId) {
     setError('You must be logged in to save preferences. Please log in and try again.');
@@ -764,11 +613,15 @@ const handleSubmit = async () => {
               <div className="tourist-preferences-glass-container">
                 <div className="tourist-preferences-section-header">
                   <h3>Your Travel Budget *</h3>
-                  <p>Enter your daily budget per person (will be converted to JMD)</p>
+                  <p>Enter your daily budget per person (will be converted to JMD). 
+                     <p className="tourist-preferences-budget-help">
+                    <br />
+                    This helps us recommend experiences within your comfort zone
+                  </p>
+                  </p>
                 </div>
                 
                 <div className="tourist-preferences-budget-input-container">
-                  <div className="tourist-preferences-budget-icon-display">💰</div>
                   <div className="tourist-preferences-currency-row">
                     <div className="tourist-preferences-currency-select-wrapper">
                       <select
@@ -798,18 +651,21 @@ const handleSubmit = async () => {
                         required
                       />
                                   </div>
+
                                 {/* Conversion Display */}
                   {userInfo.budget && userInfo.currency !== 'JMD' && (
                     <div style={{
                       backgroundColor: '#e8f5e8',
                       border: '1px solid #4caf50',
                       borderRadius: '8px',
-                      padding: '12px',
-                      marginTop: '10px',
-                      textAlign: 'center'
+                      padding: '5px',
+                      marginTop: '0px',
+                      textAlign: 'center',
+                      display:'block',
+                      whiteSpace: 'pre-wrap' 
                     }}>
                       <p style={{ margin: 0, color: '#2e7d32', fontWeight: '500' }}>
-                        💱 Converts to: <strong>J${convertedAmount.toLocaleString()} JMD</strong>
+                        Converts to: <strong>J${convertedAmount.toLocaleString()} JMD</strong>
                         <br />
                         <span style={{ fontSize: '12px', opacity: 0.8 }}>
                           (Rate: 1 {userInfo.currency} = {currencyToJMD[userInfo.currency]} JMD)
@@ -833,9 +689,7 @@ const handleSubmit = async () => {
                     </div>
                   )}
                   
-                  <p className="tourist-preferences-budget-help">
-                    This helps us recommend experiences within your comfort zone
-                  </p>
+            
                 </div>
               </div>
 

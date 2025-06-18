@@ -59,29 +59,34 @@ const handleLogout = () => {
         <h2>Welcome {user.username}</h2>
         <a href="#" className="edit-link">Edit Profile</a>
 
-        <h3>Preferences</h3>
+        {/* <h3>Preferences</h3>
         <div className="preferences">
           <span>🏛️ Museums</span>
           <span>🎉 Festivals</span>
           <span>🍽️ Restaurants</span>
         </div>
-        <Link to="/prefer">Edit Preferences</Link>
+        <Link to="/prefer">Edit Preferences</Link> */}
 
       </aside>
 
       <main className="main-content">
         <section className="my-trip">
-          <img  alt="Trip" className="trip-image" />
+        
           <div className="trip-details">
-          
+        <h2> Register another venue / or event for our tourists to enjoy. </h2>
             <button className="btn" onClick={addev}>Add another venue/Event</button>
           </div>
         </section>
 
         <section className="favorites">
-          <h2> Your venues / Events</h2>
+          <h2> Your venues </h2>
           <button Link= "/"></button>
         </section>
+        <section className="favorites">
+          <h2> Your Events </h2>
+          <button Link= "/"></button>
+        </section>
+
 
         <footer className="footer">
           <div>
