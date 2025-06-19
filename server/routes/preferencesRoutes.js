@@ -20,74 +20,7 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// //adding the  tourists preferences to the db
-// router.post("/preferences", authenticateToken, async (req, res) => {
-//   const connection = await pool.getConnection();
-// try {
-//     await connection.beginTransaction();
-//     const { preferences } = req.body;
-//     const user_id = req.user.userId;
-//     try {
-//       if (!preferences || !Array.isArray(preferences) || preferences.length === 0) {
-//         return res.status(400).json({ 
-//           error: "Preferences cannot be empty. Please select at least one preference." 
-//         });
-//       }
-//       const isValidPreferences = preferences.every(pref => 
-//         pref && typeof pref === 'object' && pref.tag && typeof pref.weight === 'number'
-//       );
-      
-//       if (!isValidPreferences) {
-//         return res.status(400).json({ 
-//           error: "Invalid preference format. Each preference must have 'tag' and 'weight' properties." 
-//         });
-//       }
 
-//       const preferencesJson = JSON.stringify(preferences);
-//       if (!preferencesJson || preferencesJson === '[]' || preferencesJson === 'null') {
-//         return res.status(400).json({ 
-//           error: "Preferences data is empty or invalid." 
-//         });
-//       }
-//       const updateResult = await pool.query(
-//         "UPDATE tourist_preferences SET preferences = ? WHERE tourist_id = ?",
-//         [preferencesJson, tourist_id]
-//       );
-//           console.log("New preferences record created for tourist_id:", tourist_id);
-
-
-      
-//       // If no rows were affected, insert a new record
-//       if (updateResult.affectedRows === 0) {
-//         await pool.query(
-//           "INSERT INTO tourist_preferences (tourist_id, preferences) VALUES (?, ?)",
-//           [tourist_id, preferencesJson]
-//         );
-//         console.log("New preferences record created for tourist_id:", tourist_id);
-//       } else {
-//         console.log("Preferences updated for tourist_id:", tourist_id);
-//       }
-      
-//       res.status(200).json({ 
-//         message: "Preferences saved successfully",
-//         tourist_id: tourist_id,
-//         preferences_count: preferences.length
-//       });
-      
-//     } catch (error) {
-//       console.error("DB error:", error);
-//       res.status(500).json({ 
-//         error: "Failed to save preferences",
-//         details: error.message 
-//       });
-//   }      await connection.commit();
-//   } catch (error) {
-//     await connection.rollback();
-//     throw error;
-//   } finally {
-//     connection.release();
-//   }
-// });
 router.post("/preferences", authenticateToken, async (req, res) => {
   const connection = await pool.getConnection();
   
@@ -95,7 +28,7 @@ router.post("/preferences", authenticateToken, async (req, res) => {
     await connection.query('START TRANSACTION');
     
     const { preferences } = req.body;
-    const user_id = req.user.userId; // Get from auth token, not request body
+    const user_id = req.user.userId; 
     
     console.log('=== UPDATING PREFERENCES ===');
     console.log('User ID:', user_id);
@@ -183,7 +116,7 @@ router.post("/preferences", authenticateToken, async (req, res) => {
 // GET all preferences
 router.get('/', async (req, res) => {
   try {
-    const [prefers] = await pool.query('SELECT * FROM Preferences');
+    const [prefers] = await pool.query('SELECT * FROM Tourist_Preferences');
     res.json(prefers);
   } catch (err) {
     console.error(err);

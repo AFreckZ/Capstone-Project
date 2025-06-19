@@ -234,12 +234,9 @@ const BusinessProfilePage = () => {
         <div className="header-content">
           <div className="logo">Yaad Quest</div>
           <nav className="nav-links">
-            <a href="#">Home</a>
-            <a href="#">Explore</a>
-            <a href="#">Activities</a>
-            <a href="#">About Us</a>
-            <a href="#">Contact</a>
-          </nav>
+            <a href="/business-profile">Home</a>
+            <a href="/search">Search</a>
+            </nav>
           <div className="avatar"></div>
           <button onClick={handleLogout}>logout</button>
         </div>
@@ -369,17 +366,12 @@ const BusinessProfilePage = () => {
               </div>
               <div>
                 <h3>Contact</h3>
-                <p>Email</p>
+                <p>yaadquest@gmail.com</p>
               </div>
               <div>
-                <h3>Further</h3>
-                <p>Activities</p>
-                <p>Restaurants</p>
+                <h3> <a href="/search">Explore other businesses</a></h3>
               </div>
-              <div>
-                <h3>Discover</h3>
-                <p>🌐 App Store / Google Play</p>
-              </div>
+              
             </footer>
           </main>
         </div>

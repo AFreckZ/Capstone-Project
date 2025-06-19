@@ -274,8 +274,7 @@ const SearchPage = () => {
             Yaad Quest
           </div>
           <nav className="nav-links">
-            <a href="/">Home</a>
-            <a href="/explore">Explore</a>
+           
             <a href="/search" className="active">Search</a>
             <a href="/about">About</a>
           </nav>
@@ -485,7 +484,7 @@ const SearchPage = () => {
 
         {hasSearchQuery() && results.length === 0 && !loading && (
           <div className="no-results">
-            <h2>🔍 No Results Found</h2>
+            <h2> No Results Found</h2>
             <p>Try adjusting your search terms or filters</p>
             <button onClick={clearFilters} className="clear-button">
               Clear Filters

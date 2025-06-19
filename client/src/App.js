@@ -39,7 +39,7 @@ function App() {
         <Route path="/business-profile" element={<BusinessProfilePage/>} />
         <Route path ="/travel-profile" element= {<TravelProfilePage/>}/>
         <Route path ="/EVregister" element={<EventVenueCreator/>}/>
-        <Route path ="/searchevent" element ={<SearchEvent/>}/>
+        <Route path ="/search" element ={<SearchEvent/>}/>
       </Routes>
       
       </AuthProvider>

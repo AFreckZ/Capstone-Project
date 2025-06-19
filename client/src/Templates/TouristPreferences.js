@@ -1206,11 +1206,10 @@ const handleSubmit = async () => {
           </div>
           
           <nav className="tourist-preferences-nav">
-            <a href="#" className="tourist-preferences-nav-link">Home</a>
-            <a href="#" className="tourist-preferences-nav-link">Explore</a>
-            <a href="#" className="tourist-preferences-nav-link">Activities</a>
+            <a href="/tourist-profile" className="tourist-preferences-nav-link">Home</a>
+            <a href="/search" className="tourist-preferences-nav-link">Explore</a>
             <a href="#" className="tourist-preferences-nav-link">About Us</a>
-            <a href="#" className="tourist-preferences-nav-link">Contact</a>
+           
           </nav>
           
           <div className="tourist-preferences-avatar"></div>
@@ -1330,17 +1329,12 @@ const handleSubmit = async () => {
             <h3>Company</h3>
             <p>About Us</p>
             <h3>Contact</h3>
-            <p>Email</p>
+            <p>yaadQuest@gmail.com</p>
           </div>
           <div className="tourist-preferences-footer-section">
             <h3>Further</h3>
-            <p>Events</p>
-            <p>Experiences</p>
-            <div className="tourist-preferences-footer-icons">
-              <div className="tourist-preferences-footer-icon"></div>
-              <div className="tourist-preferences-store-badge">Google Play</div>
-              <div className="tourist-preferences-store-badge">App Store</div>
-            </div>
+            <a href="/search"><p>Search for more places</p></a>
+          
           </div>
         </div>
       </footer>

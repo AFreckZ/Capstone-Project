@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
@@ -549,6 +549,7 @@ const ItineraryPlanner = () => {
       distance: route.distanceText
     } : null;
   }, [routeData]);
+
   const downloadAsText = useCallback(() => {
   const generateItineraryText = () => {
     let content = `TRAVEL ITINERARY\n`;
@@ -732,81 +733,229 @@ const openPrintView = useCallback(() => {
     alert('Error generating PDF. Please try again.');
   }
 }, [touristInfo, budget, totalCost]);
-const DownloadButtons = () => (
-  <div className="itinerary-download-section" style={{
-    marginTop: '20px',
-    padding: '20px',
-    background: '#f8f9fa',
-    borderRadius: '8px',
-    border: '1px solid #dee2e6'
-  }}>
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      marginBottom: '15px'
-    }}>
-      <span style={{ fontSize: '1.2em', marginRight: '10px' }}>📥</span>
-      <h3 style={{ margin: 0, color: '#333' }}>Download Itinerary</h3>
-    </div>
-    <div style={{
-      display: 'flex',
-      gap: '10px',
-      flexWrap: 'wrap'
-    }}>
-      <button
-        onClick={downloadAsPDF}
-        style={{
-          padding: '10px 20px',
-          backgroundColor: '#dc3545',
-          color: 'white',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          fontSize: '14px'
-        }}
-      >
-        Download as PDF
-      </button>
-      <button
-        onClick={downloadAsText}
-        style={{
-          padding: '10px 20px',
-          backgroundColor: '#28a745',
-          color: 'white',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          fontSize: '14px'
-        }}
-      >
-       Download as Text file
-      </button>
-      
-      <button
-        onClick={openPrintView}
-        style={{
-          padding: '10px 20px',
-          backgroundColor: '#6c757d',
-          color: 'white',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          fontSize: '14px'
-        }}
-      >
-        🖨️ Print View
-      </button>
-    </div>
-  </div>
-);
+// Replace your existing DownloadButtons component with this:
 
+const DownloadButtons = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleOptionClick = (action) => {
+    action();
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="itinerary-download-section" style={{
+      marginTop: '20px',
+      padding: '20px',
+      background: '#f8f9fa',
+      borderRadius: '8px',
+      border: '1px solid #dee2e6'
+    }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '15px'
+      }}>
+        <span style={{ fontSize: '1.2em', marginRight: '10px' }}>📥</span>
+        <h3 style={{ margin: 0, color: '#333' }}>Download Itinerary</h3>
+      </div>
+      
+      <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          style={{
+            padding: '12px 24px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: '500',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: '0 2px 8px rgba(0,123,255,0.3)',
+            transition: 'all 0.3s ease',
+            minWidth: '180px',
+            justifyContent: 'space-between'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = '#0056b3';
+            e.target.style.transform = 'translateY(-2px)';
+            e.target.style.boxShadow = '0 4px 12px rgba(0,123,255,0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = '#007bff';
+            e.target.style.transform = 'translateY(0)';
+            e.target.style.boxShadow = '0 2px 8px rgba(0,123,255,0.3)';
+          }}
+        >
+          <span>📥 Download Options</span>
+          <span style={{
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.3s ease',
+            fontSize: '12px'
+          }}>
+            ▼
+          </span>
+        </button>
+
+        {isOpen && (
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            left: '0',
+            right: '0',
+            backgroundColor: 'white',
+            border: '1px solid #e1e5e9',
+            borderRadius: '8px',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+            zIndex: 1000,
+            marginTop: '8px',
+            overflow: 'hidden',
+            animation: 'dropdownFadeIn 0.3s ease'
+          }}>
+            <button
+              onClick={() => handleOptionClick(downloadAsPDF)}
+              style={{
+                width: '100%',
+                padding: '14px 18px',
+                backgroundColor: 'transparent',
+                border: 'none',
+                textAlign: 'left',
+                cursor: 'pointer',
+                fontSize: '14px',
+                color: '#333',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#dc3545';
+                e.target.style.color = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.color = '#333';
+              }}
+            >
+              <span style={{ fontSize: '16px' }}>📄</span>
+              <div>
+                <div style={{ fontWeight: '500' }}>Download as PDF</div>
+                <div style={{ fontSize: '12px', opacity: 0.8 }}>Save as PDF document</div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleOptionClick(downloadAsText)}
+              style={{
+                width: '100%',
+                padding: '14px 18px',
+                backgroundColor: 'transparent',
+                border: 'none',
+                textAlign: 'left',
+                cursor: 'pointer',
+                fontSize: '14px',
+                color: '#333',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                transition: 'all 0.2s ease',
+                borderTop: '1px solid #f1f3f4'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#28a745';
+                e.target.style.color = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.color = '#333';
+              }}
+            >
+              <span style={{ fontSize: '16px' }}>📝</span>
+              <div>
+                <div style={{ fontWeight: '500' }}>Download as Text File</div>
+                <div style={{ fontSize: '12px', opacity: 0.8 }}>Save as text file</div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleOptionClick(openPrintView)}
+              style={{
+                width: '100%',
+                padding: '14px 18px',
+                backgroundColor: 'transparent',
+                border: 'none',
+                textAlign: 'left',
+                cursor: 'pointer',
+                fontSize: '14px',
+                color: '#333',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                transition: 'all 0.2s ease',
+                borderTop: '1px solid #f1f3f4'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#6c757d';
+                e.target.style.color = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.color = '#333';
+              }}
+            >
+              <span style={{ fontSize: '16px' }}>🖨️</span>
+              <div>
+                <div style={{ fontWeight: '500' }}>Print View</div>
+                <div style={{ fontSize: '12px', opacity: 0.8 }}>Open print preview</div>
+              </div>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* CSS Animation */}
+      <style jsx>{`
+        @keyframes dropdownFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
   return (
     <div className="itinerary-planner-container">
       <div className="p-6 max-w-5xl mx-auto bg-white">
         <div className="itinerary-planner-header">
           <h1 className="itinerary-planner-title">Tourist Itinerary Planner</h1>
-          <h2><Link to="/tourist-profile">Home</Link></h2>
+          <h1><a href="/tourist-profile">Home</a></h1>
           <h2><Link to="/preferences">Edit Itinerary</Link></h2>
+
         </div>
 
         {touristInfo && (
@@ -982,7 +1131,7 @@ const DownloadButtons = () => (
                               </div>
                             </div>
                             
-                            {/* {activity.travel_time_from_previous && activity.travel_time_from_previous > 0 && (
+                            {activity.travel_time_from_previous && activity.travel_time_from_previous > 0 && (
                               <div className="itinerary-travel-adjustment" style={{
                                 backgroundColor: '#f0f9ff',
                                 border: '1px solid #bae6fd',
@@ -991,13 +1140,13 @@ const DownloadButtons = () => (
                                 margin: '8px 0',
                                 fontSize: '0.9em'
                               }}>
-                                <span style={{color: '#0369a1'}}>
+                                {/* <span style={{color: '#0369a1'}}>
                                   ⏱️ Start time adjusted by {activity.buffer_time} minutes 
                                   (including {activity.travel_time_from_previous} min travel time)
-                                </span>
+                                </span> */}
                               </div>
                             )}
-                             */}
+                            
                             <div className="itinerary-activity-details">
                               <div className="itinerary-activity-info">
                                 <div className="itinerary-activity-detail">

@@ -1,9 +1,9 @@
-
 // CreateVenuePage.js 
 import React, { useState, useEffect } from "react";
 import "../css/CreateEventPage.css";
 import JamaicanAddressForm from "./JamaicanAddressForm";
 import { useAuth } from "../contexts/AuthContext"; 
+import { useNavigate } from "react-router-dom";
 
 const daysOfWeek = [
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
@@ -76,7 +76,7 @@ function DaysSelector({ selectedDays, setSelectedDays }) {
 export default function CreateVenuePage() {
   // Use your existing AuthContext
   const { userId, isAuthenticated, getAuthHeaders, loading: authLoading } = useAuth();
-
+  const navigate= useNavigate();
   const [name, setName] = useState("");
   const [venueType, setVenueType] = useState("");
   const [openingTime, setOpeningTime] = useState("");
@@ -109,6 +109,7 @@ export default function CreateVenuePage() {
   };
 
   const handleCreateVenue = async () => {
+    
     setError(null);
     setSuccess(null);
 
@@ -192,7 +193,7 @@ export default function CreateVenuePage() {
         setAddress("");
         setDescription("");
         setDaysOpen([]);
-
+        navigate('/business-profile');
       } else {
         throw new Error(result.error || result.message || 'Failed to create venue');
       }
@@ -430,6 +431,7 @@ export default function CreateVenuePage() {
               setDaysOpen([]);
               setError(null);
               setSuccess(null);
+
             }}
             disabled={loading}
           >

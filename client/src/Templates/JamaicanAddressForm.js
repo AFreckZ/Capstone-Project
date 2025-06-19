@@ -75,10 +75,7 @@ function JamaicanAddressForm({ onAddressChange }) {
         </select>
       </div>
 
-      {/* <div className="form-group">
-        <label htmlFor="country">Country</label>
-        <input id="country" type="text" value={country} disabled />
-      </div> */}
+     
     </div>
   );
 }

@@ -20,6 +20,23 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+router.get('/user/:userId', async (req, res) => {
+  try {
+    const [tourist] = await pool.query(
+      'SELECT tourist_id, user_id FROM tourist WHERE user_id = ?', 
+      [req.params.userId]
+    );
+    
+    if (tourist.length === 0) {
+      return res.status(404).json({ error: 'Tourist profile not found' });
+    }
+    
+    res.json(tourist[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch tourist profile' });
+  }
+});
 
 // GET all tourists
 router.get('/', async (req, res) => {

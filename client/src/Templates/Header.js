@@ -18,10 +18,10 @@ function Header() {
              <div className="logo">Yaad Quest</div>
              <nav className="nav-links">
                <a href="#">Home</a>
-               <a href="#">Explore</a>
+               <a href="/search">Explore</a>
                <a href="#">Activities</a>
                <a href="#">About Us</a>
-               <a href="#">Contact</a>
+              
                
              </nav>
              <div className="avatar"></div>

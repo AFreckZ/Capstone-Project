@@ -8,25 +8,19 @@ function Footer() {
   
   return(
   <footer className="footer">
-          <div>
-            <h3>Company</h3>
-            <p>About Us</p>
-          </div>
-          <div>
-            <h3>Contact</h3>
-            <p>Email</p>
-          </div>
-          <div>
-            <h3>Further</h3>
-            <p>Activities</p>
-            <p>Restaurants</p>
-          </div>
-          <div>
-            <h3>Discover</h3>
-            <p>🌐 App Store / Google Play</p>
-          </div>
+           <div>
+                <h3>Company</h3>
+                <p>About Us</p>
+              </div>
+              <div>
+                <h3>Contact</h3>
+                <p>yaadquest@gmail.com</p>
+              </div>
+              <div>
+                <h3> <a href="/search">Explore other businesses</a></h3>
+                </div>
         </footer>
-        )
-}
+        );
+};
 
 export default Footer;
