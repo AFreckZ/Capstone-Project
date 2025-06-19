@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from '../contexts/AuthContext';
 import  "../css/Login.css"
 import SunsetImage from "../images/sunset.jpg";
-import logo from "../images/logo.png";
+import logo from "../images/Logo(YaadQuest).png";
 
 function Login() {
  const [email, setEmail] = useState("");

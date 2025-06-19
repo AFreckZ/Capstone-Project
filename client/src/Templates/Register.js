@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 //import React from "react";
 import "../css/Register.css";
 import Beach from "../images/Beach.jpg";
-
+import logo from "../images/Logo(YaadQuest).png";
 
 function Register() {
 
@@ -166,7 +166,7 @@ const {register, login, isAuthenticated, user, userType} = useAuth();
       <div className="register-right">
         <div className="register-form-container">
           <div className="register-logo">
-            <img src="/path-to-logo.png" alt="Logo" />
+            <img src={logo} alt="Logo" />
           </div>
           <h2 className="register-title">Register</h2>
           
