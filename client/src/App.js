@@ -18,8 +18,10 @@ import TravelProfilePage from './Templates/travelagencyprofilepage';
 import BusinessProfilePage from './Templates/businessprofilepage';
 import EventVenueCreator from './Templates/EventVenueCreator';
 import SearchEvent from './components/searchpage';
+import AgencyProfilePage from './Templates/AgencyProfilePage';
 //used to manage user sessions
 import AuthDebug from './Templates/debugAuth';
+
 function App() {
 
   return (
@@ -40,6 +42,7 @@ function App() {
         <Route path ="/travel-profile" element= {<TravelProfilePage/>}/>
         <Route path ="/EVregister" element={<EventVenueCreator/>}/>
         <Route path ="/search" element ={<SearchEvent/>}/>
+        <Route path="/agencyprofilepage" element={<AgencyProfilePage />} />
       </Routes>
       
       </AuthProvider>
