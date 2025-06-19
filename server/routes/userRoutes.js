@@ -46,8 +46,8 @@ router.post('/register', async (req, res) => {
         profileParams = [userResult.insertId];
         break;
       case 'transport-agency':
-        profileQuery = `INSERT INTO transportagency (user_id) VALUES (?)`;
-        profileParams = [userResult.insertId];
+        profileQuery = `INSERT INTO transportagency (user_id, company_name) VALUES (?)`;
+        profileParams = [userResult.insertId, name];
         break;
       default:
         throw new Error(`Invalid user type: ${userType}`);

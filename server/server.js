@@ -14,7 +14,7 @@ const userRoutes = require('./routes/userRoutes');
 const preferenceRoutes = require('./routes/preferencesRoutes');
 const searchRoutes = require('./routes/searchRoutes');
 const businessRoutes = require('./routes/businessRoutes');
-//const driverRoutes = require('./routes/driverRoutes');
+const agencyRoutes = require('./routes/agencyRoutes');
 
 //allowing the pictures to be uploaded
 app.use('/uploads', express.static('uploads'));
@@ -41,7 +41,7 @@ app.use ('/api/prefer', preferenceRoutes);
 //search routes
 app.use('/api/search', searchRoutes);
 //driver routes
-//app.use('/api/driver', driverRoutes);
+app.use('/api/agency', agencyRoutes);
 // business owner routes
 app.use('/api/business',businessRoutes);
 
@@ -53,14 +53,6 @@ app.get('/api/test', (req, res) => {
 });
 
 
-// app.get('/api/search/test', (req, res) => {
-//   console.log('Direct search test route hit!');
-//   res.json({ 
-//     message: 'Direct search route works!', 
-//     timestamp: new Date().toISOString()
-//   });
-// });
-//testing routes
 app.get('/api/dbtest', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * From venue');

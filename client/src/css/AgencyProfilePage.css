@@ -1,125 +1,188 @@
-import React, { useState } from 'react';
-import '../css/AgencyProfilePage.css';
+/* ───────────────────────────────────────
+   General Layout
+──────────────────────────────────────── */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f4f4f9;
+}
 
-const AgencyProfilePage = () => {
-  const [drivers, setDrivers] = useState([
-    { id: 1, name: 'John Doe', license: 'JD123', status: 'Available' },
-    { id: 2, name: 'Jane Smith', license: 'JS456', status: 'On Trip' }
-  ]);
+.agency-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
 
-  const [newDriver, setNewDriver] = useState({ name: '', license: '' });
-  const [selectedDriverId, setSelectedDriverId] = useState('');
-  const [newStatus, setNewStatus] = useState('Available');
+/* ───────────────────────────────────────
+   Header
+──────────────────────────────────────── */
+.trip-header {
+  background: linear-gradient(to right, #1d3557, #457b9d);
+  color: white;
+  padding: 20px 40px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-  const addDriver = () => {
-    if (!newDriver.name || !newDriver.license) return;
-    const newId = Date.now();
-    setDrivers([...drivers, { ...newDriver, id: newId, status: 'Available' }]);
-    setNewDriver({ name: '', license: '' });
-  };
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  const deleteDriver = (id) => {
-    setDrivers(drivers.filter(driver => driver.id !== id));
-  };
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
 
-  const updateDriverStatus = () => {
-    setDrivers(drivers.map(driver =>
-      driver.id === Number(selectedDriverId)
-        ? { ...driver, status: newStatus }
-        : driver
-    ));
-  };
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: 500;
+}
 
-  return (
-    <div className="agency-container">
-       <header className="trip-header">
-        <div className="header-content">
-          <div className="logo">Yaad Quest</div>
-          <nav className="nav-links">
-            <a href="#">Home</a>
-            <a href="#">Explore</a>
-            <a href="#">Activities</a>
-            <a href="#">About Us</a>
-            <a href="#">Contact</a>
-          </nav>
-          <div className="avatar"></div>
-        </div>
-      </header>
+.avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #ccc;
+  border-radius: 50%;
+}
 
-      <div className="content-body">
-        <aside className="sidebar">
-          <h2>Add Driver</h2>
-          <input
-            type="text"
-            placeholder="Name"
-            value={newDriver.name}
-            onChange={e => setNewDriver({ ...newDriver, name: e.target.value })}
-          />
-          <input
-            type="text"
-            placeholder="License #"
-            value={newDriver.license}
-            onChange={e => setNewDriver({ ...newDriver, license: e.target.value })}
-          />
-          <button className="btn" onClick={addDriver}>Add Driver</button>
+/* ───────────────────────────────────────
+   Body Layout
+──────────────────────────────────────── */
+.content-body {
+  display: flex;
+  flex: 1;
+}
 
-          <hr style={{ margin: '20px 0' }} />
+.sidebar {
+  background-color: white;
+  padding: 30px;
+  width: 300px;
+  border-right: 1px solid #ddd;
+}
 
-          <h3>Set Driver Status</h3>
-          <select onChange={(e) => setSelectedDriverId(e.target.value)} value={selectedDriverId}>
-            <option value="">Select Driver</option>
-            {drivers.map(driver => (
-              <option key={driver.id} value={driver.id}>{driver.name}</option>
-            ))}
-          </select>
-          <select onChange={(e) => setNewStatus(e.target.value)} value={newStatus}>
-            <option value="Available">Available</option>
-            <option value="On Trip">On Trip</option>
-            <option value="Off Duty">Off Duty</option>
-          </select>
-          <button className="btn" onClick={updateDriverStatus} disabled={!selectedDriverId}>Update Status</button>
-        </aside>
+.sidebar input,
+.sidebar select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
 
-        <main className="main-content">
-          <section className="drivers-section">
-            <h2>Drivers</h2>
-            <div className="drivers-grid">
-              {drivers.map(driver => (
-                <div key={driver.id} className="driver-card">
-                  <div className="driver-details">
-                    <h3>{driver.name}</h3>
-                    <p>License: {driver.license}</p>
-                    <p>Status: {driver.status}</p>
-                    <button className="btn" onClick={() => deleteDriver(driver.id)}>Delete</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+.sidebar h2 {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  color: #1d3557;
+}
 
-          <footer className="footer">
-            <div>
-              <h3>Company</h3>
-              <p>About Us</p>
-            </div>
-            <div>
-              <h3>Contact</h3>
-              <p>Email</p>
-            </div>
-            <div>
-              <h3>Further</h3>
-              <p>Activities</p>
-              <p>Restaurants</p>
-            </div>
-            <div>
-              <h3>Discover</h3>
-              <p>🌐 App Store / Google Play</p>
-            </div>
-          </footer>
-        </main>
-      </div>
-    </div>
-  );
-};
+.sidebar h3 {
+  margin-top: 20px;
+  color: #1d3557;
+}
 
-export default AgencyProfilePage;
+.sidebar hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 20px 0;
+}
+
+/* ───────────────────────────────────────
+   Main Content
+──────────────────────────────────────── */
+.main-content {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.drivers-section h2 {
+  margin-bottom: 20px;
+  color: #1d3557;
+}
+
+.drivers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.driver-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.driver-details h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.driver-details p {
+  margin: 4px 0;
+  font-size: 0.95rem;
+}
+
+/* ───────────────────────────────────────
+   Buttons
+──────────────────────────────────────── */
+.btn {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #457b9d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn:hover {
+  background-color: #1d3557;
+}
+
+/* ───────────────────────────────────────
+   Footer
+──────────────────────────────────────── */
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 40px 60px;
+  background-color: #f1f1f1; /* lighter background for visibility */
+  color: #1d3557; /* dark text for contrast */
+  border-top: 4px solid #457b9d;
+}
+
+.footer > div {
+  flex: 1 1 200px;
+  margin-bottom: 20px;
+  min-width: 180px;
+}
+
+.footer h3 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: #1d3557;
+  border-bottom: 2px solid #457b9d;
+  display: inline-block;
+  padding-bottom: 4px;
+}
+
+.footer p {
+  margin: 6px 0;
+  font-size: 0.95rem;
+  color: #2b2b2b;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.footer p:hover {
+  color: #457b9d;
+}

@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import '../css/businessprofile.css';
 import profileImage from '../images/sunset.jpg';
-import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 
 const BusinessProfilePage = () => {
-  const { user, userId, userType, loading, isAuthenticated, logout, token, getAuthHeaders } = useAuth();
+  const { user, userId,  loading, isAuthenticated, logout, token } = useAuth();
   const navigate = useNavigate();
   
   // State for venues and events
@@ -134,79 +133,9 @@ const BusinessProfilePage = () => {
     navigate('/EVregister');
   };
 
-  const handleEditVenue = (venueId) => {
-    navigate(`/venues/edit/${venueId}`);
-  };
+  
 
-  const handleEditEvent = (eventId) => {
-    navigate(`/events/edit/${eventId}`);
-  };
-
-  const handleDeleteVenue = async (venueId) => {
-    if (window.confirm('Are you sure you want to delete this venue?')) {
-      try {
-        const response = await fetch(`http://localhost:5001/api/business/venue/${venueId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          }
-        });
-        
-        if (response.ok) {
-          setVenues(venues.filter(venue => venue.venue_id !== venueId));
-        }
-      } catch (err) {
-        console.error('Error deleting venue:', err);
-      }
-    }
-  };
-
-  const handleDeleteEvent = async (eventId) => {
-    if (window.confirm('Are you sure you want to delete this event?')) {
-      try {
-        const response = await fetch(`http://localhost:5001/api/business/event/${eventId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          }
-        });
-        
-        if (response.ok) {
-          setEvents(events.filter(event => event.event_id !== eventId));
-        }
-      } catch (err) {
-        console.error('Error deleting event:', err);
-      }
-    }
-  };
-
-  const handleToggleVenueStatus = async (venueId, currentStatus) => {
-    try {
-      const newStatus = currentStatus === 1 ? 0 : 1;
-      const response = await fetch(`http://localhost:5001/api/business/venue/${venueId}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ is_active: newStatus })
-      });
-      
-      if (response.ok) {
-        setVenues(venues.map(venue => 
-          venue.venue_id === venueId 
-            ? { 
-                ...venue, 
-                is_active: newStatus,
-                status_text: newStatus === 1 ? 'active' : 'inactive'
-              }
-            : venue
-        ));
-      }
-    } catch (err) {
-      console.error('Error updating venue status:', err);
-    }
-  };
+ 
 
   const formatDateTime = (dateTimeString) => {
     const date = new Date(dateTimeString);

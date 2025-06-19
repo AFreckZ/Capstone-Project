@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 //import React from "react";
 import "../css/Register.css";
 import Beach from "../images/Beach.jpg";
-import logo from "../images/Logo(YaadQuest).png";
+import logo from "../images/logo.png";
 
 function Register() {
 
