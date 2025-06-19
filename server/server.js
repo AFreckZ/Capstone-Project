@@ -40,7 +40,7 @@ app.use ('/api/user', userRoutes);
 app.use ('/api/prefer', preferenceRoutes);
 //search routes
 app.use('/api/search', searchRoutes);
-//driver routes
+//transport agency routes
 app.use('/api/agency', agencyRoutes);
 // business owner routes
 app.use('/api/business',businessRoutes);

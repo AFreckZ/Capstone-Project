@@ -3,6 +3,11 @@ const router = express.Router();
 const pool = require('../db');
 const jwt = require('jsonwebtoken');
 
+router.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 // Authentication middleware
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -17,6 +22,7 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+//getting all the agencies
 router.get('/', async (req,res)=>{
   try {
   
@@ -195,54 +201,53 @@ router.delete('/drivers/:driverId', authenticateToken, async (req, res) => {
   }
 });
 
-// Update agency travel rate
-// Update agency travel rate - Fixed version
+
 router.put('/:agencyId/rate', authenticateToken, async (req, res) => {
   try {
+    console.log('Request body:', req.body); // Debug log
+    
     const { agencyId } = req.params;
     const { travel_rate } = req.body;
     const userId = req.user.userId;
 
-    console.log(`Updating rate for agency ${agencyId} with rate ${travel_rate}`); // Debug log
-
-    // Validate input
-    if (travel_rate === undefined || travel_rate === null || isNaN(parseFloat(travel_rate))) {
-      return res.status(400).json({ error: 'Invalid rate provided' });
+    // Validation
+    if (travel_rate === undefined || isNaN(parseFloat(travel_rate))) {
+      return res.status(400).json({ error: 'Valid travel_rate number required' });
     }
 
-    // Verify agency ownership
+    // Ownership check
     const [agency] = await pool.query(
       'SELECT agency_id FROM transportagency WHERE user_id = ? AND agency_id = ?',
       [userId, agencyId]
     );
 
-    if (agency.length === 0) {
-      return res.status(403).json({ error: 'Unauthorized access to this agency' });
+    if (!agency.length) {
+      return res.status(403).json({ error: 'Unauthorized access' });
     }
 
-    // Update rate
+    // Update
     const [result] = await pool.query(
       'UPDATE transportagency SET travel_rate = ? WHERE agency_id = ?',
       [parseFloat(travel_rate), agencyId]
     );
 
-    console.log('Update result:', result); // Debug log
-
     if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Agency not found or no changes made' });
+      return res.status(404).json({ error: 'Agency not found' });
     }
 
     res.json({ 
       success: true,
-      message: 'Travel rate updated successfully',
-      new_rate: travel_rate
+      message: 'Rate updated',
+      new_rate: parseFloat(travel_rate)
     });
+    
   } catch (err) {
-    console.error('Error updating travel rate:', err);
+    console.error('Rate update error:', err);
     res.status(500).json({ 
-      error: 'Failed to update travel rate',
-      details: err.message
+      error: 'Server error',
+      details: err.message 
     });
   }
 });
+
 module.exports = router;

@@ -145,28 +145,34 @@ const AgencyProfilePage = () => {
     }
   };
 
-  const updateTravelRate = async () => {
-    try {
-      const rate = parseFloat(newRate);
-      if (isNaN(rate)) {
-        throw new Error('Please enter a valid number');
-      }
-
-      await axios.put(
-        `${API_BASE_URL}/agency/${agencyInfo.agency_id}/rate`,
-        { travel_rate: rate },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setAgencyInfo({ ...agencyInfo, travel_rate: rate });
-      setSuccess('Travel rate updated!');
-      setError(null);
-    } catch (err) {
-      setError(err.response?.data?.error || err.message);
-      setSuccess(null);
+const updateTravelRate = async () => {
+  try {
+    const rate = parseFloat(newRate);
+    if (isNaN(rate)) {
+      throw new Error('Please enter a valid number');
     }
-  };
-  
+
+    const response = await axios.put(
+      `${API_BASE_URL}/agency/${agencyInfo.agency_id}/rate`,
+      { travel_rate: rate },  // Must match backend expectation
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json' // Crucial header
+        }
+      }
+    );
+
+    if (response.data.success) {
+      setAgencyInfo(prev => ({ ...prev, travel_rate: rate }));
+      setSuccess(`Rate updated to $${rate}/km`);
+      setNewRate("");
+    }
+  } catch (err) {
+    setError(err.response?.data?.error || 'Update failed');
+    console.error('Update error:', err.response?.data || err.message);
+  }
+};
 const handleLogout = () => {
     logout();
     navigate('/login');
@@ -298,7 +304,9 @@ const handleLogout = () => {
         </aside>
 
         <main className="main-content">
+          <h2>Welcome {userId.username}</h2>
           <h2>Driver Management</h2>
+          
           <div className="drivers-grid">
             {drivers.length === 0 ? (
               <p>No drivers found</p>
