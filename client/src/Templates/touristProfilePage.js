@@ -54,8 +54,7 @@ const handleLogout = () => {
             <a href="#">Home</a>
             <a href="#">Explore</a>
             <a href="#">Activities</a>
-            {/* <a href="#">About Us</a>
-            <a href="#">Contact</a> */}
+           
           </nav>
           <button onClick={handleLogout}>logout</button>
         </div>
@@ -73,7 +72,7 @@ const handleLogout = () => {
           <span>🎉 Festivals</span>
           <span>🍽️ Restaurants</span>
         </div>
-        <Link to="/prefer">Edit Preferences</Link>
+        <Link to="/preferences">Edit Preferences</Link>
 
       </aside>
 

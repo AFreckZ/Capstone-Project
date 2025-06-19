@@ -13,6 +13,7 @@ const transportRoutes = require('./routes/transportRoutes');
 const userRoutes = require('./routes/userRoutes');
 const preferenceRoutes = require('./routes/preferencesRoutes');
 const searchRoutes = require('./routes/search');
+const businessRoutes = require('./routes/businessRoutes');
 //const driverRoutes = require('./routes/driverRoutes');
 
 //allowing the pictures to be uploaded
@@ -41,6 +42,8 @@ app.use ('/api/prefer', preferenceRoutes);
 app.use('/api/search',searchRoutes);
 //driver routes
 //app.use('/api/driver', driverRoutes);
+// business owner routes
+app.use('/api/business',businessRoutes);
 
 
 //testing the server

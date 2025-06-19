@@ -365,7 +365,6 @@ export default function CreateEventPage() {
 
       setDateSchedule([...dateSchedule, newSchedule]);
       
-      // Reset single day fields
       setSelectedDate("");
       setStartTime("");
       setEndTime("");
