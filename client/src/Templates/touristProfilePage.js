@@ -85,16 +85,16 @@ const TouristProfilePage = () => {
               if (contentType?.includes('application/json')) {
                 preferencesData = await response.json();
                 successfulEndpoint = endpoint;
-                console.log(`✅ SUCCESS with endpoint: ${endpoint}`);
+                console.log(` SUCCESS with endpoint: ${endpoint}`);
                 console.log(`Raw response data:`, JSON.stringify(preferencesData, null, 2));
                 break;
               } else {
-                console.log(`❌ Wrong content type: ${contentType}`);
+                console.log(`Wrong content type: ${contentType}`);
                 const responseText = await response.text();
                 console.log(`Response text:`, responseText);
               }
             } else {
-              console.log(`❌ Failed with status: ${response.status}`);
+              console.log(` Failed with status: ${response.status}`);
               const responseText = await response.text();
               console.log(`Error response text:`, responseText);
               
@@ -103,7 +103,7 @@ const TouristProfilePage = () => {
               }
             }
           } catch (err) {
-            console.log(`❌ Network error with endpoint ${endpoint}:`, err.message);
+            console.log(` Network error with endpoint ${endpoint}:`, err.message);
             continue;
           }
         }
@@ -155,7 +155,7 @@ const TouristProfilePage = () => {
         }
 
         if (!successfulEndpoint) {
-          console.log('❌ All methods failed - no preferences could be loaded');
+          console.log(' All methods failed - no preferences could be loaded');
           setPreferences([]);
           return;
         }
@@ -198,7 +198,7 @@ const TouristProfilePage = () => {
                     console.log('Parsed preferences is not an array:', parsedPrefs);
                   }
                 } catch (parseError) {
-                  console.error('❌ Error parsing preferences JSON:', parseError);
+                  console.error(' Error parsing preferences JSON:', parseError);
                   console.log('Raw preferences value that failed to parse:', preferenceRecord.preferences);
                 }
               } else {
@@ -226,11 +226,11 @@ const TouristProfilePage = () => {
           }
         }
 
-        console.log('✅ Final processed preferences:', processedPreferences);
+        console.log('Final processed preferences:', processedPreferences);
         setPreferences(processedPreferences);
 
       } catch (err) {
-        console.error('❌ Error fetching user preferences:', err);
+        console.error('Error fetching user preferences:', err);
         setPreferencesError(`Failed to load preferences: ${err.message}`);
         setPreferences([]);
       } finally {
@@ -493,7 +493,7 @@ const TouristProfilePage = () => {
                   ))
               ) : (
                 <div className="no-preferences">
-                  <span>No preferences set</span>
+                  <span>Your preferences will be shown here</span>
                 </div>
               )}
             </div>

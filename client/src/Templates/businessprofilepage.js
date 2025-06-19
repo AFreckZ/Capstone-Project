@@ -247,7 +247,6 @@ const BusinessProfilePage = () => {
           <aside className="sidebar">
             <img src={profileImage} alt="User" className="profile-pic" />
             <h2>Welcome {user.username}</h2>
-            <a href="#" className="edit-link">Edit Profile</a>
           </aside>
 
           <main className="main-content">
