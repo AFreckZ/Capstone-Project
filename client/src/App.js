@@ -17,7 +17,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import TravelProfilePage from './Templates/travelagencyprofilepage';
 import BusinessProfilePage from './Templates/businessprofilepage';
 import EventVenueCreator from './Templates/EventVenueCreator';
-import SearchEvent from './Templates/eventSearchPage';
+import SearchEvent from './components/searchpage';
 //used to manage user sessions
 import AuthDebug from './Templates/debugAuth';
 function App() {

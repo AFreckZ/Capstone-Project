@@ -12,7 +12,7 @@ const itineraryRoutes= require('./routes/itineraryRoutes');
 const transportRoutes = require('./routes/transportRoutes');
 const userRoutes = require('./routes/userRoutes');
 const preferenceRoutes = require('./routes/preferencesRoutes');
-const searchRoutes = require('./routes/search');
+const searchRoutes = require('./routes/searchRoutes');
 const businessRoutes = require('./routes/businessRoutes');
 //const driverRoutes = require('./routes/driverRoutes');
 
@@ -39,7 +39,7 @@ app.use ('/api/user', userRoutes);
 // preference routes
 app.use ('/api/prefer', preferenceRoutes);
 //search routes
-app.use('/api/search',searchRoutes);
+app.use('/api/search', searchRoutes);
 //driver routes
 //app.use('/api/driver', driverRoutes);
 // business owner routes
@@ -49,8 +49,17 @@ app.use('/api/business',businessRoutes);
 //testing the server
 app.get('/api/test', (req, res) => {
   res.json({ status: 'Server is working!' });
+
 });
 
+
+// app.get('/api/search/test', (req, res) => {
+//   console.log('Direct search test route hit!');
+//   res.json({ 
+//     message: 'Direct search route works!', 
+//     timestamp: new Date().toISOString()
+//   });
+// });
 //testing routes
 app.get('/api/dbtest', async (req, res) => {
   try {
