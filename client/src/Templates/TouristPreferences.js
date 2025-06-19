@@ -2000,7 +2000,7 @@ const handleSubmit = async () => {
                         step="10"
                         required
                       />
-                                  </div>
+                                  </div><br />
 
                                 {/* Conversion Display */}
                   {userInfo.budget && userInfo.currency !== 'JMD' && (

@@ -20,9 +20,7 @@ const TouristProfilePage = () => {
   const [preferencesLoading, setPreferencesLoading] = useState(true);
   const [preferencesError, setPreferencesError] = useState(null);
   
-  const [trip] = useState({
-    name: "Create your dream vacation by entering your preferences below",
-  });
+ 
 
   // Fetch user preferences
   useEffect(() => {
@@ -45,10 +43,7 @@ const TouristProfilePage = () => {
           authHeaders['Authorization'] = `Bearer ${token}`;
         }
 
-        // Let's try the exact routes from your backend in order:
-        // 1. GET /preferences/tourists/:id
-        // 2. GET /preferences/:id  
-        // 3. GET /preferences/tourists (then filter)
+        
 
         const touristId = 10; // You confirmed this is correct
         console.log('Using known tourist_id:', touristId);
@@ -505,12 +500,11 @@ const TouristProfilePage = () => {
           <main className="main-content">
             <section className="my-trip">
               <div className="trip-details">
-                <h2>{trip.name}</h2>
-                <p>{trip.dates}</p>
-                <button className="btn" onClick={enterinfo}>Create Itinerary</button>
+                <h2>Create your dream vacation by entering your preferences below</h2>
+                 <button className="btn" onClick={enterinfo}>Create Itinerary</button>
               </div>
             </section>
-
+            
             {/* Featured Venues Section */}
             <section className="favorites">
               <div className="section-header">
@@ -559,7 +553,7 @@ const TouristProfilePage = () => {
             <section className="favorites">
               <div className="section-header">
                 <h2>🎉 Upcoming Events</h2>
-                <Link to="/search?type=events" className="view-all-link">View All →</Link>
+               <Link to="/search?type=events" className="view-all-link"><button> View All →</button></Link>
               </div>
               
               {featuredLoading ? (
@@ -614,7 +608,7 @@ const TouristProfilePage = () => {
                 <p>yaadquest@gmail.com</p>
               </div>
               <div>
-                <a href="/search"><h3>Look for more things to do in Jamaica</h3></a>
+                <a href="/search"><h3>Explore</h3></a>
               </div>
             </footer>
           </main>

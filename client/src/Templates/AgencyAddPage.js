@@ -7,7 +7,7 @@ import '../css/AgencyProfilePage.css';
 const API_BASE_URL = 'http://localhost:5001/api';
 
 const AgencyProfilePage = () => {
-  const { userId, token, userInfo,logout } = useAuth();
+  const { user,userId, token, userInfo,logout } = useAuth();
   const navigate = useNavigate();
   const [drivers, setDrivers] = useState([]);
   const [agencyInfo, setAgencyInfo] = useState(null);
@@ -304,7 +304,7 @@ const handleLogout = () => {
         </aside>
 
         <main className="main-content">
-          <h2>Welcome {userId.username}</h2>
+          <h2> Welcome, {user.username || 'User'}</h2>
           <h2>Driver Management</h2>
           
           <div className="drivers-grid">
@@ -313,6 +313,7 @@ const handleLogout = () => {
             ) : (
               drivers.map((driver) => (
                 <div key={driver.driver_id} className="driver-card">
+                <div className="driver-card-content">
                   <div className="driver-avatar">
                     {driver.driver_name.charAt(0)}
                   </div>
@@ -325,13 +326,14 @@ const handleLogout = () => {
                       <strong>Status:</strong> {driver.driver_status}
                     </p>
                   </div>
-                  <button
-                    className="btn delete"
-                    onClick={() => deleteDriver(driver.driver_id)}
-                  >
-                    Remove Driver
-                  </button>
                 </div>
+                <button
+                  className="btn delete"
+                  onClick={() => deleteDriver(driver.driver_id)}
+                >
+                  Remove Driver
+                </button>
+              </div>
               ))
             )}
           </div>
