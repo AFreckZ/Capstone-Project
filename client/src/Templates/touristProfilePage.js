@@ -500,15 +500,20 @@ const TouristProfilePage = () => {
           <main className="main-content">
             <section className="my-trip">
               <div className="trip-details">
-                <h2>Create your dream vacation by entering your preferences below</h2>
-                 <button className="btn" onClick={enterinfo}>Create Itinerary</button>
+                <h1>Create your dream vacation by entering your preferences and trip information </h1>
+                 <button className="btn" onClick={enterinfo}>Enter information</button>
               </div>
             </section>
-            
+            <section className="my-trip">
+              <div className="trip-details">
+                <h1>Generate your Itinerary here</h1>
+                 <a href="/generate"><button className="btn" >Create Itinerary</button></a>
+              </div>
+            </section>
             {/* Featured Venues Section */}
             <section className="favorites">
               <div className="section-header">
-                <h2>🏢 Featured Venues</h2>
+                <h2>Featured Venues</h2>
                 <Link to="/search?type=venues" className="view-all-link">View All →</Link>
               </div>
               

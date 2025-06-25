@@ -3,14 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const jwt = require('jsonwebtoken');
 
-// Simple test route to verify the business routes are working
-router.get('/test', (req, res) => {
-  res.json({ 
-    message: 'Business routes are working!', 
-    timestamp: new Date().toISOString(),
-    path: req.path 
-  });
-});
+
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
