@@ -1,8 +1,11 @@
 import React from 'react';
 import '../css/About.css';
+
 const About = () => {
   return (
+   
     <div className="about-page">
+      
       <div className="about-hero">
         <h1>About Yaad Quest</h1>
         <p>

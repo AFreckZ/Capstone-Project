@@ -136,15 +136,21 @@ router.get('/tourists', async (req,res) =>{
 })
 
 // getting tourist preferences by their id
-router.get('/tourists/:id', async (req,res) =>{
-    try{
-        const[tourpre] = await pool.query('Select * from Tourist_Preferences p Join Tourist t on p.tourist_id = t.tourist_id WHERE t.tourist_id = ?', [req.params.id]);
+router.get('/tourists/:id', async (req, res) => {
+    try {
+        // Now using user_id to find the tourist and their preferences
+        const [tourpre] = await pool.query(`
+            SELECT * FROM Tourist_Preferences p 
+            JOIN Tourist t ON p.tourist_id = t.tourist_id 
+            WHERE t.user_id = ?
+        `, [req.params.id]);
+        
         res.json(tourpre);
-    }catch (err){
+    } catch (err) {
         console.error(err);
-        res.status(500).json({error: 'Failed to fetch tourists preferences by id '});
+        res.status(500).json({error: 'Failed to fetch tourists preferences by user id'});
     }
-})
+});
 // GET single preference
 router.get('/:id', async (req, res) => {
   try {
@@ -158,5 +164,18 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch preference' });
   }
 });
-
+router.get('/user/:userId/preferences', async (req, res) => {
+    try {
+        const [tourpre] = await pool.query(`
+            SELECT * FROM Tourist_Preferences p 
+            JOIN Tourist t ON p.tourist_id = t.tourist_id 
+            WHERE t.user_id = ?
+        `, [req.params.userId]);
+        
+        res.json(tourpre);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({error: 'Failed to fetch tourist preferences by user id'});
+    }
+});
 module.exports = router;

@@ -1,3 +1,4 @@
+// this one is to add things to the preference tables 
 import express from 'express';
 import sql from '../db.js';
 
@@ -283,5 +284,6 @@ router.get("/get-preferences-by-day/:userId/:day", async (req, res) => {
         res.status(500).json({ error: "Server error fetching preferences by day" });
     }
 });
+
 
 export default router;

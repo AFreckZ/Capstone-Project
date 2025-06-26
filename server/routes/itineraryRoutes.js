@@ -1,48 +1,24 @@
-// const express = require('express');
-// const router = express.Router();
-// const pool = require('../db');
 
-// // GET all itineraries
-// router.get('/', async (req, res) => {
-//   try {
-//     const [itineraries] = await pool.query('SELECT * FROM itineraries');
-//     res.json(itineraries);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: 'Failed to fetch itinerary' });
-//   }
-// });
-
-// // GET single intinerary
-// router.get('/:id', async (req, res) => {
-//   try {
-//     const [itinerary] = await pool.query('SELECT * FROM itineraries WHERE itinerary_id = ?', [req.params.id]);
-//     if (itinerary.length === 0) {
-//       return res.status(404).json({ error: 'Itinerary not found' });
-//     }
-//     res.json(itinerary[0]);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: 'Failed to fetch Itinerary' });
-//   }
-// });
-// // GET all itineraries
-// // router.get('/generate', async (req, res) => {
-// //   try {
-
-// //     //filter the events
-// //     const [itineraries] = await pool.query('SELECT * FROM Events Where start_date == 2024-12-15');
-// //     res.json(itineraries);
-// //   } catch (err) {
-// //     console.error(err);
-// //     res.status(500).json({ error: 'Failed to fetch itinerary' });
-// //   }
-// //});
-// module.exports = router;
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const auth = require('../middleware/auth');
+
+const auth = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access token required' });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: 'Invalid or expired token' });
+    }
+    req.user = user;
+    next();
+  });
+};
 
 // GET all itineraries for a user
 router.get('/', auth, async (req, res) => {

@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import '../css/Header.css'; 
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';

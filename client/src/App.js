@@ -1,20 +1,20 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Register from './Templates/Register';
 import Login from './Templates/Login';
 import TouristProfilePage from './Templates/touristProfilePage';
 import InterestPage from './Templates/Preferences';
 import TouristPreferencesForm from './Templates/TouristPreferences';
 import TripInformationPage from './Templates/TripInformation';
-import logo from './logo.svg';
+//import logo from './logo.svg';
 import './css/App.css';
 import CreateEventPage from './Templates/CreateEventPage';
 import Welcome from './Templates/WelcomePage';
 import ItineraryGenerator from './Templates/itinerarygen';
 import CreateVenuePage from './Templates/CreateVenuePage';
-import ProtectedRoute from './Templates/ProtectedRoutes';
+//import ProtectedRoute from './Templates/ProtectedRoutes';
 import { AuthProvider } from './contexts/AuthContext';
-import TravelProfilePage from './Templates/travelagencyprofilepage';
+//import TravelProfilePage from './Templates/travelagencyprofilepage';
 import BusinessProfilePage from './Templates/businessprofilepage';
 import EventVenueCreator from './Templates/EventVenueCreator';
 import SearchEvent from './components/searchpage';
@@ -27,7 +27,7 @@ function App() {
 
   return (
    <AuthProvider>
-      
+      <AuthDebug/>
       <Routes>
         <Route path ="/" element={<Welcome/>}/>
         <Route path="/register" element={<Register />} />
