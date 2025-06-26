@@ -28,9 +28,9 @@ CREATE TABLE `businessowner` (
   `user_id` int NOT NULL,
   `businesstype` enum('venue','event') DEFAULT NULL,
   PRIMARY KEY (`bid`),
-  KEY `user_id` (`user_id`),
+  KEY `idx_businessowner_user_id` (`user_id`),
   CONSTRAINT `businessowner_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -47,7 +47,8 @@ INSERT INTO `businessowner` VALUES
 (5,8,'venue'),
 (6,11,'event'),
 (7,12,'venue'),
-(8,51,NULL);
+(8,51,NULL),
+(9,61,NULL);
 /*!40000 ALTER TABLE `businessowner` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -67,7 +68,7 @@ CREATE TABLE `Driver` (
   PRIMARY KEY (`driver_id`),
   KEY `agency_id` (`agency_id`),
   CONSTRAINT `driver_ibfk_1` FOREIGN KEY (`agency_id`) REFERENCES `TransportAgency` (`agency_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -87,7 +88,13 @@ INSERT INTO `Driver` VALUES
 (8,1,'Maria Santos','On Trip','DL234567'),
 (9,1,'James Wilson','Available','DL345678'),
 (10,2,'David Kim','Available','DL456789'),
-(11,2,'Lisa Chen','Off Duty','DL567890');
+(11,2,'Lisa Chen','Off Duty','DL567890'),
+(13,6,'Samantha Brown ','Off Duty','JM-DW-12345'),
+(14,6,'Rushane Campbell','Available','JW-DW-27566'),
+(15,6,'Cierra Ortega','On Trip','JM-DW-2123'),
+(16,6,'John Cena','Available','JW-CM-4567'),
+(19,6,'Greg Browm','On Trip','JW-DM-2245'),
+(20,7,'Miana Jones','On Trip','355342');
 /*!40000 ALTER TABLE `Driver` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -119,6 +126,18 @@ CREATE TABLE `event` (
   KEY `idx_event_type` (`event_type`),
   KEY `idx_event_datetime` (`start_datetime`,`end_datetime`),
   KEY `idx_event_cost` (`cost`),
+  KEY `idx_event_datetime_range` (`start_datetime`,`end_datetime`),
+  KEY `idx_event_start_datetime` (`start_datetime`),
+  KEY `idx_event_end_datetime` (`end_datetime`),
+  KEY `idx_event_type_date_cost` (`event_type`,`start_datetime`,`cost`),
+  KEY `idx_event_venue_location` (`venue_location`),
+  KEY `idx_event_type_datetime` (`event_type`,`start_datetime`),
+  KEY `idx_event_location` (`venue_location`),
+  KEY `idx_event_active_dates` (`start_datetime`,`end_datetime`,`cost`),
+  KEY `idx_event_value_cost` (`event_type`,`cost`,`start_datetime`),
+  KEY `idx_event_time_conflicts` (`start_datetime`,`end_datetime`,`event_id`),
+  KEY `idx_event_geographic` (`venue_location`,`start_datetime`),
+  KEY `idx_event_scheduling` (`start_datetime`,`end_datetime`,`event_type`,`cost`),
   FULLTEXT KEY `name` (`name`,`description`,`venue_location`),
   CONSTRAINT `event_ibfk_1` FOREIGN KEY (`bid`) REFERENCES `BusinessOwner` (`bid`) ON DELETE CASCADE,
   CONSTRAINT `event_chk_1` CHECK ((`end_datetime` > `start_datetime`))
@@ -132,32 +151,32 @@ CREATE TABLE `event` (
 LOCK TABLES `event` WRITE;
 /*!40000 ALTER TABLE `event` DISABLE KEYS */;
 INSERT INTO `event` VALUES
-(17,2,'Reggae Sumfest','Concert','2025-07-14 20:00:00','2025-07-20 04:00:00','Catherine Hall, Montego Bay',120.00,'Jamaica\'s premier reggae festival featuring international and local acts. Multi-day event with beach parties.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(18,2,'Rebel Salute','Concert','2025-08-19 18:00:00','2025-08-20 06:00:00','Grizzly\'s Plantation Cove',100.00,'Annual roots reggae festival celebrating conscious music. Strictly no meat or alcohol sold on premises.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(19,2,'Sting','Concert','2025-12-26 20:00:00','2025-12-27 06:00:00','Jamworld, Portmore',80.00,'The ultimate dancehall clash where artists compete lyrically. Not for the faint-hearted.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(20,2,'Jamaica Jazz and Blues','Concert','2025-09-25 19:00:00','2025-09-28 23:00:00','Various locations',75.00,'International jazz artists perform at scenic Jamaican locations. Some free daytime events.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(21,2,'Reggae Month Concert','Concert','2026-02-24 18:00:00','2026-02-24 23:00:00','Emancipation Park, Kingston',50.00,'Free outdoor concert celebrating Bob Marley\'s birthday month with top reggae acts.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(17,2,'Reggae Sumfest','Concert','2025-07-14 20:00:00','2025-07-20 04:00:00','Catherine Hall, Montego Bay',3108.00,'Jamaica\'s premier reggae festival featuring international and local acts. Multi-day event with beach parties.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(18,2,'Rebel Salute','Concert','2025-08-19 18:00:00','2025-08-20 06:00:00','Grizzly\'s Plantation Cove',4762.00,'Annual roots reggae festival celebrating conscious music. Strictly no meat or alcohol sold on premises.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(19,2,'Sting','Concert','2025-12-26 20:00:00','2025-12-27 06:00:00','Jamworld, Portmore',3480.00,'The ultimate dancehall clash where artists compete lyrically. Not for the faint-hearted.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(20,2,'Jamaica Jazz and Blues','Concert','2025-09-25 19:00:00','2025-09-28 23:00:00','Various locations',4118.00,'International jazz artists perform at scenic Jamaican locations. Some free daytime events.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(21,2,'Reggae Month Concert','Concert','2026-02-24 18:00:00','2026-02-24 23:00:00','Emancipation Park, Kingston',3150.00,'Free outdoor concert celebrating Bob Marley\'s birthday month with top reggae acts.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
 (22,3,'Accompong Maroon Festival','Festival','2026-01-06 06:00:00','2026-01-06 18:00:00','Accompong Town, St. Elizabeth',0.00,'Annual celebration of Maroon independence featuring traditional dances, food, and ceremonies.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(23,3,'Jerk Festival','Festival','2025-11-05 11:00:00','2025-11-05 22:00:00','Portland',15.00,'Celebration of Jamaica\'s jerk tradition with cooking competitions and tastings. Held in jerk pork\'s birthplace.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(24,3,'Ocho Rios Seafood Festival','Festival','2025-06-15 12:00:00','2025-06-16 20:00:00','Ocho Rios',20.00,'Showcase of Jamaica\'s seafood prepared by top chefs. Cooking demos and live entertainment.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(25,3,'Blue Mountain Coffee Festival','Festival','2026-02-25 09:00:00','2026-02-25 17:00:00','New Castle',10.00,'Celebration of Jamaica\'s world-famous coffee with tastings, farm tours, and barista competitions.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(26,3,'Carnival in Jamaica','Festival','2026-04-07 08:00:00','2026-04-07 23:00:00','Kingston',40.00,'Colorful street parade with costumed bands, soca music, and dancing. \"The greatest show on earth\".',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(27,3,'Jamaica Invitational','Sport','2026-05-05 17:00:00','2026-05-05 22:00:00','National Stadium, Kingston',30.00,'International track and field meet featuring Olympic athletes. Bolt and Fraser-Pryce often appear.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(28,3,'Reggae Marathon','Sport','2025-12-03 05:00:00','2025-12-03 11:00:00','Negril',75.00,'Scenic beachside race with reggae bands along the course. Options for full/half marathon or 10K.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(29,3,'Red Stripe Premier League','Sport','2025-09-17 15:00:00','2026-05-26 21:00:00','Various stadiums',15.00,'Jamaica\'s top football league featuring island\'s best teams and players.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(23,3,'Jerk Festival','Festival','2025-11-05 11:00:00','2025-11-05 22:00:00','Portland',4396.00,'Celebration of Jamaica\'s jerk tradition with cooking competitions and tastings. Held in jerk pork\'s birthplace.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(24,3,'Ocho Rios Seafood Festival','Festival','2025-06-15 12:00:00','2025-06-16 20:00:00','Ocho Rios',3528.00,'Showcase of Jamaica\'s seafood prepared by top chefs. Cooking demos and live entertainment.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(25,3,'Blue Mountain Coffee Festival','Festival','2026-02-25 09:00:00','2026-02-25 17:00:00','New Castle',3455.00,'Celebration of Jamaica\'s world-famous coffee with tastings, farm tours, and barista competitions.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(26,3,'Carnival in Jamaica','Festival','2026-04-07 08:00:00','2026-04-07 23:00:00','Kingston',3689.00,'Colorful street parade with costumed bands, soca music, and dancing. \"The greatest show on earth\".',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(27,3,'Jamaica Invitational','Sport','2026-05-05 17:00:00','2026-05-05 22:00:00','National Stadium, Kingston',3082.00,'International track and field meet featuring Olympic athletes. Bolt and Fraser-Pryce often appear.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(28,3,'Reggae Marathon','Sport','2025-12-03 05:00:00','2025-12-03 11:00:00','Negril',3346.00,'Scenic beachside race with reggae bands along the course. Options for full/half marathon or 10K.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(29,3,'Red Stripe Premier League','Sport','2025-09-17 15:00:00','2026-05-26 21:00:00','Various stadiums',4481.00,'Jamaica\'s top football league featuring island\'s best teams and players.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
 (30,3,'Surfing Competition','Sport','2026-01-21 08:00:00','2026-01-21 17:00:00','Boston Bay',0.00,'Annual surfing competition at Jamaica\'s best surf spot. Open to spectators free of charge.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(31,3,'Jamaica Open Golf','Sport','2026-02-09 07:00:00','2026-02-11 18:00:00','Tryall Club',50.00,'Prestigious golf tournament attracting international players to Jamaica\'s championship courses.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(31,3,'Jamaica Open Golf','Sport','2026-02-09 07:00:00','2026-02-11 18:00:00','Tryall Club',3367.00,'Prestigious golf tournament attracting international players to Jamaica\'s championship courses.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
 (32,2,'Kingston on the Edge','Art/Talent Showcasing','2025-06-15 10:00:00','2025-06-23 22:00:00','Various locations, Kingston',0.00,'Annual urban arts festival showcasing visual arts, music, dance, and theater across Kingston.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(33,2,'Jamaica Biennial','Art/Talent Showcasing','2026-03-02 10:00:00','2026-05-31 17:00:00','National Gallery, Kingston',5.00,'Premier contemporary art exhibition featuring established and emerging Jamaican artists.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(34,2,'LTM Pantomime','Art/Talent Showcasing','2025-12-26 10:00:00','2026-04-21 22:00:00','Little Theatre, Kingston',25.00,'Jamaica\'s annual theatrical tradition mixing folk tales, music, and comedy. Runs for months.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(35,2,'Rastafari Indigenous Village','Art/Talent Showcasing','2026-03-15 09:00:00','2026-03-15 17:00:00','Montego Bay',40.00,'Cultural immersion experience with drumming, crafts, and Ital cooking demonstrations.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(36,2,'Poetry in Motion','Art/Talent Showcasing','2026-02-25 18:00:00','2026-02-25 22:00:00','Emancipation Park',15.00,'Monthly spoken word event featuring Jamaica\'s top poets and open mic sessions.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(37,2,'Dream Weekend','Party','2025-07-31 22:00:00','2025-08-05 06:00:00','Negril',150.00,'Jamaica\'s biggest party weekend featuring multiple events like Beach J\'ouvert and All White.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(38,2,'Bacchanal Jamaica','Party','2026-02-11 20:00:00','2026-04-07 04:00:00','Mas Camp, Kingston',40.00,'Carnival season parties leading up to road march. Soca music, costumes, and Caribbean vibes.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(39,2,'Upscale Saturdays','Party','2025-06-11 23:00:00','2025-06-12 06:00:00','The Deck, Kingston',25.00,'Weekly upscale party attracting Kingston\'s elite. Strict dress code enforced.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(40,2,'Sunset Beach Bash','Party','2025-07-16 14:00:00','2025-07-16 22:00:00','Seven Mile Beach',30.00,'All-day beach party with multiple DJs, swimming, and water sports. Family-friendly until 6pm.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(41,2,'MoBay White Party','Party','2026-01-28 20:00:00','2026-01-29 04:00:00','Half Moon Resort',60.00,'Exclusive all-white attire party with international DJs. One of Montego Bay\'s premier events.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
-(44,8,'I love Soca','Party','2025-06-27 04:28:00','2025-06-27 14:28:00','Plantation Cove , Priory, St. Ann',5000.00,'Come enjoy good soca music at this all inclusive cooler fete.',NULL,'/uploads/events/flyerImage-1750141882431-658231106.jpeg','2025-06-17 06:31:22','2025-06-17 06:31:22');
+(33,2,'Jamaica Biennial','Art/Talent Showcasing','2026-03-02 10:00:00','2026-05-31 17:00:00','National Gallery, Kingston',4394.00,'Premier contemporary art exhibition featuring established and emerging Jamaican artists.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(34,2,'LTM Pantomime','Art/Talent Showcasing','2025-12-26 10:00:00','2026-04-21 22:00:00','Little Theatre, Kingston',4866.00,'Jamaica\'s annual theatrical tradition mixing folk tales, music, and comedy. Runs for months.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(35,2,'Rastafari Indigenous Village','Art/Talent Showcasing','2026-03-15 09:00:00','2026-03-15 17:00:00','Montego Bay',4147.00,'Cultural immersion experience with drumming, crafts, and Ital cooking demonstrations.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(36,2,'Poetry in Motion','Art/Talent Showcasing','2026-02-25 18:00:00','2026-02-25 22:00:00','Emancipation Park',3139.00,'Monthly spoken word event featuring Jamaica\'s top poets and open mic sessions.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(37,2,'Dream Weekend','Party','2025-07-31 22:00:00','2025-08-05 06:00:00','Negril',4257.00,'Jamaica\'s biggest party weekend featuring multiple events like Beach J\'ouvert and All White.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(38,2,'Bacchanal Jamaica','Party','2026-02-11 20:00:00','2026-04-07 04:00:00','Mas Camp, Kingston',4865.00,'Carnival season parties leading up to road march. Soca music, costumes, and Caribbean vibes.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(39,2,'Upscale Saturdays','Party','2025-06-11 23:00:00','2025-06-12 06:00:00','The Deck, Kingston',4554.00,'Weekly upscale party attracting Kingston\'s elite. Strict dress code enforced.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(40,2,'Sunset Beach Bash','Party','2025-07-16 14:00:00','2025-07-16 22:00:00','Seven Mile Beach',3174.00,'All-day beach party with multiple DJs, swimming, and water sports. Family-friendly until 6pm.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(41,2,'MoBay White Party','Party','2026-01-28 20:00:00','2026-01-29 04:00:00','Half Moon Resort',3212.00,'Exclusive all-white attire party with international DJs. One of Montego Bay\'s premier events.',NULL,NULL,'2025-06-03 19:03:44','2025-06-03 19:03:58'),
+(44,8,'I love Soca','Party','2025-06-27 04:28:00','2025-06-27 14:28:00','Plantation Cove , Priory, St. Ann',3536.00,'Come enjoy good soca music at this all inclusive cooler fete.',NULL,'/uploads/events/flyerImage-1750141882431-658231106.jpeg','2025-06-17 06:31:22','2025-06-17 06:31:22');
 /*!40000 ALTER TABLE `event` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -177,6 +196,7 @@ CREATE TABLE `Excursion` (
   `description` text,
   `status` enum('Planning','Confirmed','Completed','Cancelled') DEFAULT 'Planning',
   PRIMARY KEY (`excursion_id`),
+  KEY `idx_excursion_cost` (`cost`),
   CONSTRAINT `excursion_chk_1` CHECK ((`end_datetime` > `start_datetime`))
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -202,62 +222,6 @@ INSERT INTO `Excursion` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `Itinerary`
---
-
-DROP TABLE IF EXISTS `Itinerary`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Itinerary` (
-  `itinerary_id` int NOT NULL AUTO_INCREMENT,
-  `tourist_id` int NOT NULL,
-  `creation_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `status` enum('Draft','Booked','Completed') DEFAULT 'Draft',
-  PRIMARY KEY (`itinerary_id`),
-  KEY `tourist_id` (`tourist_id`),
-  CONSTRAINT `itinerary_ibfk_1` FOREIGN KEY (`tourist_id`) REFERENCES `Tourist` (`tourist_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Itinerary`
---
-
-LOCK TABLES `Itinerary` WRITE;
-/*!40000 ALTER TABLE `Itinerary` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Itinerary` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `Itinerary_Excursion`
---
-
-DROP TABLE IF EXISTS `Itinerary_Excursion`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Itinerary_Excursion` (
-  `itinerary_id` int NOT NULL,
-  `excursion_id` int NOT NULL,
-  `sequence_number` int DEFAULT NULL,
-  PRIMARY KEY (`itinerary_id`,`excursion_id`),
-  KEY `excursion_id` (`excursion_id`),
-  CONSTRAINT `itinerary_excursion_ibfk_1` FOREIGN KEY (`itinerary_id`) REFERENCES `Itinerary` (`itinerary_id`) ON DELETE CASCADE,
-  CONSTRAINT `itinerary_excursion_ibfk_2` FOREIGN KEY (`excursion_id`) REFERENCES `Excursion` (`excursion_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Itinerary_Excursion`
---
-
-LOCK TABLES `Itinerary_Excursion` WRITE;
-/*!40000 ALTER TABLE `Itinerary_Excursion` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Itinerary_Excursion` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `tourist`
 --
 
@@ -276,9 +240,15 @@ CREATE TABLE `tourist` (
   `address` varchar(200) DEFAULT NULL,
   `preferred_dates` json DEFAULT NULL,
   PRIMARY KEY (`tourist_id`),
-  KEY `user_id` (`user_id`),
+  KEY `idx_tourist_user_id` (`user_id`),
+  KEY `idx_tourist_trip_dates` (`trip_start`,`trip_end`),
+  KEY `idx_tourist_budget` (`budget`),
+  KEY `idx_tourist_user_trip` (`user_id`,`trip_start`,`trip_end`),
+  KEY `idx_tourist_preferred_times` (`preferred_start`,`preferred_end`),
+  KEY `idx_tourist_transport` (`need_for_transport`),
+  KEY `idx_tourist_complete_profile` (`tourist_id`,`trip_start`,`trip_end`,`budget`,`preferred_start`,`preferred_end`),
   CONSTRAINT `tourist_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -288,12 +258,13 @@ CREATE TABLE `tourist` (
 LOCK TABLES `tourist` WRITE;
 /*!40000 ALTER TABLE `tourist` DISABLE KEYS */;
 INSERT INTO `tourist` VALUES
-(10,41,'2025-06-11','2025-06-28',34965.00,0,'09:00:00','17:00:00','RIU','[\"2025-06-11\", \"2025-06-18\"]'),
+(10,41,'2025-06-19','2025-07-05',34965.00,0,'09:00:00','17:00:00','RIU','[\"2025-06-27\"]'),
 (11,49,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL),
 (12,53,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL),
 (13,54,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL),
 (14,55,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL),
-(15,56,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL);
+(15,56,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL),
+(16,58,'2025-06-20','2025-07-12',34965.00,0,'06:00:00','22:00:00','RIU','[\"2025-06-20\", \"2025-06-26\", \"2025-07-04\"]');
 /*!40000 ALTER TABLE `tourist` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -312,8 +283,11 @@ CREATE TABLE `tourist_preferences` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`preference_id`),
   UNIQUE KEY `unique_tourist_prefs` (`tourist_id`),
+  KEY `idx_tourist_preferences_tourist_id` (`tourist_id`),
+  KEY `idx_tourist_preferences_created` (`tourist_id`,`created_at` DESC),
+  KEY `idx_tourist_preferences_updated` (`tourist_id`,`updated_at` DESC),
   CONSTRAINT `tourist_preferences_ibfk_1` FOREIGN KEY (`tourist_id`) REFERENCES `tourist` (`tourist_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -323,7 +297,8 @@ CREATE TABLE `tourist_preferences` (
 LOCK TABLES `tourist_preferences` WRITE;
 /*!40000 ALTER TABLE `tourist_preferences` DISABLE KEYS */;
 INSERT INTO `tourist_preferences` VALUES
-(1,10,'[{\"tag\": \"Pristine Beaches\", \"weight\": 4}, {\"tag\": \"Adventure Sports\", \"weight\": 3}, {\"tag\": \"Local Food/Dining\", \"weight\": 2}, {\"tag\": \"Unique Food & Dining\", \"weight\": 1}]','2025-06-13 06:56:47','2025-06-17 01:14:59');
+(1,10,'[{\"tag\": \"Pristine Beaches\", \"weight\": 3}, {\"tag\": \"Local Food/Dining\", \"weight\": 2}, {\"tag\": \"Unique Food & Dining\", \"weight\": 1}]','2025-06-13 06:56:47','2025-06-25 05:51:37'),
+(39,16,'[{\"tag\": \"Concert\", \"weight\": 4}, {\"tag\": \"Museum/Historical Site\", \"weight\": 3}, {\"tag\": \"Local Food/Dining\", \"weight\": 2}, {\"tag\": \"Club/Bar/Party\", \"weight\": 1}]','2025-06-26 03:13:32','2025-06-26 05:02:22');
 /*!40000 ALTER TABLE `tourist_preferences` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -342,7 +317,7 @@ CREATE TABLE `TransportAgency` (
   PRIMARY KEY (`agency_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `transportagency_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -356,7 +331,9 @@ INSERT INTO `TransportAgency` VALUES
 (2,16,42.00,'Island Routes Transportation'),
 (3,9,0.75,'City Transport Services'),
 (4,10,1.25,'Island Tours & Transport'),
-(5,52,NULL,NULL);
+(5,52,NULL,NULL),
+(6,57,350.00,NULL),
+(7,66,350.00,'miana');
 /*!40000 ALTER TABLE `TransportAgency` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -376,8 +353,9 @@ CREATE TABLE `user` (
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`),
-  KEY `idx_email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `idx_email` (`email`),
+  KEY `idx_user_email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -428,7 +406,11 @@ INSERT INTO `user` VALUES
 (53,'liata','$2b$10$5qzfKhdbiboHlHrshNk/Venri2to4SBaHEOeZzeSnZSGFTUV1ACuu','liata@gmail.com','tourist'),
 (54,'liaw','$2b$10$PRuPAc0KF92xVm9UNVJR6.XA89k5pc/lcS.23vatDmpg2jgoFt.Le','liaw@gmail.com','tourist'),
 (55,'daniel ','$2b$10$.BsNolNRsuSA//XWgZbgCO5Bv0HWBc76fU6TYvZGDBvs6ii3ciBAO','dannyboy@gmail.com','tourist'),
-(56,'adam','$2b$10$5PdnfWl9SkwinVT1F5s24.zK6dJgogyic0pF91K2PqNHkPOtpLfBG','adam@gmail.com','tourist');
+(56,'adam','$2b$10$5PdnfWl9SkwinVT1F5s24.zK6dJgogyic0pF91K2PqNHkPOtpLfBG','adam@gmail.com','tourist'),
+(57,'Rainbow tours','$2b$10$NfZ3wlTNEv/GBA.ShfIknuNIbdwfYyQxAbPmh0p7qNftu63MVIZ86','raintour101@gmail.com','transport-agency'),
+(58,'mia ','$2b$10$oInr2cDJFhFdz669v1qXxuCu7quSLr5xiQbpBDAHw0Hq4INh2FamW','mia@gmail.com','tourist'),
+(61,'drivetours','$2b$10$SiCw7KOEGtfOmCz6cdVNWeZ0VYxRh18C8D0MV5xZW9icbbOTlzEK6','name@gmail.com','business-owner'),
+(66,'miana','$2b$10$hg/XzKaks9dJyJ2HRQBUXuDCelHPxNp.QdYud.U73aQVWv8jAK6JK','miana2@gmail.com','transport-agency');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -453,8 +435,22 @@ CREATE TABLE `venue` (
   `days_open` json DEFAULT NULL,
   PRIMARY KEY (`venue_id`),
   KEY `bid` (`bid`),
+  KEY `idx_venue_active_type_cost` (`is_active`,`venue_type`,`cost`),
+  KEY `idx_venue_is_active` (`is_active`),
+  KEY `idx_venue_type` (`venue_type`),
+  KEY `idx_venue_cost` (`cost`),
+  KEY `idx_venue_opening_time` (`opening_time`),
+  KEY `idx_venue_closing_time` (`closing_time`),
+  KEY `idx_venue_active_status` (`is_active`),
+  KEY `idx_venue_cost_range` (`cost`),
+  KEY `idx_venue_type_active` (`venue_type`,`is_active`),
+  KEY `idx_venue_hours` (`opening_time`,`closing_time`),
+  KEY `idx_venue_days_composite` (`is_active`,`opening_time`,`closing_time`),
+  KEY `idx_venue_value_cost` (`venue_type`,`cost`,`is_active`),
+  KEY `idx_venue_time_slots` (`opening_time`,`closing_time`,`venue_id`),
+  KEY `idx_venue_availability` (`is_active`,`venue_type`,`cost`,`opening_time`,`closing_time`),
   CONSTRAINT `venue_ibfk_1` FOREIGN KEY (`bid`) REFERENCES `BusinessOwner` (`bid`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -483,13 +479,13 @@ INSERT INTO `venue` VALUES
 (70,5,'Miss T\'s Kitchen','Food & Dining (Local)','11:00:00','21:00:00',4500.00,'Ocho Rios','Cozy spot serving Jamaican home-style cooking like oxtail, curry goat, and ackee & saltfish.',1,'{\"friday\": true, \"monday\": true, \"sunday\": false, \"tuesday\": true, \"saturday\": true, \"thursday\": true, \"wednesday\": true}'),
 (71,7,'Peppa\'s Jerk Centre','Food & Dining (Local)','11:00:00','23:00:00',2800.00,'Southaven, Kingston','Popular jerk spot with live music on weekends. Try their jerk sausage and roasted breadfruit.',1,'{\"friday\": true, \"monday\": false, \"sunday\": true, \"tuesday\": false, \"saturday\": true, \"thursday\": true, \"wednesday\": true}'),
 (72,4,'Border Jerk','Food & Dining (Local)','10:00:00','02:00:00',3200.00,'Border Ave, Montego Bay','Late-night jerk spot popular with locals and tourists. Known for fiery jerk sauce.',1,'{\"friday\": true, \"monday\": true, \"sunday\": false, \"tuesday\": true, \"saturday\": true, \"thursday\": true, \"wednesday\": true}'),
-(73,1,'Faith\'s Pen','Food & Dining (Local)','08:00:00','20:00:00',1800.00,'St. Catherine','Roadside food stalls serving authentic Jamaican dishes like mannish water, stew peas, and fried fish.',1,'{\"friday\": true, \"monday\": true, \"sunday\": true, \"tuesday\": true, \"saturday\": true, \"thursday\": true, \"wednesday\": true}'),
 (74,1,'Pier 1','Club/Bar/Party','18:00:00','04:00:00',3000.00,'Howard Cooke Blvd, Montego Bay','Waterfront nightclub with regular dancehall nights and international DJs. Cover charge varies by event.',1,'{\"friday\": true, \"monday\": false, \"sunday\": false, \"tuesday\": false, \"saturday\": true, \"thursday\": true, \"wednesday\": true}'),
 (75,1,'Quad Nightclub','Club/Bar/Party','22:00:00','05:00:00',3000.00,'New Kingston','Upscale multi-level club with different music genres on each floor. Dress code enforced.',1,'{\"friday\": true, \"monday\": false, \"sunday\": false, \"tuesday\": false, \"saturday\": true, \"thursday\": true, \"wednesday\": false}'),
 (76,1,'Margaritaville','Club/Bar/Party','11:00:00','02:00:00',2500.00,'Hip Strip, Montego Bay','Beachfront party spot with water trampoline and famous \"Bob Marley Shot\". Tourist-friendly atmosphere.',1,'{\"friday\": true, \"monday\": true, \"sunday\": true, \"tuesday\": true, \"saturday\": true, \"thursday\": true, \"wednesday\": true}'),
 (77,1,'Jungle Nightclub','Club/Bar/Party','23:00:00','06:00:00',2800.00,'Ocho Rios','Massive open-air club with themed nights and local dancehall artists. Known for late-night parties.',1,'{\"friday\": true, \"monday\": false, \"sunday\": false, \"tuesday\": false, \"saturday\": true, \"thursday\": true, \"wednesday\": false}'),
 (78,1,'Weekenz','Club/Bar/Party','21:00:00','04:00:00',2500.00,'Portmore','Popular local dancehall spot where Jamaican artists often perform unreleased music.',1,'{\"friday\": true, \"monday\": false, \"sunday\": false, \"tuesday\": false, \"saturday\": true, \"thursday\": false, \"wednesday\": false}'),
-(79,8,'Rick\'s Cafe','Food & Dining (Local)','12:00:00','22:00:00',7000.00,'West End Road , Negril, Westmoreland','Longtime bar/eatery offering Caribbean grub & cocktails, plus a pool & cliffside jumping spots.',1,'[\"Monday\", \"Friday\", \"Saturday\", \"Tuesday\", \"Wednesday\", \"Sunday\", \"Thursday\"]');
+(79,8,'Rick\'s Cafe','Food & Dining (Local)','12:00:00','22:00:00',7000.00,'West End Road , Negril, Westmoreland','Longtime bar/eatery offering Caribbean grub & cocktails, plus a pool & cliffside jumping spots.',1,'[\"Monday\", \"Friday\", \"Saturday\", \"Tuesday\", \"Wednesday\", \"Sunday\", \"Thursday\"]'),
+(80,8,'Luminous Lagoon Glistening Waters','Outdoor Adventure','17:30:00','22:00:00',4000.00,'Rock , Falmouth, Trelawny','One of Jamaica’s most magical natural wonders, the Luminous Lagoon glows at night due to bioluminescent microorganisms. Guided boat tours let visitors swim in the sparkling waters, creating an ethereal light show with every movement. A bucket-list experience for nature lovers.',1,'[\"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\"]');
 /*!40000 ALTER TABLE `venue` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -502,4 +498,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2025-06-17 17:10:34
+-- Dump completed on 2025-06-26  1:04:04
