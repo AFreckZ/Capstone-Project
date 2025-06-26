@@ -1,3 +1,4 @@
+//profile page for tourists
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import '../css/ProfilePage.css';
@@ -20,9 +21,84 @@ const TouristProfilePage = () => {
   const [preferencesLoading, setPreferencesLoading] = useState(true);
   const [preferencesError, setPreferencesError] = useState(null);
   
- 
+  // NEW: State for saved itinerary
+  const [savedItinerary, setSavedItinerary] = useState(null);
+  const [hasItinerary, setHasItinerary] = useState(false);
 
-  // Fetch user preferences
+  // NEW: Check for saved itinerary on component mount
+  useEffect(() => {
+    const checkForSavedItinerary = () => {
+      try {
+        const touristId = 10; // Your hardcoded tourist ID
+        const saved = localStorage.getItem(`itinerary_${touristId}`);
+        
+        if (saved) {
+          const itineraryData = JSON.parse(saved);
+          setSavedItinerary(itineraryData);
+          setHasItinerary(true);
+          console.log('Found saved itinerary:', itineraryData);
+        } else {
+          setHasItinerary(false);
+          console.log('No saved itinerary found');
+        }
+      } catch (error) {
+        console.error('Error checking for saved itinerary:', error);
+        setHasItinerary(false);
+      }
+    };
+
+    if (isAuthenticated) {
+      checkForSavedItinerary();
+    }
+  }, [isAuthenticated]);
+
+  // NEW: Handle view itinerary button click
+  const handleViewItinerary = () => {
+    if (hasItinerary) {
+      // Navigate to itinerary page - it will load the saved data automatically
+      navigate('/generate');
+    } else {
+      // No saved itinerary, redirect to create one
+      navigate('/preferences');
+    }
+  };
+
+  // NEW: Format date for display
+  const formatItineraryDate = (timestamp) => {
+    if (!timestamp) return '';
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // NEW: Get itinerary summary for display
+  const getItinerarySummary = () => {
+    if (!savedItinerary) return null;
+    
+    const activityCount = savedItinerary.optimalActivities?.length || 0;
+    const totalCost = savedItinerary.totalCost || 0;
+    
+    // Calculate day count from optimalActivities since adjustedActivitiesByDay might not be saved
+    let dayCount = 0;
+    if (savedItinerary.optimalActivities && savedItinerary.optimalActivities.length > 0) {
+      const uniqueDates = new Set(savedItinerary.optimalActivities.map(activity => activity.date));
+      dayCount = uniqueDates.size;
+    }
+    
+    return {
+      activityCount,
+      totalCost,
+      dayCount,
+      lastSaved: formatItineraryDate(savedItinerary.timestamp)
+    };
+  };
+
+  // Your existing useEffect for preferences (keeping exactly the same)
   useEffect(() => {
     const fetchUserPreferences = async () => {
       try {
@@ -31,7 +107,6 @@ const TouristProfilePage = () => {
 
         console.log('Fetching user preferences for user:', userId);
 
-        // Get authentication token from localStorage or context
         const token = localStorage.getItem('token') || localStorage.getItem('authToken');
         console.log('Auth token available:', !!token);
 
@@ -43,17 +118,12 @@ const TouristProfilePage = () => {
           authHeaders['Authorization'] = `Bearer ${token}`;
         }
 
-        
-
-        const touristId = 10; // You confirmed this is correct
+        const touristId = 10;
         console.log('Using known tourist_id:', touristId);
 
-        // Try your exact backend routes
         const preferencesEndpointsToTry = [
-          // Try the direct backend first (bypassing any proxy issues)
           `http://localhost:5001/api/preferences/tourists/${touristId}`,
           `http://localhost:5001/api/preferences/${touristId}`,
-          // Then try with proxy
           `/api/preferences/tourists/${touristId}`,
           `/api/preferences/${touristId}`,
         ];
@@ -103,7 +173,6 @@ const TouristProfilePage = () => {
           }
         }
 
-        // If all specific endpoints failed, try getting all tourist preferences
         if (!successfulEndpoint) {
           console.log('\n=== Trying fallback: Get all tourist preferences ===');
           
@@ -128,7 +197,6 @@ const TouristProfilePage = () => {
                 console.log('All tourist preferences count:', allTouristPrefs.length);
                 console.log('All tourist preferences:', allTouristPrefs);
                 
-                // Find preferences for our tourist_id
                 const userPrefs = allTouristPrefs.filter(pref => {
                   console.log(`Checking pref: tourist_id=${pref.tourist_id} (type: ${typeof pref.tourist_id}) vs ${touristId} (type: ${typeof touristId})`);
                   return pref.tourist_id === parseInt(touristId) || pref.tourist_id === touristId;
@@ -155,7 +223,6 @@ const TouristProfilePage = () => {
           return;
         }
 
-        // Process preferences data
         console.log('\n=== Processing preferences data ===');
         console.log('Raw preferences data:', JSON.stringify(preferencesData, null, 2));
         let processedPreferences = [];
@@ -238,7 +305,7 @@ const TouristProfilePage = () => {
     }
   }, [isAuthenticated, userId]);
 
-  // Fetch featured venues and events
+  // Your existing useEffect for featured content (keeping exactly the same)
   useEffect(() => {
     const fetchFeaturedContent = async () => {
       try {
@@ -247,15 +314,11 @@ const TouristProfilePage = () => {
 
         console.log('Fetching featured content...');
 
-        // Try different API endpoint patterns
         const endpointsToTry = [
-          // Try relative URLs first (with proxy)
           { venues: '/api/venues/', events: '/api/events/' },
           { venues: '/api/venues', events: '/api/events' },
-          // Try absolute URLs (direct to backend)
           { venues: 'http://localhost:5001/api/venues/', events: 'http://localhost:5001/api/events/' },
           { venues: 'http://localhost:5001/api/venues', events: 'http://localhost:5001/api/events' },
-          // Try if there are different route patterns
           { venues: '/api/venue/', events: '/api/event/' },
           { venues: 'http://localhost:5001/api/venue/', events: 'http://localhost:5001/api/event/' }
         ];
@@ -264,7 +327,6 @@ const TouristProfilePage = () => {
         let eventsData = [];
         let successfulEndpoint = null;
 
-        // Try each endpoint pattern until one works
         for (const endpoints of endpointsToTry) {
           try {
             console.log(`Trying endpoints: venues=${endpoints.venues}, events=${endpoints.events}`);
@@ -304,7 +366,6 @@ const TouristProfilePage = () => {
           throw new Error('All API endpoints failed');
         }
 
-        // Process venues
         console.log('Raw venues data:', venuesData);
         if (Array.isArray(venuesData)) {
           const activeVenues = venuesData
@@ -320,7 +381,6 @@ const TouristProfilePage = () => {
           console.error('Venues data is not an array:', venuesData);
         }
 
-        // Process events
         console.log('Raw events data:', eventsData);
         if (Array.isArray(eventsData)) {
           const now = new Date();
@@ -352,16 +412,15 @@ const TouristProfilePage = () => {
     }
   }, [isAuthenticated]);
 
+  // All your existing functions (keeping exactly the same)
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <div>Please log in to view your profile.</div>;
   }
 
-  // Show message if user data is not available
   if (!user) {
     return <div>User data not available. Please try logging in again.</div>;
   }
@@ -417,10 +476,8 @@ const TouristProfilePage = () => {
     return icons[eventType] || '🎫';
   };
 
-  // Helper function to get icon for preference
   const getPreferenceIcon = (preferenceName) => {
     const defaultIcons = {
-      // Exact matches for your system preferences
       'Concert': '🎤',
       'Party': '🎉',
       'Festival': '🎪',
@@ -433,16 +490,12 @@ const TouristProfilePage = () => {
       'Unique Food/Dining': '🍴',
       'Club/Bar/Party': '🍻',
       'Live Music': '🎵',
-      
-      
     };
     
-    // Try exact match first
     if (defaultIcons[preferenceName]) {
       return defaultIcons[preferenceName];
     }
     
-    // Try partial matches (case insensitive) for any variations
     const lowerPreference = preferenceName.toLowerCase();
     for (const [key, icon] of Object.entries(defaultIcons)) {
       if (key.toLowerCase().includes(lowerPreference) || lowerPreference.includes(key.toLowerCase())) {
@@ -450,8 +503,11 @@ const TouristProfilePage = () => {
       }
     }
     
-    return '⭐'; // Default fallback
+    return '⭐';
   };
+
+  // NEW: Get itinerary summary for display
+  const itinerarySummary = getItinerarySummary();
 
   return (
     <div className="profile-container">
@@ -480,7 +536,7 @@ const TouristProfilePage = () => {
                 <div className="error-message">Unable to load preferences</div>
               ) : preferences.length > 0 ? (
                 preferences
-                  .sort((a, b) => (b.weight || 0) - (a.weight || 0)) // Sort by weight, highest first
+                  .sort((a, b) => (b.weight || 0) - (a.weight || 0))
                   .map((preference, index) => (
                     <span key={index} title={`Weight: ${preference.weight || 'N/A'}`}>
                       {getPreferenceIcon(preference.preference_name)} {preference.preference_name}
@@ -504,13 +560,71 @@ const TouristProfilePage = () => {
                  <button className="btn" onClick={enterinfo}>Enter information</button>
               </div>
             </section>
+
+            {/* MODIFIED: Enhanced Itinerary Section */}
             <section className="my-trip">
               <div className="trip-details">
-                <h1>Generate your Itinerary here</h1>
-                 <a href="/generate"><button className="btn" >Create Itinerary</button></a>
+                {hasItinerary ? (
+                  <>
+                    <h1>Your Saved Itinerary</h1>
+                    {itinerarySummary && (
+                      <div style={{
+                        backgroundColor: '#e8f5e8',
+                        border: '1px solid #4caf50',
+                        borderRadius: '8px',
+                        padding: '16px',
+                        margin: '16px 0',
+                        color: '#2e7d32'
+                      }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '8px' }}>
+                          <span><strong>📅 {itinerarySummary.dayCount}</strong> days planned</span>
+                          <span><strong>🎯 {itinerarySummary.activityCount}</strong> activities</span>
+                          <span><strong>💰 ${itinerarySummary.totalCost.toFixed(2)}</strong> total cost</span>
+                        </div>
+                        <div style={{ fontSize: '14px', opacity: 0.8 }}>
+                          Last saved: {itinerarySummary.lastSaved}
+                        </div>
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                      <button 
+                        className="btn" 
+                        onClick={handleViewItinerary}
+                        style={{ backgroundColor: '#4caf50' }}
+                      >
+                        📋 View My Itinerary
+                      </button>
+                      <button 
+                        className="btn" 
+                        onClick={() => navigate('/generate')}
+                        style={{ backgroundColor: '#ff9800' }}
+                      >
+                        🔄 Create New Itinerary
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h1>Generate your Itinerary here</h1>
+                    <div style={{
+                      backgroundColor: '#fff3cd',
+                      border: '1px solid #ffeaa7',
+                      borderRadius: '8px',
+                      padding: '16px',
+                      margin: '16px 0',
+                      color: '#856404'
+                    }}>
+                      <p style={{ margin: 0 }}>
+                        💡 No saved itinerary found. Create your first personalized itinerary!
+                      </p>
+                    </div>
+                    <a href="/generate"><button className="btn">Create Itinerary</button></a>
+                  </>
+                )}
               </div>
             </section>
-            {/* Featured Venues Section */}
+
+            {/* Keep all your existing sections exactly the same */}
             <section className="favorites">
               <div className="section-header">
                 <h2>Featured Venues</h2>
@@ -554,7 +668,6 @@ const TouristProfilePage = () => {
               )}
             </section>
 
-            {/* Featured Events Section */}
             <section className="favorites">
               <div className="section-header">
                 <h2>🎉 Upcoming Events</h2>

@@ -31,7 +31,7 @@ app.use('/api/events', eventRoutes);
 //tourists routes
 app.use('/api/tourists', touristRoutes );
 //itinerary routes
-app.use('/api/itinerary',itineraryRoutes );
+app.use('/api/itineraries',itineraryRoutes );
 //transport agency routes, 
 app.use ('/api/transports', transportRoutes);
 //user routes 

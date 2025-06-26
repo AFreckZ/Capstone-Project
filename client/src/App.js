@@ -18,6 +18,7 @@ import TravelProfilePage from './Templates/travelagencyprofilepage';
 import BusinessProfilePage from './Templates/businessprofilepage';
 import EventVenueCreator from './Templates/EventVenueCreator';
 import SearchEvent from './components/searchpage';
+import About from './Templates/About';
 import AgencyAddPage from './Templates/AgencyAddPage';
 //used to manage user sessions
 import AuthDebug from './Templates/debugAuth';
@@ -42,6 +43,7 @@ function App() {
         <Route path ="/travel-profile" element= {<AgencyAddPage/>}/>
         <Route path ="/EVregister" element={<EventVenueCreator/>}/>
         <Route path ="/search" element ={<SearchEvent/>}/>
+        <Route path= "/about" element= {<About/>}/>
       </Routes>
       
       </AuthProvider>
