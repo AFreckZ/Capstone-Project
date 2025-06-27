@@ -65,7 +65,36 @@ router.get('/:userId', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Database error' });
   }
 });
-
+// Get all available drivers across all agencies (for tourist transportation booking)
+router.get('/drivers/available',  async (req, res) => {
+  try {
+    console.log('Fetching available drivers for transportation booking...');
+    
+    const query = `
+      SELECT 
+        d.driver_id,
+        d.agency_id,
+        d.driver_name,
+        d.license_number,
+        d.driver_status,
+        ta.company_name,
+        ta.travel_rate
+      FROM driver d
+      JOIN transportagency ta ON d.agency_id = ta.agency_id
+      WHERE d.driver_status = 'Available'
+      ORDER BY ta.company_name, d.driver_name
+    `;
+    
+    const [drivers] = await pool.query(query);
+    
+    console.log(`Found ${drivers.length} available drivers`);
+    res.json(drivers);
+    
+  } catch (err) {
+    console.error('Error fetching available drivers:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
 // Get all drivers for an agency
 router.get('/:agencyId/drivers', authenticateToken, async (req, res) => {
   try {

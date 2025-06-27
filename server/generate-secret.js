@@ -4,7 +4,7 @@ const path = require('path');
 
 // Settings
 const ENV_PATH = path.join(__dirname, '.env');
-const SECRET_KEY_NAME = 'JWT_SECRET'; // You can change this
+const SECRET_KEY_NAME = 'JWT_SECRET'; 
 const KEY_LENGTH_BYTES = 48;
 
 // Generate a secure secret

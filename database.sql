@@ -181,47 +181,6 @@ INSERT INTO `event` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `Excursion`
---
-
-DROP TABLE IF EXISTS `Excursion`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Excursion` (
-  `excursion_id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `start_datetime` datetime NOT NULL,
-  `end_datetime` datetime NOT NULL,
-  `cost` decimal(10,2) DEFAULT NULL,
-  `description` text,
-  `status` enum('Planning','Confirmed','Completed','Cancelled') DEFAULT 'Planning',
-  PRIMARY KEY (`excursion_id`),
-  KEY `idx_excursion_cost` (`cost`),
-  CONSTRAINT `excursion_chk_1` CHECK ((`end_datetime` > `start_datetime`))
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Excursion`
---
-
-LOCK TABLES `Excursion` WRITE;
-/*!40000 ALTER TABLE `Excursion` DISABLE KEYS */;
-INSERT INTO `Excursion` VALUES
-(1,'Blue Mountain Adventure Day','2024-12-16 08:00:00','2024-12-16 16:00:00',85.00,'Coffee plantation tour with hiking and local lunch','Confirmed'),
-(2,'Negril Sunset Experience','2024-12-17 15:00:00','2024-12-17 21:00:00',65.00,'Seven Mile Beach relaxation followed by Rick\'s Cafe sunset','Confirmed'),
-(3,'Kingston Cultural Journey','2024-12-18 09:00:00','2024-12-18 17:00:00',75.00,'Bob Marley Museum, Devon House, and local jerk food experience','Planning'),
-(4,'Ocho Rios Waterfall Adventure','2024-12-19 09:00:00','2024-12-19 15:00:00',90.00,'Dunn\'s River Falls climbing and Blue Hole swimming','Confirmed'),
-(5,'Rum and Reggae Evening','2024-12-20 16:00:00','2024-12-20 23:00:00',95.00,'Appleton Estate tour followed by live reggae at Bob Marley Bar','Planning'),
-(6,'Beach & Adventure Day','2024-06-16 09:00:00','2024-06-16 18:00:00',120.00,'Full day combining beach relaxation and mountain adventures','Confirmed'),
-(7,'Cultural Food Tour','2024-07-02 11:00:00','2024-07-02 16:00:00',85.00,'Guided tour through local restaurants and cultural sites','Planning'),
-(8,'Night Life Experience','2024-07-03 20:00:00','2024-07-04 01:00:00',95.00,'Evening tour of best nightlife spots','Confirmed'),
-(9,'Adventure Sports Weekend','2024-08-06 08:00:00','2024-08-06 19:00:00',150.00,'Full day of outdoor and indoor adventure activities','Planning'),
-(10,'Festival & Dining Experience','2024-08-10 12:00:00','2024-08-10 22:00:00',130.00,'Food festival combined with fine dining experience','Confirmed');
-/*!40000 ALTER TABLE `Excursion` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `tourist`
 --
 
@@ -498,4 +457,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2025-06-26  1:04:04
+-- Dump completed on 2025-06-26 14:23:33

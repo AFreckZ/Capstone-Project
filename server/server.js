@@ -15,6 +15,7 @@ const preferenceRoutes = require('./routes/preferencesRoutes');
 const searchRoutes = require('./routes/searchRoutes');
 const businessRoutes = require('./routes/businessRoutes');
 const agencyRoutes = require('./routes/agencyRoutes');
+const geocodingRoutes = require('./routes/geocodingRoutes');
 
 //allowing the pictures to be uploaded
 app.use('/uploads', express.static('uploads'));
@@ -44,6 +45,8 @@ app.use('/api/search', searchRoutes);
 app.use('/api/agency', agencyRoutes);
 // business owner routes
 app.use('/api/business',businessRoutes);
+//geocoding routes
+app.use('/api/geocoding', geocodingRoutes);
 
 
 //testing the server

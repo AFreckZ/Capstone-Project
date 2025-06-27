@@ -35,9 +35,9 @@ const TouristPreferencesForm = () => {
     accommodation: '',
     groupSize: '',
     preferredDays: [],
-    preferredStartTime: '09:00', // NEW: Simple start time
-    preferredEndTime: '17:00',   // NEW: Simple end time
-    needTransportation: 0    // NEW: Transportation toggle
+    preferredStartTime: '09:00', 
+    preferredEndTime: '17:00',  
+    needTransportation: 0   
   });
 
   const currencies = [
@@ -468,7 +468,7 @@ const handleSubmit = async () => {
 
       setSuccess({
         title: 'Preferences Saved Successfully!',
-        message: `Your top priority is ${weightedPreferences[0]?.tag} (weight: ${weightedPreferences[0]?.weight}). Budget converted: ${getCurrencySymbol(userInfo.currency)}${userInfo.budget} ${userInfo.currency} → J$${budgetInJMD.toFixed(2)} JMD. Preferred activity time: ${formatTime(userInfo.preferredStartTime || '09:00')} - ${formatTime(userInfo.preferredEndTime || '17:00')}. Transportation needed: ${userInfo.needTransportation ? '1' : '0'}.`,
+        message: `Your top priority is ${weightedPreferences[0]?.tag} (weight: ${weightedPreferences[0]?.weight}). Budget converted: ${getCurrencySymbol(userInfo.currency)}${userInfo.budget} ${userInfo.currency} → J$${budgetInJMD.toFixed(2)} JMD. Preferred activity time: ${formatTime(userInfo.preferredStartTime || '09:00')} - ${formatTime(userInfo.preferredEndTime || '17:00')}. Transportation needed: ${userInfo.need_for_ransportation ? '1' : '0'}.`,
         redirect: 'Redirecting to itinerary planner in 3 seconds...'
       });
       

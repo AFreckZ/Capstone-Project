@@ -109,7 +109,7 @@ router.post('/save-preferences', authenticateToken, async (req, res) => {
         trip_start = ?, 
         trip_end = ?, 
         budget = ?, 
-        need_for_transport=?,
+        needTransportation=?,
         preferred_start = ?, 
         preferred_end = ?, 
         address = ?, 
@@ -135,14 +135,14 @@ router.post('/save-preferences', authenticateToken, async (req, res) => {
     if (updateResult.affectedRows === 0) {
       const [insertResult] = await connection.query(
         `INSERT INTO tourist 
-        (user_id, trip_start, trip_end, budget, need_for_transport, preferred_start, preferred_end, address, preferred_dates) 
+        (user_id, trip_start, trip_end, budget, needTransportion, preferred_start, preferred_end, address, preferred_dates) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           user_id,
           tripData.startDate,
           tripData.endDate,
           tripData.budget,
-          0, // need_for_transport default to 0
+          tripData.needTransportation, 
           tripData.preferredStartTime,
           tripData.preferredEndTime,
           tripData.accommodation || tripData.parish,
