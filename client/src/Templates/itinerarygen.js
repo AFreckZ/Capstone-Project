@@ -2728,7 +2728,7 @@ const fetchAvailableDrivers = useCallback(async () => {
 const autoAssignDriver = useCallback(async () => {
   try {
     setTransportationLoading(true);
-    console.log('🚗 Auto-assigning driver...');
+    console.log(' Auto-assigning driver...');
     
     // Fetch fresh driver data
     const drivers = await fetchAvailableDrivers();
@@ -2740,7 +2740,7 @@ const autoAssignDriver = useCallback(async () => {
     );
     
     if (availableForAssignment.length === 0) {
-      console.warn('⚠️ No drivers available for auto-assignment');
+      console.warn(' No drivers available for auto-assignment');
       setNeedsTransportation(0); // Reset back to No
       setTransportationLoading(false);
       alert('No drivers available at this time. Please try again later or set transportation need to "No".');
@@ -3041,7 +3041,43 @@ const TransportationSection = () => {
               <span style={{ fontSize: '1.1em', marginRight: '8px' }}>✅</span>
               <strong style={{ color: '#155724', fontSize: '1.1em' }}>Driver Successfully Assigned!</strong>
             </div>
-            
+            <div style={{
+  backgroundColor: '#c3e6cb',
+  padding: '12px',
+  borderRadius: '4px',
+  marginBottom: '15px',
+  border: '1px solid #a3d5a6'
+}}>
+  <div style={{ color: '#155724', fontWeight: 'bold', marginBottom: '8px' }}>
+    🚗 Transportation Cost Estimate
+  </div>
+  
+  {(() => {
+    // Calculate estimated total distance
+    const activityCount = optimalActivities.length;
+    const estimatedKmPerActivity = 15; // Average distance between activities
+    const estimatedTotalKm = Math.max(activityCount * estimatedKmPerActivity, 50); // Minimum 50km
+    const estimatedCost = estimatedTotalKm * parseFloat(assignedDriver.travel_rate);
+    
+    return (
+      <div style={{ color: '#155724' }}>
+        <div style={{ fontSize: '0.9em', marginBottom: '4px' }}>
+          <strong>Rate:</strong> ${assignedDriver.travel_rate}/km
+        </div>
+        <div style={{ fontSize: '0.9em', marginBottom: '4px' }}>
+          <strong>Estimated Distance:</strong> ~{estimatedTotalKm}km ({activityCount} activities)
+        </div>
+        <div style={{ fontSize: '1em', fontWeight: 'bold', color: '#2d5a2f' }}>
+          <strong>Estimated Total:</strong> ${estimatedCost.toFixed(2)}
+        </div>
+        <div style={{ fontSize: '0.8em', fontStyle: 'italic', marginTop: '4px' }}>
+          💡 Actual cost may vary based on route optimization and pickup locations
+        </div>
+      </div>
+    );
+  })()}
+</div>
+
             <div style={{ 
               display: 'grid', 
               gridTemplateColumns: '1fr 1fr', 
@@ -3078,7 +3114,7 @@ const TransportationSection = () => {
               </div>
             </div>
             
-            <div style={{
+            {/* <div style={{
               backgroundColor: '#c3e6cb',
               padding: '10px',
               borderRadius: '4px',
@@ -3088,9 +3124,9 @@ const TransportationSection = () => {
                 📍 Your driver will pick you up for each activity location. 
                 Please contact the transport agency directly to coordinate pickup times and locations.
               </small>
-            </div>
+            </div> */}
             
-            {assignedDriver.itinerary_summary && (
+            {/* {assignedDriver.itinerary_summary && (
               <div style={{
                 backgroundColor: '#c3e6cb',
                 padding: '8px',
@@ -3101,7 +3137,7 @@ const TransportationSection = () => {
                   📋 <strong>Your Itinerary:</strong> {assignedDriver.itinerary_summary}
                 </small>
               </div>
-            )}
+            )} */}
           </div>
           
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -3127,7 +3163,7 @@ const TransportationSection = () => {
               Cancel Transportation
             </button>
             
-            {assignedDriver.agency_contact && assignedDriver.agency_contact !== 'Contact agency directly' ? (
+            {/* {assignedDriver.agency_contact && assignedDriver.agency_contact !== 'Contact agency directly' ? (
               <button
                 onClick={() => window.open(`mailto:${assignedDriver.agency_contact}`, '_blank')}
                 style={{
@@ -3165,7 +3201,7 @@ const TransportationSection = () => {
               >
                 📞 Contact Agency Directly
               </button>
-            )}
+            )} */}
           </div>
         </div>
       )}
